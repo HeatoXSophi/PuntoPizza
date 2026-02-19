@@ -5,25 +5,39 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, ShoppingCart, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import { useCartStore } from "@/lib/store";
-import { PizzaBaseSVG, PepperoniSVG, MushroomSVG, OliveSVG, OnionSVG, PepperSVG } from "./PizzaAssets";
+import {
+    PizzaBaseSVG,
+    TomatoSVG,
+    OnionSVG,
+    PepperSVG,
+    CornSVG,
+    OliveSVG,
+    PepperoniSVG,
+    ChorizoSVG,
+    HamSVG,
+    BaconSVG,
+    AnchovySVG,
+    MushroomSVG
+} from "./PizzaAssets";
 
 // Extended ingredients list based on user request
 // Note: We're reusing some SVGs for new ingredients for now to keep the code clean
 // In a real production app, we would create unique SVGs for each new ingredient.
 const INGREDIENTS = [
     // Bases / Veggies
-    { id: "tomato", name: "Tomate", icon: PepperoniSVG, color: "#FF6347", zIndex: 15, price: 0.50 }, // Reuse/Recolor
+    { id: "tomato", name: "Tomate", icon: TomatoSVG, zIndex: 15, price: 0.50 },
     { id: "onion", name: "Cebolla", icon: OnionSVG, zIndex: 50, price: 0.50 },
     { id: "peppers", name: "Pimentón", icon: PepperSVG, zIndex: 40, price: 1.00 },
-    { id: "corn", name: "Maíz", icon: OliveSVG, color: "#FFD700", zIndex: 45, price: 0.50 }, // Reuse/Recolor
+    { id: "corn", name: "Maíz", icon: CornSVG, zIndex: 45, price: 0.50 },
     { id: "olives", name: "Aceitunas", icon: OliveSVG, zIndex: 30, price: 1.00 },
+    { id: "mushrooms", name: "Champiñones", icon: MushroomSVG, zIndex: 20, price: 1.50 },
 
     // Meats
     { id: "pepperoni", name: "Pepperoni", icon: PepperoniSVG, zIndex: 10, price: 2.00 },
-    { id: "chorizo", name: "Chorizo", icon: PepperoniSVG, color: "#CD5C5C", zIndex: 12, price: 2.00 }, // Reuse/Recolor
-    { id: "ham", name: "Jamón", icon: MushroomSVG, color: "#FFC0CB", zIndex: 20, price: 1.50 }, // Reuse shape
-    { id: "bacon", name: "Tocineta", icon: MushroomSVG, color: "#8B4513", zIndex: 25, price: 2.00 }, // Reuse shape
-    { id: "anchovies", name: "Anchoas", icon: PepperSVG, color: "#708090", zIndex: 35, price: 2.50 }, // Reuse shape
+    { id: "chorizo", name: "Chorizo", icon: ChorizoSVG, zIndex: 12, price: 2.00 },
+    { id: "ham", name: "Jamón", icon: HamSVG, zIndex: 20, price: 1.50 },
+    { id: "bacon", name: "Tocineta", icon: BaconSVG, zIndex: 25, price: 2.00 },
+    { id: "anchovies", name: "Anchoas", icon: AnchovySVG, zIndex: 35, price: 2.50 },
 ];
 
 export function PizzaBuilder() {
@@ -143,11 +157,9 @@ export function PizzaBuilder() {
                                                             top,
                                                             left,
                                                             transform: `translate(-50%, -50%) rotate(${seed * 45}deg)`,
-                                                            color: ing.color // Apply color override if exists
                                                         }}
                                                     >
-                                                        {/* Clone SVG to apply color */}
-                                                        <ing.icon style={{ fill: ing.color, stroke: ing.color ? 'rgba(0,0,0,0.2)' : undefined }} />
+                                                        <ing.icon />
                                                     </div>
                                                 );
                                             })}
@@ -198,7 +210,7 @@ export function PizzaBuilder() {
                                             `}
                                         >
                                             <div className="w-8 h-8 relative flex-shrink-0 text-primary">
-                                                <ing.icon style={{ fill: ing.color }} />
+                                                <ing.icon />
                                             </div>
                                             <div className="flex-1 flex flex-col">
                                                 <span className={`block font-bold text-xs ${isSelected ? 'text-primary' : 'text-gray-700'}`}>
