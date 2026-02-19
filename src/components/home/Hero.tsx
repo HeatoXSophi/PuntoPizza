@@ -3,9 +3,14 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Clock, MapPin, Star, PlayCircle, MessageCircle } from "lucide-react";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
+import { useCartStore } from "@/lib/store";
+import { DICTIONARY } from "@/lib/dictionary";
 
 export function Hero() {
+    const { language } = useCartStore();
+    const t = DICTIONARY[language || "es"] || DICTIONARY.es;
+
     const ref = useRef(null);
     const { scrollYProgress } = useScroll({
         target: ref,
@@ -52,7 +57,7 @@ export function Hero() {
                     className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white/90 text-sm font-medium mb-8"
                 >
                     <Star className="w-4 h-4 text-primary fill-primary" />
-                    <span>Más de 250 reseñas de 5 estrellas</span>
+                    <span>{t.hero_badge}</span>
                 </motion.div>
 
                 {/* Heading */}
@@ -62,9 +67,9 @@ export function Hero() {
                     transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                     className="font-heading text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-white leading-[0.9] tracking-tight mb-8 drop-shadow-2xl"
                 >
-                    La Mejor Pizza <br />
+                    {t.hero_title_1} <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600">
-                        de la Ciudad
+                        {t.hero_title_2}
                     </span>
                 </motion.h1>
 
@@ -75,8 +80,7 @@ export function Hero() {
                     transition={{ duration: 0.8, delay: 0.4 }}
                     className="text-lg sm:text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto font-light leading-relaxed mb-12"
                 >
-                    Ingredientes frescos, masa madre artesanal y el auténtico sabor italiano.
-                    Una experiencia culinaria en cada rebanada.
+                    {t.hero_desc}
                 </motion.p>
 
                 {/* CTA Buttons */}
@@ -91,7 +95,7 @@ export function Hero() {
                         className="group relative px-8 py-4 bg-primary text-white text-lg font-bold rounded-full overflow-hidden shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 hover:scale-105"
                     >
                         <span className="relative z-10 flex items-center gap-2">
-                            Ver Menú Completo
+                            {t.hero_cta_menu}
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </span>
                         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
@@ -104,7 +108,7 @@ export function Hero() {
                         className="flex items-center gap-3 px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/20 text-white text-lg font-semibold rounded-full hover:bg-white/10 transition-all duration-300 group"
                     >
                         <MessageCircle className="w-6 h-6 text-green-500 group-hover:scale-110 transition-transform" />
-                        <span>Ordenar por WhatsApp</span>
+                        <span>{t.hero_cta_whatsapp}</span>
                     </a>
                 </motion.div>
 
@@ -116,15 +120,15 @@ export function Hero() {
                     className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
                 >
                     {[
-                        { icon: Clock, label: "30-45 min", sub: "Delivery Rápido" },
-                        { icon: MapPin, label: "Santa Cruz", sub: "Ubicación" },
-                        { icon: Star, label: "Premium", sub: "Calidad" },
-                        { icon: ArrowRight, label: "Pick-up", sub: "Disponible" },
+                        { icon: Clock, label: t.hero_stat_time, sub: t.hero_stat_delivery },
+                        { icon: MapPin, label: "Santa Cruz", sub: t.hero_stat_location },
+                        { icon: Star, label: "Premium", sub: t.hero_stat_quality },
+                        { icon: ArrowRight, label: "Pick-up", sub: t.hero_stat_pickup },
                     ].map((item, i) => (
                         <div key={i} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors">
                             <item.icon className="w-6 h-6 text-white mb-2" />
-                            <p className="text-white font-bold">{item.label}</p>
-                            <p className="text-white/60 text-xs uppercase tracking-wider">{item.sub}</p>
+                            <p className="text-white font-bold text-center">{item.label}</p>
+                            <p className="text-white/60 text-xs uppercase tracking-wider text-center">{item.sub}</p>
                         </div>
                     ))}
                 </motion.div>
@@ -138,7 +142,7 @@ export function Hero() {
                 className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 text-white/50 flex flex-col items-center gap-2"
             >
                 <div className="w-[1px] h-12 bg-gradient-to-b from-transparent via-white/50 to-transparent" />
-                <span className="text-[10px] uppercase tracking-[0.2em]">Explorar</span>
+                <span className="text-[10px] uppercase tracking-[0.2em]">{t.hero_scroll}</span>
             </motion.div>
         </section>
     );

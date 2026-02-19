@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, ShoppingCart, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import { useCartStore } from "@/lib/store";
+import { DICTIONARY } from "@/lib/dictionary";
 import {
     PizzaBaseSVG,
     TomatoSVG,
@@ -41,6 +42,9 @@ const INGREDIENTS = [
 ];
 
 export function PizzaBuilder() {
+    const { language } = useCartStore();
+    const t = DICTIONARY[language || "es"] || DICTIONARY.es;
+
     const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
     const addItem = useCartStore((state) => state.addItem);
 
@@ -52,12 +56,12 @@ export function PizzaBuilder() {
 
     const resetBuilder = () => {
         setSelectedIngredients([]);
-        toast.info("Pizza reiniciada");
+        toast.info(t.builder_reset);
     };
 
     const handleAddToCart = () => {
         if (selectedIngredients.length === 0) {
-            toast.error("¡Agrega al menos un ingrediente!");
+            toast.error(t.builder_empty_error);
             return;
         }
 
@@ -69,7 +73,7 @@ export function PizzaBuilder() {
         const totalPrice = basePrice + ingredientsPrice;
 
         const ingredientNames = selectedIngredients
-            .map(id => INGREDIENTS.find(i => i.id === id)?.name)
+            .map(id => t[`ing_${id}` as keyof typeof t] || id)
             .join(", ");
 
         addItem({
@@ -81,7 +85,7 @@ export function PizzaBuilder() {
             category: "Personalizada"
         });
 
-        toast.success("¡Tu Pizza Personalizada ha sido agregada al carrito! 🛒");
+        toast.success(t.builder_success);
         resetBuilder();
     };
 
@@ -89,12 +93,12 @@ export function PizzaBuilder() {
         <section className="py-24 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
-                    <span className="text-primary font-bold tracking-wider uppercase text-sm">Tu Obra Maestra</span>
+                    <span className="text-primary font-bold tracking-wider uppercase text-sm">{t.builder_subtitle}</span>
                     <h2 className="font-heading text-4xl md:text-5xl font-black text-[#0F172A] mt-2">
-                        Arma tu Pizza <span className="text-primary">Perfecta</span>
+                        {t.builder_title} <span className="text-primary">{t.builder_title_highlight}</span>
                     </h2>
                     <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-                        Selecciona tus ingredientes favoritos. Nosotros ponemos la pasión.
+                        {t.builder_desc}
                     </p>
                 </div>
 
@@ -174,7 +178,7 @@ export function PizzaBuilder() {
                             layout
                             className="absolute -bottom-6 md:bottom-10 right-0 md:-right-4 bg-white px-6 py-4 rounded-3xl shadow-2xl border border-gray-100 flex flex-col items-center"
                         >
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t.builder_total}</span>
                             <span className="text-4xl font-black text-[#0F172A] font-heading">
                                 ${(10 + selectedIngredients.reduce((acc, id) => {
                                     const ing = INGREDIENTS.find(i => i.id === id);
@@ -189,7 +193,7 @@ export function PizzaBuilder() {
                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100/50">
                             <h3 className="text-xl font-bold text-[#0F172A] mb-6 flex items-center gap-2">
                                 <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">1</span>
-                                Elige tus Ingredientes
+                                {t.builder_step_1}
                             </h3>
 
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -214,7 +218,7 @@ export function PizzaBuilder() {
                                             </div>
                                             <div className="flex-1 flex flex-col">
                                                 <span className={`block font-bold text-xs ${isSelected ? 'text-primary' : 'text-gray-700'}`}>
-                                                    {ing.name}
+                                                    {t[`ing_${ing.id}` as keyof typeof t] || ing.name}
                                                 </span>
                                                 <span className="text-[10px] text-gray-400 font-medium">
                                                     +${ing.price.toFixed(2)}
@@ -240,7 +244,7 @@ export function PizzaBuilder() {
                             >
                                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                                 <ShoppingCart className="w-6 h-6" />
-                                Agregar al Pedido
+                                {t.builder_add_cart}
                             </motion.button>
                             <motion.button
                                 whileHover={{ rotate: 180 }}

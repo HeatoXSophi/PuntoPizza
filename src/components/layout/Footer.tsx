@@ -2,8 +2,13 @@
 
 import Link from "next/link";
 import { Facebook, Instagram, MapPin, Phone, Mail } from "lucide-react";
+import { useCartStore } from "@/lib/store";
+import { DICTIONARY } from "@/lib/dictionary";
 
 export function Footer() {
+    const { language } = useCartStore();
+    const t = DICTIONARY[language || "es"] || DICTIONARY.es;
+
     return (
         <footer className="bg-[#0F172A] text-white pt-16 pb-8 border-t border-white/5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,8 +24,7 @@ export function Footer() {
                             </span>
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            La verdadera tradición italiana con el sabor único de Santa Cruz.
-                            Ingredientes frescos, masa madre y horno de piedra.
+                            {t.footer_brand_desc}
                         </p>
                         <div className="flex gap-4">
                             <Link href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all">
@@ -34,26 +38,26 @@ export function Footer() {
 
                     {/* Quick Links */}
                     <div>
-                        <h4 className="font-heading font-bold text-lg mb-6">Enlaces Rápidos</h4>
+                        <h4 className="font-heading font-bold text-lg mb-6">{t.footer_links}</h4>
                         <ul className="space-y-4">
                             <li>
                                 <Link href="/" className="text-gray-400 hover:text-primary transition-colors text-sm">
-                                    Inicio
+                                    {t.footer_home}
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/menu" className="text-gray-400 hover:text-primary transition-colors text-sm">
-                                    Nuestro Menú
+                                    {t.footer_menu}
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/nosotros" className="text-gray-400 hover:text-primary transition-colors text-sm">
-                                    Historia
+                                    {t.footer_history}
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/contacto" className="text-gray-400 hover:text-primary transition-colors text-sm">
-                                    Contacto
+                                    {t.footer_contact}
                                 </Link>
                             </li>
                         </ul>
@@ -61,7 +65,7 @@ export function Footer() {
 
                     {/* Contact Info */}
                     <div>
-                        <h4 className="font-heading font-bold text-lg mb-6">Contacto</h4>
+                        <h4 className="font-heading font-bold text-lg mb-6">{t.footer_contact_title}</h4>
                         <ul className="space-y-4">
                             <li className="flex items-start gap-3 text-gray-400 text-sm">
                                 <MapPin className="w-5 h-5 text-primary flex-shrink-0" />
@@ -80,18 +84,18 @@ export function Footer() {
 
                     {/* Map / Hours */}
                     <div>
-                        <h4 className="font-heading font-bold text-lg mb-6">Horario</h4>
+                        <h4 className="font-heading font-bold text-lg mb-6">{t.footer_hours_title}</h4>
                         <ul className="space-y-3">
                             <li className="flex justify-between text-sm">
-                                <span className="text-gray-400">Lunes - Jueves</span>
+                                <span className="text-gray-400">{t.footer_days_week}</span>
                                 <span className="font-bold">5:00 PM - 11:00 PM</span>
                             </li>
                             <li className="flex justify-between text-sm">
-                                <span className="text-gray-400">Viernes - Sábado</span>
+                                <span className="text-gray-400">{t.footer_days_weekend}</span>
                                 <span className="font-bold text-primary">5:00 PM - 12:00 AM</span>
                             </li>
                             <li className="flex justify-between text-sm">
-                                <span className="text-gray-400">Domingo</span>
+                                <span className="text-gray-400">{t.footer_days_sunday}</span>
                                 <span className="font-bold">5:00 PM - 11:00 PM</span>
                             </li>
                         </ul>
@@ -100,7 +104,7 @@ export function Footer() {
 
                 <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-gray-500 text-xs">
-                        © {new Date().getFullYear()} Santa Cruz Pizzería. Todos los derechos reservados.
+                        © {new Date().getFullYear()} Santa Cruz Pizzería. {t.footer_rights}
                     </p>
                     <div className="flex gap-6 text-gray-500 text-xs">
                         <Link href="#" className="hover:text-white transition-colors">Privacidad</Link>

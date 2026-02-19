@@ -27,13 +27,11 @@ export const DICTIONARY = {
         welcome_text: "Crea tu perfil para realizar pedidos más rápido y guardar tus direcciones favoritas.",
         create_account: "Crear mi Cuenta",
         no_password: "No necesitas contraseña, solo tus datos de contacto.",
-
         name_label: "Nombre Completo",
         name_placeholder: "Tu nombre...",
         phone_profile_label: "Teléfono / WhatsApp",
         addr_profile_label: "Dirección Predeterminada",
         addr_profile_placeholder: "Tu dirección de entrega habitual...",
-
         edit_profile: "Editar Mis Datos",
         logout: "Cerrar Sesión",
         logout_success: "Sesión cerrada",
@@ -46,24 +44,80 @@ export const DICTIONARY = {
         vip: "Cliente VIP",
         app_name: "A Punto Pizza",
 
-        // Home
+        // Home - Hero
+        hero_badge: "Más de 250 reseñas de 5 estrellas",
+        hero_title_1: "La Mejor Pizza",
+        hero_title_2: "de la Ciudad",
+        hero_desc: "Ingredientes frescos, masa madre artesanal y el auténtico sabor italiano. Una experiencia culinaria en cada rebanada.",
+        hero_cta_menu: "Ver Menú Completo",
+        hero_cta_whatsapp: "Ordenar por WhatsApp",
+        hero_stat_time: "30-45 min",
+        hero_stat_delivery: "Delivery Rápido",
+        hero_stat_location: "Punto Fijo",
+        hero_stat_quality: "Calidad Premium",
+        hero_stat_pickup: "Pick-up Disponible",
+        hero_scroll: "Explorar",
+
+        // Home - Pizza Builder
+        builder_subtitle: "Tu Obra Maestra",
+        builder_title: "Arma tu Pizza",
+        builder_title_highlight: "Perfecta",
+        builder_desc: "Selecciona tus ingredientes favoritos. Nosotros ponemos la pasión.",
+        builder_step_1: "Elige tus Ingredientes",
+        builder_total: "Total",
+        builder_add_cart: "Agregar al Pedido",
+        builder_reset: "Pizza reiniciada",
+        builder_empty_error: "¡Agrega al menos un ingrediente!",
+        builder_success: "¡Tu Pizza Personalizada ha sido agregada al carrito! 🛒",
+        // Ingredients
+        ing_tomato: "Tomate",
+        ing_onion: "Cebolla",
+        ing_peppers: "Pimentón",
+        ing_corn: "Maíz",
+        ing_olives: "Aceitunas",
+        ing_mushrooms: "Champiñones",
+        ing_pepperoni: "Pepperoni",
+        ing_chorizo: "Chorizo",
+        ing_ham: "Jamón",
+        ing_bacon: "Tocineta",
+        ing_anchovies: "Anchoas",
+
+        // Home - Features
+        features_badge: "¿Por qué elegirnos?",
+        features_title: "Lo que nos hace",
+        features_title_highlight: "especiales",
+        features_desc: "Más de 10 años de experiencia nos respaldan. Conoce las razones por las que somos la pizza favorita de Punto Fijo.",
+        feat_oven: "Horno de Piedra",
+        feat_oven_desc: "Pizzas cocinadas en horno tradicional de piedra a 400°C para un sabor único.",
+        feat_fresh: "Ingredientes Frescos",
+        feat_fresh_desc: "Solo utilizamos ingredientes frescos y de la más alta calidad.",
+        feat_delivery: "Delivery Express",
+        feat_delivery_desc: "Entrega rápida en 30-45 minutos para que disfrutes tu pizza caliente.",
+        feat_recipes: "Recetas Premiadas",
+        feat_recipes_desc: "Nuestras recetas han sido reconocidas por su autenticidad y sabor.",
+        feat_hours: "Horario Extendido",
+        feat_hours_desc: "Abiertos de 11:00 AM a 11:00 PM todos los días de la semana.",
+        feat_love: "Hecho con Amor",
+        feat_love_desc: "Cada pizza es preparada con pasión y dedicación por nuestro equipo.",
+
+        // Footer
+        footer_links: "Enlaces Rápidos",
+        footer_home: "Inicio",
+        footer_menu: "Nuestro Menú",
+        footer_history: "Historia",
+        footer_contact: "Contacto",
+        footer_contact_title: "Contacto",
+        footer_hours_title: "Horario",
+        footer_rights: "Todos los derechos reservados.",
+        footer_brand_desc: "La verdadera tradición italiana con el sabor único de Santa Cruz. Ingredientes frescos, masa madre y horno de piedra.",
+        footer_days_week: "Lunes - Jueves",
+        footer_days_weekend: "Viernes - Sábado",
+        footer_days_sunday: "Domingo",
+
+        // General
         store_closed: "La tienda está cerrada.",
-
-        // Bottom Nav
-        favs: "FAVS",
-        account: "MI CUENTA",
-        cart: "CARRITO",
-
-        // Categories
-        cat_personal: "PIZZA PERSONAL",
-        cat_medium: "PIZZA MEDIANA",
-        cat_family: "PIZZA FAMILIAR",
-        cat_mixed: "PIZZA COMBINADA",
-        cat_pastas: "PASTAS",
-        cat_combos: "COMBOS",
-        cat_drinks: "BEBIDAS",
-        cat_desserts: "POSTRES",
-        cat_beers: "CERVEZAS"
+        loading: "Cargando...",
+        currency: "$"
     },
     en: {
         pickup: "Pickup",
@@ -93,13 +147,11 @@ export const DICTIONARY = {
         welcome_text: "Create your profile to order faster and save your favorite addresses.",
         create_account: "Create my Account",
         no_password: "No password needed, just your contact info.",
-
         name_label: "Full Name",
         name_placeholder: "Your name...",
         phone_profile_label: "Phone / WhatsApp",
         addr_profile_label: "Default Address",
         addr_profile_placeholder: "Your usual delivery address...",
-
         edit_profile: "Edit My Data",
         logout: "Log Out",
         logout_success: "Logged out",
@@ -112,23 +164,79 @@ export const DICTIONARY = {
         vip: "VIP Customer",
         app_name: "A Punto Pizza",
 
-        // Home
+        // Home - Hero
+        hero_badge: "Over 250 5-star reviews",
+        hero_title_1: "The Best Pizza",
+        hero_title_2: "in Town",
+        hero_desc: "Fresh ingredients, artisanal sourdough, and authentic Italian taste. A culinary experience in every slice.",
+        hero_cta_menu: "View Full Menu",
+        hero_cta_whatsapp: "Order via WhatsApp",
+        hero_stat_time: "30-45 min",
+        hero_stat_delivery: "Fast Delivery",
+        hero_stat_location: "Punto Fijo",
+        hero_stat_quality: "Premium Quality",
+        hero_stat_pickup: "Pick-up Available",
+        hero_scroll: "Explore",
+
+        // Home - Pizza Builder
+        builder_subtitle: "Your Masterpiece",
+        builder_title: "Build Your",
+        builder_title_highlight: "Perfect Pizza",
+        builder_desc: "Select your favorite ingredients. We add the passion.",
+        builder_step_1: "Choose Your Toppings",
+        builder_total: "Total",
+        builder_add_cart: "Add to Order",
+        builder_reset: "Pizza reset",
+        builder_empty_error: "Add at least one ingredient!",
+        builder_success: "Your Custom Pizza has been added to the cart! 🛒",
+        // Ingredients
+        ing_tomato: "Tomato",
+        ing_onion: "Onion",
+        ing_peppers: "Peppers",
+        ing_corn: "Corn",
+        ing_olives: "Olives",
+        ing_mushrooms: "Mushrooms",
+        ing_pepperoni: "Pepperoni",
+        ing_chorizo: "Chorizo",
+        ing_ham: "Ham",
+        ing_bacon: "Bacon",
+        ing_anchovies: "Anchovies",
+
+        // Home - Features
+        features_badge: "Why Choose Us?",
+        features_title: "What makes us",
+        features_title_highlight: "special",
+        features_desc: "Over 10 years of experience support us. Discover why we are the favorite pizza of Punto Fijo.",
+        feat_oven: "Stone Oven",
+        feat_oven_desc: "Pizzas cooked in a traditional stone oven at 400°C for a unique flavor.",
+        feat_fresh: "Fresh Ingredients",
+        feat_fresh_desc: "We only use fresh ingredients of the highest quality.",
+        feat_delivery: "Express Delivery",
+        feat_delivery_desc: "Fast delivery in 30-45 minutes so you enjoy your pizza hot.",
+        feat_recipes: "Award-Winning Recipes",
+        feat_recipes_desc: "Our recipes have been recognized for their authenticity and taste.",
+        feat_hours: "Extended Hours",
+        feat_hours_desc: "Open from 11:00 AM to 11:00 PM every day of the week.",
+        feat_love: "Made with Love",
+        feat_love_desc: "Each pizza is prepared with passion and dedication by our team.",
+
+        // Footer
+        footer_links: "Quick Links",
+        footer_home: "Home",
+        footer_menu: "Our Menu",
+        footer_history: "History",
+        footer_contact: "Contact",
+        footer_contact_title: "Contact",
+        footer_hours_title: "Hours",
+        footer_rights: "All rights reserved.",
+        footer_brand_desc: "True Italian tradition with the unique flavor of Santa Cruz. Fresh ingredients, sourdough, and stone oven.",
+        footer_days_week: "Monday - Thursday",
+        footer_days_weekend: "Friday - Saturday",
+        footer_days_sunday: "Sunday",
+
+        // General
         store_closed: "The store is currently closed.",
-
-        // Bottom Nav
-        favs: "FAVS",
-        account: "ACCOUNT",
-        cart: "CART",
-
-        // Categories
-        cat_personal: "PERSONAL PIZZA",
-        cat_medium: "MEDIUM PIZZA",
-        cat_family: "FAMILY PIZZA",
-        cat_mixed: "MIXED PIZZA",
-        cat_pastas: "PASTAS",
-        cat_combos: "COMBOS",
-        cat_drinks: "DRINKS",
-        cat_desserts: "DESSERTS",
-        cat_beers: "BEERS"
+        loading: "Loading...",
+        currency: "$"
     }
 };
