@@ -129,15 +129,15 @@ export function Hero() {
                         <div className="flex items-center justify-center gap-3 px-6 py-4 bg-white/10 backdrop-blur-sm rounded-2xl">
                             <Clock className="w-6 h-6 text-[#FFAB91]" />
                             <div className="text-left">
-                                <p className="text-white font-semibold">Delivery Rápido</p>
-                                <p className="text-gray-400 text-sm">30-45 minutos</p>
+                                <p className="text-white font-semibold">Horario</p>
+                                <p className="text-gray-400 text-sm">6:00 PM - 11:00 PM</p>
                             </div>
                         </div>
                         <div className="flex items-center justify-center gap-3 px-6 py-4 bg-white/10 backdrop-blur-sm rounded-2xl">
                             <MapPin className="w-6 h-6 text-[#FFAB91]" />
                             <div className="text-left">
                                 <p className="text-white font-semibold">Ubicación</p>
-                                <p className="text-gray-400 text-sm">Av. Principal, SC</p>
+                                <p className="text-gray-400 text-sm">Puerta Maraven, PF</p>
                             </div>
                         </div>
                         <div className="flex items-center justify-center gap-3 px-6 py-4 bg-white/10 backdrop-blur-sm rounded-2xl">

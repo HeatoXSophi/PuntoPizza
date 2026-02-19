@@ -34,7 +34,9 @@ interface CartState {
     // UI State
     isCartOpen: boolean;
     toggleCart: () => void;
-    setCartOpen: (isOpen: boolean) => void;
+    // Auth State
+    user: any | null; // Use proper User type from supabase if possible
+    setUser: (user: any) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -51,6 +53,10 @@ export const useCartStore = create<CartState>()(
             email: "",
             location: null,
             language: "es",
+
+            // Auth State
+            user: null,
+            setUser: (user) => set({ user }),
 
             // Order History Defaults
             orders: [],
@@ -111,7 +117,7 @@ export const useCartStore = create<CartState>()(
             // UI State
             isCartOpen: false,
             toggleCart: () => set((state) => ({ isCartOpen: !state.isCartOpen })),
-            setCartOpen: (isOpen) => set({ isCartOpen: isOpen }),
+            setCartOpen: (isOpen: boolean) => set({ isCartOpen: isOpen }),
         }),
         {
             name: "cart-storage",
@@ -139,7 +145,8 @@ export const useCartStore = create<CartState>()(
                 userName: state.userName,
                 email: state.email,
                 location: state.location,
-                language: state.language
+                language: state.language,
+                user: state.user
             }),
         }
     )
