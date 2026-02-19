@@ -61,6 +61,19 @@ export const products = [
     { id: "ds-1", name: "Brownie con Helado", description: "Delicioso brownie caliente con helado de vainilla.", price: 5.99, category: "desserts", image: "https://images.unsplash.com/photo-1564355808539-22fda35bed7e?auto=format&fit=crop&q=80&w=400" },
 ];
 
+export const extraIngredients = [
+    { id: "ex-cheese", name: "Extra Queso", price: 1.50 },
+    { id: "ex-pep", name: "Pepperoni", price: 1.50 },
+    { id: "ex-ham", name: "Jamón", price: 1.50 },
+    { id: "ex-mush", name: "Champiñones", price: 1.00 },
+    { id: "ex-oni", name: "Cebolla", price: 0.50 },
+    { id: "ex-bacon", name: "Tocineta", price: 1.50 },
+    { id: "ex-corn", name: "Maíz", price: 0.50 },
+    { id: "ex-pine", name: "Piña", price: 1.00 },
+    { id: "ex-olive", name: "Aceitunas Negras", price: 1.00 },
+    { id: "ex-pep-g", name: "Pimentón", price: 0.50 },
+];
+
 export const categories = [
     { id: "all", name: "Todas" },
     { id: "personal", name: "Pequeña" },

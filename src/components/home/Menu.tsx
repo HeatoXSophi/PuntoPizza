@@ -9,6 +9,7 @@ import { DICTIONARY } from "@/lib/dictionary";
 import { toast } from "sonner";
 import { products as menuItems } from "@/lib/data"; // Use shared data
 import { ProductCard } from "@/components/menu/ProductCard"; // Reuse component
+import { ProductModal } from "@/components/menu/ProductModal";
 
 const categories = [
     { id: "all", name: "Todas" },
@@ -35,6 +36,7 @@ const menuCategories = [
 
 export function Menu() {
     const { language } = useCartStore();
+    const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
     const t = DICTIONARY[language || "es"] || DICTIONARY.es;
     const [activeCategory, setActiveCategory] = useState("all");
     // Dynamic translation for tabs
@@ -50,6 +52,11 @@ export function Menu() {
 
     return (
         <section id="menu" className="py-24 bg-white relative overflow-hidden">
+            <ProductModal
+                product={selectedProduct}
+                isOpen={!!selectedProduct}
+                onClose={() => setSelectedProduct(null)}
+            />
             <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-orange-50 to-transparent pointer-events-none" />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -118,6 +125,7 @@ export function Menu() {
                                     price={item.price}
                                     category={item.category}
                                     image={item.image}
+                                    onClick={() => setSelectedProduct(item)}
                                 />
                             </div>
                         ))}

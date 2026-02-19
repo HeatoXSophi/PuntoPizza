@@ -13,15 +13,28 @@ interface ProductCardProps {
     price: number;
     category: string;
     image: string;
+    onClick?: () => void;
 }
 
-export function ProductCard({ id, name, description, price, category, image }: ProductCardProps) {
+export function ProductCard({ id, name, description, price, category, image, onClick }: ProductCardProps) {
     const addItem = useCartStore((state) => state.addItem);
+
+    const handleAdd = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (onClick) {
+            onClick();
+        } else {
+            // Fallback if no onClick provided (though we plan to always provide it)
+            addItem({ id, name, price, image, category, description });
+            toast.success(`Agregado: ${name}`);
+        }
+    };
 
     return (
         <motion.div
             whileHover={{ y: -5 }}
             className="flex flex-col items-center w-full max-w-[220px] mx-auto group cursor-pointer"
+            onClick={onClick}
         >
             {/* Circle Image Wrapper */}
             <div className="relative w-full aspect-square mb-[-25px] z-10 filter drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-300">
@@ -44,6 +57,7 @@ export function ProductCard({ id, name, description, price, category, image }: P
             <motion.div
                 whileTap={{ scale: 0.95 }}
                 className="bg-[#FFF8E1] rounded-full px-1 pl-4 py-0.5 flex items-center gap-2 shadow-sm border border-[#FFE082] z-20 mb-3 scale-90 origin-top hover:shadow-md transition-shadow"
+                onClick={(e) => e.stopPropagation()} // Prevent double click
             >
                 <span className="font-extrabold text-[#5D4037] text-base font-body">
                     ${price.toFixed(2)}
@@ -51,10 +65,7 @@ export function ProductCard({ id, name, description, price, category, image }: P
                 <motion.button
                     whileTap={{ scale: 0.8, rotate: 90 }}
                     className="w-7 h-7 rounded-full bg-white border border-[#FF9800] flex items-center justify-center text-[#FF9800] hover:bg-[#FF9800] hover:text-white transition-colors"
-                    onClick={() => {
-                        addItem({ id, name, price, image, category, description });
-                        toast.success(`Agregado: ${name}`);
-                    }}
+                    onClick={handleAdd}
                 >
                     <Plus className="w-4 h-4 stroke-[3]" />
                 </motion.button>

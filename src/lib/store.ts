@@ -34,6 +34,7 @@ interface CartState {
     // UI State
     isCartOpen: boolean;
     toggleCart: () => void;
+    setCartOpen: (isOpen: boolean) => void;
     // Auth State
     user: any | null; // Use proper User type from supabase if possible
     setUser: (user: any) => void;
