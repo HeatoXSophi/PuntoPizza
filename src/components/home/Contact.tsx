@@ -112,8 +112,8 @@ export function Contact() {
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="text-center">
                                     <MapPin className="w-12 h-12 text-[#E64A19] mx-auto mb-2" />
-                                    <p className="text-[#BF360C] font-medium">Santa Cruz, Aragua</p>
-                                    <p className="text-[#E64A19] text-sm">Venezuela</p>
+                                    <p className="text-[#BF360C] font-medium">Puerta Maraven</p>
+                                    <p className="text-[#E64A19] text-sm">Punto Fijo, Falcón</p>
                                 </div>
                             </div>
                             <div
