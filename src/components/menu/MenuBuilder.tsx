@@ -5,6 +5,8 @@ import { ProductCard } from "@/components/menu/ProductCard";
 import { CategoryTabs } from "@/components/menu/CategoryTabs";
 import { Category, Product } from "@/types";
 import { Loader2 } from "lucide-react";
+import { useCartStore } from "@/lib/store";
+import { DICTIONARY } from "@/lib/dictionary";
 
 interface MenuBuilderProps {
     categories: Category[];
@@ -12,7 +14,30 @@ interface MenuBuilderProps {
 }
 
 export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
+    const { language } = useCartStore();
+    const t = DICTIONARY[language || "es"] || DICTIONARY.es;
     const [activeCategory, setActiveCategory] = useState("all");
+
+    // Categories defined by the user:
+    // TODAS, PIZZAS PEQUEÑA, PIZZAS MEDIANA, PIZZAS GRANDE, PIZZAS FAMILIARES, PASTAS, COMBOS, PROMOCIONES, POSTRES, BEBIDAS
+    const menuCategories = [
+        { id: "all", label: "cat_all" },
+        { id: "personal", label: "cat_small" },
+        { id: "medium", label: "cat_medium" },
+        { id: "large", label: "cat_large" },
+        { id: "family", label: "cat_family" },
+        { id: "pasta", label: "cat_pasta" },
+        { id: "combos", label: "cat_combos" },
+        { id: "promos", label: "cat_promos" },
+        { id: "desserts", label: "cat_desserts" },
+        { id: "drinks", label: "cat_drinks" },
+    ];
+
+    // TODO: We need to ensure products have these categories
+    const categoriesWithLabels = menuCategories.map(c => ({
+        id: c.id,
+        name: t[c.label as keyof typeof t] || c.label // Dynamic translation
+    }));
 
     // We filter from the initial products passed from server
     // No need for client-side fetching anymore!
@@ -24,11 +49,13 @@ export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
         <div className="pb-24">
             {/* Page Header */}
             <div className="bg-white p-4 shadow-sm sticky top-0 z-10">
-                <h1 className="text-2xl font-black text-[#5D4037] mb-4">Nuestro Menú</h1>
+                <h1 className="text-2xl font-black text-[#5D4037] mb-4">
+                    {t.menu_title || "Nuestro Menú"}
+                </h1>
 
                 {/* Category Tabs */}
                 <CategoryTabs
-                    categories={[{ id: "all", name: "Todos" }, ...categories]}
+                    categories={categoriesWithLabels}
                     activeCategory={activeCategory}
                     onSelectCategory={setActiveCategory}
                 />
@@ -59,3 +86,4 @@ export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
         </div>
     );
 }
+

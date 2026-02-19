@@ -10,6 +10,19 @@ export const DICTIONARY = {
         save_phone_error: "Por favor ingresa un número de teléfono",
         save_success: "Información de entrega guardada",
 
+        // Menu Categories
+        cat_all: "Todas",
+        cat_small: "Pequeña",
+        cat_medium: "Mediana",
+        cat_large: "Grande",
+        cat_family: "Familiar",
+        cat_pasta: "Pastas",
+        cat_combos: "Combos",
+        cat_promos: "Promociones",
+        cat_desserts: "Postres",
+        cat_drinks: "Bebidas",
+        menu_title: "Nuestro Menú",
+
         // Header Modal
         delivery_title: "Dirección de Entrega",
         phone_label: "Número de Teléfono / WhatsApp",
@@ -129,6 +142,19 @@ export const DICTIONARY = {
         save_addr_error: "Please enter an address",
         save_phone_error: "Please enter a phone number",
         save_success: "Delivery information saved",
+
+        // Menu Categories
+        cat_all: "All",
+        cat_small: "Small",
+        cat_medium: "Medium",
+        cat_large: "Large",
+        cat_family: "Family",
+        cat_pasta: "Pastas",
+        cat_combos: "Combos",
+        cat_promos: "Promos",
+        cat_desserts: "Desserts",
+        cat_drinks: "Drinks",
+        menu_title: "Our Menu",
 
         // Header Modal
         delivery_title: "Delivery Address",

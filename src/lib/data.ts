@@ -42,9 +42,14 @@ export const products = [
 ];
 
 export const categories = [
-    { id: "all", name: "Todos" },
-    { id: "pizza", name: "Pizzas" },
-    { id: "combo", name: "Combos" },
-    { id: "drink", name: "Bebidas" },
-    { id: "dessert", name: "Postres" },
+    { id: "all", name: "Todas" },
+    { id: "personal", name: "Pequeña" },
+    { id: "medium", name: "Mediana" },
+    { id: "large", name: "Grande" },
+    { id: "family", name: "Familiar" },
+    { id: "pasta", name: "Pastas" },
+    { id: "combos", name: "Combos" },
+    { id: "promos", name: "Promociones" },
+    { id: "desserts", name: "Postres" },
+    { id: "drinks", name: "Bebidas" },
 ];
