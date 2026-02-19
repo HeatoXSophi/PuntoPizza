@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Pizza as PizzaIcon, RefreshCcw } from "lucide-react";
+import { Check, ShoppingCart, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
+import { PizzaBaseSVG, PepperoniSVG, MushroomSVG, OliveSVG, OnionSVG, PepperSVG } from "./PizzaAssets";
 
-// Ingredients data with visuals (simulated with CSS/colors for now)
 const INGREDIENTS = [
-    { id: "pepperoni", name: "Pepperoni", color: "#B71C1C", zIndex: 10 },
-    { id: "mushrooms", name: "Champiñones", color: "#8D6E63", zIndex: 20 },
-    { id: "olives", name: "Aceitunas", color: "#212121", zIndex: 30 },
-    { id: "peppers", name: "Pimentón", color: "#43A047", zIndex: 40 },
-    { id: "onions", name: "Cebolla", color: "#F48FB1", zIndex: 50 },
+    { id: "pepperoni", name: "Pepperoni", icon: PepperoniSVG, zIndex: 10, price: 2.00 },
+    { id: "mushrooms", name: "Champiñones", icon: MushroomSVG, zIndex: 20, price: 1.50 },
+    { id: "olives", name: "Aceitunas", icon: OliveSVG, zIndex: 30, price: 1.00 },
+    { id: "peppers", name: "Pimentón", icon: PepperSVG, zIndex: 40, price: 1.00 },
+    { id: "onions", name: "Cebolla", icon: OnionSVG, zIndex: 50, price: 0.50 },
 ];
 
 export function PizzaBuilder() {
@@ -35,29 +35,27 @@ export function PizzaBuilder() {
     return (
         <section className="py-24 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
+                <div className="text-center mb-12">
                     <span className="text-primary font-bold tracking-wider uppercase text-sm">Tu Obra Maestra</span>
                     <h2 className="font-heading text-4xl md:text-5xl font-black text-[#0F172A] mt-2">
                         Arma tu Pizza <span className="text-primary">Perfecta</span>
                     </h2>
                     <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-                        Selecciona tus ingredientes favoritos y visualiza tu creación antes de ordenar.
+                        Selecciona tus ingredientes favoritos. Nosotros ponemos la pasión.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     {/* Visualizer */}
-                    <div className="relative flex items-center justify-center h-[400px] md:h-[500px]">
-                        {/* Plate/Crust */}
+                    <div className="relative flex items-center justify-center h-[400px] md:h-[500px] perspective-1000">
+                        {/* Pizza Base */}
                         <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            whileInView={{ scale: 1, opacity: 1 }}
-                            transition={{ duration: 0.5 }}
-                            className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px] bg-[#F5CA99] rounded-full border-[12px] border-[#E0A769] shadow-2xl flex items-center justify-center overflow-hidden"
+                            initial={{ rotateX: 20, scale: 0.9 }}
+                            animate={{ rotateX: 0, scale: 1 }}
+                            transition={{ duration: 0.8, type: "spring" }}
+                            className="relative w-[320px] h-[320px] md:w-[450px] md:h-[450px]"
                         >
-                            {/* Cheese Base */}
-                            <div className="absolute inset-2 bg-[#FFF9C4] rounded-full opacity-90" />
-                            <div className="absolute inset-2 bg-[url('/cheese-texture.png')] opacity-20 mix-blend-multiply" />
+                            <PizzaBaseSVG />
 
                             {/* Ingredients Layers */}
                             <AnimatePresence>
@@ -65,27 +63,34 @@ export function PizzaBuilder() {
                                     selectedIngredients.includes(ing.id) && (
                                         <motion.div
                                             key={ing.id}
-                                            initial={{ opacity: 0, scale: 1.2, rotate: -10 }}
-                                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                                            exit={{ opacity: 0, scale: 0.8, rotate: 10 }}
+                                            initial={{ opacity: 0, scale: 1.5, y: -50 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.8 }}
                                             className="absolute inset-0 pointer-events-none"
                                             style={{ zIndex: ing.zIndex }}
                                         >
-                                            {/* Simulate scattered ingredients */}
-                                            {Array.from({ length: 12 }).map((_, i) => (
-                                                <div
-                                                    key={i}
-                                                    className="absolute rounded-full shadow-sm"
-                                                    style={{
-                                                        backgroundColor: ing.color,
-                                                        width: Math.random() * 20 + 20 + 'px',
-                                                        height: Math.random() * 20 + 20 + 'px',
-                                                        top: Math.random() * 70 + 15 + '%',
-                                                        left: Math.random() * 70 + 15 + '%',
-                                                        transform: `rotate(${Math.random() * 360}deg)`,
-                                                    }}
-                                                />
-                                            ))}
+                                            {/* Scattered Ingredients */}
+                                            {Array.from({ length: 15 }).map((_, i) => {
+                                                // Deterministic random positions based on index
+                                                const randomAngle = (i * 137.5) * (Math.PI / 180); // Golden angle
+                                                const randomRadius = 30 + (i * 4); // Spread out
+                                                const top = 50 + Math.sin(randomAngle) * (randomRadius / 2.5) + '%';
+                                                const left = 50 + Math.cos(randomAngle) * (randomRadius / 2.5) + '%';
+
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className="absolute w-8 h-8 md:w-12 md:h-12"
+                                                        style={{
+                                                            top,
+                                                            left,
+                                                            transform: `translate(-50%, -50%) rotate(${i * 45}deg)`,
+                                                        }}
+                                                    >
+                                                        <ing.icon />
+                                                    </div>
+                                                );
+                                            })}
                                         </motion.div>
                                     )
                                 ))}
@@ -95,66 +100,80 @@ export function PizzaBuilder() {
                         {/* Floating Price Tag */}
                         <motion.div
                             layout
-                            className="absolute bottom-4 right-4 md:right-12 bg-white px-6 py-3 rounded-2xl shadow-xl border border-gray-100"
+                            className="absolute -bottom-6 md:bottom-10 right-0 md:-right-4 bg-white px-6 py-4 rounded-3xl shadow-2xl border border-gray-100 flex flex-col items-center"
                         >
-                            <span className="text-sm text-gray-500 block">Precio estimado</span>
-                            <span className="text-3xl font-black text-[#0F172A]">
-                                ${(10 + selectedIngredients.length * 1.5).toFixed(2)}
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total</span>
+                            <span className="text-4xl font-black text-[#0F172A] font-heading">
+                                ${(10 + selectedIngredients.reduce((acc, id) => {
+                                    const ing = INGREDIENTS.find(i => i.id === id);
+                                    return acc + (ing ? ing.price : 0);
+                                }, 0)).toFixed(2)}
                             </span>
                         </motion.div>
                     </div>
 
                     {/* Controls */}
-                    <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                            {INGREDIENTS.map((ing) => {
-                                const isSelected = selectedIngredients.includes(ing.id);
-                                return (
-                                    <motion.button
-                                        key={ing.id}
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={() => toggleIngredient(ing.id)}
-                                        className={`
-                                            flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200
-                                            ${isSelected
-                                                ? 'border-primary bg-primary/5 shadow-md'
-                                                : 'border-white bg-white hover:border-gray-200'
-                                            }
-                                        `}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div
-                                                className="w-6 h-6 rounded-full border border-black/10"
-                                                style={{ backgroundColor: ing.color }}
-                                            />
-                                            <span className={`font-bold ${isSelected ? 'text-primary' : 'text-gray-600'}`}>
-                                                {ing.name}
-                                            </span>
-                                        </div>
-                                        {isSelected && (
-                                            <div className="bg-primary text-white p-1 rounded-full">
-                                                <Check className="w-3 h-3" />
+                    <div className="space-y-8">
+                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100/50">
+                            <h3 className="text-xl font-bold text-[#0F172A] mb-6 flex items-center gap-2">
+                                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">1</span>
+                                Elige tus Ingredientes
+                            </h3>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {INGREDIENTS.map((ing) => {
+                                    const isSelected = selectedIngredients.includes(ing.id);
+                                    return (
+                                        <motion.button
+                                            key={ing.id}
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={() => toggleIngredient(ing.id)}
+                                            className={`
+                                                relative flex items-center gap-4 p-3 rounded-2xl border-2 transition-all duration-200 text-left group
+                                                ${isSelected
+                                                    ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
+                                                    : 'border-gray-100 bg-gray-50/50 hover:border-primary/30 hover:bg-white'
+                                                }
+                                            `}
+                                        >
+                                            <div className="w-12 h-12 relative flex-shrink-0">
+                                                <ing.icon />
                                             </div>
-                                        )}
-                                    </motion.button>
-                                );
-                            })}
+                                            <div className="flex-1">
+                                                <span className={`block font-bold text-sm ${isSelected ? 'text-primary' : 'text-gray-700'}`}>
+                                                    {ing.name}
+                                                </span>
+                                                <span className="text-xs text-gray-400 font-medium">
+                                                    +${ing.price.toFixed(2)}
+                                                </span>
+                                            </div>
+                                            {isSelected && (
+                                                <div className="bg-primary text-white p-1 rounded-full absolute top-3 right-3 shadow-sm">
+                                                    <Check className="w-3 h-3" />
+                                                </div>
+                                            )}
+                                        </motion.button>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         <div className="flex gap-4">
                             <motion.button
-                                whileHover={{ scale: 1.02 }}
+                                whileHover={{ scale: 1.02, y: -2 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={handleAddToCart}
-                                className="flex-1 bg-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+                                className="flex-1 bg-gradient-to-r from-primary to-orange-600 text-white py-5 rounded-2xl font-bold text-lg shadow-xl shadow-primary/30 flex items-center justify-center gap-3 relative overflow-hidden group"
                             >
-                                <PizzaIcon className="w-5 h-5" />
-                                Ordenar Creación
+                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                                <ShoppingCart className="w-6 h-6" />
+                                Agregar al Pedido
                             </motion.button>
                             <motion.button
                                 whileHover={{ rotate: 180 }}
                                 onClick={resetBuilder}
-                                className="p-4 bg-white border-2 border-gray-200 text-gray-400 rounded-xl hover:text-gray-600 hover:border-gray-300 transition-colors"
+                                className="p-5 bg-white border-2 border-gray-100 text-gray-400 rounded-2xl hover:text-gray-600 hover:border-gray-200 transition-colors shadow-sm"
                             >
                                 <RefreshCcw className="w-6 h-6" />
                             </motion.button>
