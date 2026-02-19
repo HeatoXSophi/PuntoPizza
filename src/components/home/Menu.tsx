@@ -4,8 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Flame } from "lucide-react";
 import { useCartStore } from "@/lib/store";
-import { cn } from "@/utils/cn";
+import { DICTIONARY } from "@/lib/dictionary";
 import { toast } from "sonner";
+import { products as menuItems } from "@/lib/data"; // Use shared data
 
 const categories = [
     { id: "all", name: "Todas" },
@@ -15,127 +16,38 @@ const categories = [
     { id: "bebidas", name: "Bebidas" },
 ];
 
-const menuItems = [
-    {
-        id: "1",
-        name: "Margherita",
-        description: "Tomate, mozzarella fresca, albahaca y aceite de oliva extra virgen",
-        price: 12.99,
-        category: "clasicas",
-        image: "🍕",
-        isPopular: true,
-    },
-    {
-        id: "2",
-        name: "Pepperoni",
-        description: "Salsa de tomate, mozzarella y pepperoni premium",
-        price: 14.99,
-        category: "clasicas",
-        image: "🍕",
-        isPopular: true,
-    },
-    {
-        id: "3",
-        name: "Hawaiana",
-        description: "Jamón, piña fresca y queso mozzarella",
-        price: 13.99,
-        category: "clasicas",
-        image: "🍕",
-    },
-    {
-        id: "4",
-        name: "Vegetariana",
-        description: "Pimientos, champiñones, cebolla, aceitunas y tomate",
-        price: 13.99,
-        category: "clasicas",
-        image: "🍕",
-    },
-    {
-        id: "5",
-        name: "Quattro Formaggi",
-        description: "Mozzarella, gorgonzola, parmesano y fontina",
-        price: 16.99,
-        category: "especiales",
-        image: "🍕",
-        isPopular: true,
-    },
-    {
-        id: "6",
-        name: "BBQ Chicken",
-        description: "Pollo a la parrilla, salsa BBQ, cebolla caramelizada y cilantro",
-        price: 17.99,
-        category: "especiales",
-        image: "🍕",
-    },
-    {
-        id: "7",
-        name: "Diavola",
-        description: "Salami picante, jalapeños, pimientos rojos y aceite de chile",
-        price: 15.99,
-        category: "especiales",
-        image: "🍕",
-        isSpicy: true,
-    },
-    {
-        id: "8",
-        name: "Prosciutto",
-        description: "Jamón serrano, rúcula fresca, parmesano y aceite de oliva",
-        price: 19.99,
-        category: "premium",
-        image: "🍕",
-    },
-    {
-        id: "9",
-        name: "Trufa Negra",
-        description: "Crema de trufa, mozzarella, champiñones porcini y trufa negra",
-        price: 24.99,
-        category: "premium",
-        image: "🍕",
-        isPopular: true,
-    },
-    {
-        id: "10",
-        name: "Mariscos",
-        description: "Camarones, calamares, mejillones y salsa marinera",
-        price: 22.99,
-        category: "premium",
-        image: "🍕",
-    },
-    {
-        id: "11",
-        name: "Coca-Cola",
-        description: "Lata 355ml",
-        price: 2.50,
-        category: "bebidas",
-        image: "🥤",
-    },
-    {
-        id: "12",
-        name: "Agua Mineral",
-        description: "Botella 500ml",
-        price: 1.99,
-        category: "bebidas",
-        image: "💧",
-    },
-    {
-        id: "13",
-        name: "Cerveza Artesanal",
-        description: "Botella 330ml - IPA local",
-        price: 4.99,
-        category: "bebidas",
-        image: "🍺",
-    },
+// Categories defined by the user:
+// TODAS, PIZZAS PEQUEÑA, PIZZAS MEDIANA, PIZZAS GRANDE, PIZZAS FAMILIARES, PASTAS, COMBOS, PROMOCIONES, POSTRES, BEBIDAS
+const menuCategories = [
+    { id: "all", label: "cat_all" },
+    { id: "personal", label: "cat_small" },
+    { id: "medium", label: "cat_medium" },
+    { id: "large", label: "cat_large" },
+    { id: "family", label: "cat_family" },
+    { id: "pasta", label: "cat_pasta" },
+    { id: "combos", label: "cat_combos" },
+    { id: "promos", label: "cat_promos" },
+    { id: "desserts", label: "cat_desserts" },
+    { id: "drinks", label: "cat_drinks" },
 ];
 
 export function Menu() {
+    const { language } = useCartStore();
+    const t = DICTIONARY[language || "es"] || DICTIONARY.es;
     const [activeCategory, setActiveCategory] = useState("all");
     const addItem = useCartStore((state) => state.addItem);
     const setCartOpen = useCartStore((state) => state.setCartOpen);
 
-    const filteredItems =
-        activeCategory === "all"
-            ? menuItems
-            : menuItems.filter((item) => item.category === activeCategory);
+    // Dynamic translation for tabs
+    const categoriesWithLabels = menuCategories.map(c => ({
+        id: c.id,
+        name: t[c.label as keyof typeof t] || c.label
+    }));
+
+    // Filter products
+    const filteredProducts = activeCategory === "all"
+        ? menuItems
+        : menuItems.filter(p => p.category === activeCategory);
 
     const handleAddToCart = (item: any) => {
         addItem({
@@ -143,66 +55,75 @@ export function Menu() {
             name: item.name,
             price: item.price,
             image: item.image,
-            // Add description if supported by store in future
+            category: item.category,
+            description: item.description || ""
         });
         toast.success("Producto agregado al carrito");
         setCartOpen(true);
     };
 
     return (
-        <section id="menu" className="py-20 bg-white">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <section id="menu" className="py-24 bg-white relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-orange-50 to-transparent pointer-events-none" />
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                 {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="text-center mb-12"
-                >
-                    <span className="inline-block px-4 py-1.5 bg-[#FFAB91]/20 text-[#E64A19] text-sm font-semibold rounded-full mb-4">
-                        Nuestro Menú
-                    </span>
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-                        Pizzas para todos los
-                        <span className="text-[#FF5722]"> gustos</span>
-                    </h2>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Descubre nuestra variedad de pizzas artesanales, elaboradas con los mejores ingredientes.
-                    </p>
-                </motion.div>
+                <div className="text-center mb-16">
+                    <motion.span
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="inline-block py-1 px-3 rounded-full bg-orange-100/80 text-orange-600 text-xs font-bold tracking-wider uppercase mb-4"
+                    >
+                        {t.menu_title || "Nuestro Menú"}
+                    </motion.span>
+                    <motion.h2
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.1 }}
+                        className="font-heading text-4xl md:text-5xl font-black text-[#0F172A] leading-tight"
+                    >
+                        {t.hero_title_1} <span className="text-primary">{t.hero_title_2}</span>
+                    </motion.h2>
+                    <motion.p
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.2 }}
+                        className="mt-4 text-gray-500 max-w-2xl mx-auto text-lg"
+                    >
+                        {t.hero_desc}
+                    </motion.p>
+                </div>
 
-                {/* Category Tabs */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="flex flex-wrap justify-center gap-2 mb-12"
-                >
-                    {categories.map((category) => (
-                        <button
-                            key={category.id}
-                            onClick={() => setActiveCategory(category.id)}
-                            className={cn(
-                                "px-5 py-2.5 rounded-full font-medium transition-all duration-300",
-                                activeCategory === category.id
-                                    ? "bg-[#FF5722] text-white shadow-lg shadow-[#FF5722]/30"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            )}
-                        >
-                            {category.name}
-                        </button>
-                    ))}
-                </motion.div>
-
+                {/* Tabs */}
+                <div className="flex justify-center mb-12 overflow-x-auto pb-4 scrollbar-hide px-4">
+                    <div className="flex gap-2">
+                        {categoriesWithLabels.map((cat) => (
+                            <button
+                                key={cat.id}
+                                onClick={() => setActiveCategory(cat.id)}
+                                className={`
+                                    relative px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap
+                                    ${activeCategory === cat.id
+                                        ? "bg-primary text-white shadow-lg shadow-orange-500/25 scale-105"
+                                        : "bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+                                    }
+                                `}
+                            >
+                                {cat.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
                 {/* Menu Grid */}
                 <motion.div
                     layout
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
                     <AnimatePresence mode="popLayout">
-                        {filteredItems.map((item) => (
+                        {filteredProducts.map((item) => (
                             <motion.div
                                 key={item.id}
                                 layout
@@ -225,7 +146,6 @@ export function Menu() {
                                                 Popular
                                             </span>
                                         )}
-                                        {/* @ts-ignore - isSpicy logic */}
                                         {item.isSpicy && (
                                             <span className="px-2.5 py-1 bg-red-500 text-white text-xs font-semibold rounded-full flex items-center gap-1">
                                                 <Flame className="w-3 h-3" />

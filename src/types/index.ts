@@ -11,6 +11,8 @@ export interface Product {
     category: string;
     image: string;
     available?: boolean;
+    isPopular?: boolean;
+    isSpicy?: boolean;
 }
 
 export interface CartItem extends Product {
