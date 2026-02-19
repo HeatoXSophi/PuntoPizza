@@ -57,6 +57,19 @@ export function Hero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
+                        className="flex flex-col items-center justify-center mb-6"
+                    >
+                        <img
+                            src="/logo.png"
+                            alt="Santa Cruz Pizza Logo"
+                            className="w-48 md:w-64 h-auto drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                        />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF5722]/20 backdrop-blur-sm rounded-full text-[#FFAB91] text-sm font-medium mb-6"
                     >
                         <Star className="w-4 h-4 fill-current" />
@@ -70,10 +83,7 @@ export function Hero() {
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
                     >
-                        La Mejor Pizza de
-                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#FFAB91] to-[#FF5722]">
-                            Santa Cruz
-                        </span>
+                        La Mejor Pizza de la Ciudad
                     </motion.h1>
 
                     {/* Description */}

@@ -101,26 +101,38 @@ export function Header() {
             <header className="bg-[#FFF8E1] shadow-sm sticky top-0 z-50 transition-all">
                 <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
 
-                    {/* LEFT: Profile / Login */}
-                    <div
-                        className="flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity w-1/3"
-                        onClick={() => setShowProfile(true)}
-                    >
-                        <div className="bg-white p-2 rounded-full shadow-sm text-[#FF5722]">
-                            <User className="w-5 h-5" />
+                    {/* LEFT: Logo & Profile */}
+                    <div className="flex items-center gap-2 w-1/3">
+                        {/* Logo */}
+                        <Link href="/" className="shrink-0 mr-1 md:mr-2">
+                            <img
+                                src="/logo.png"
+                                alt="Santa Cruz"
+                                className="h-10 w-auto md:h-12 object-contain"
+                            />
+                        </Link>
+
+                        {/* Profile / Login */}
+                        <div
+                            className="flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity"
+                            onClick={() => setShowProfile(true)}
+                        >
+                            <div className="bg-white p-2 rounded-full shadow-sm text-[#FF5722]">
+                                <User className="w-5 h-5" />
+                            </div>
+                            <div className="flex flex-col leading-none hidden md:flex">
+                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                                    {userName ? "Hola," : "Bienvenido"}
+                                </span>
+                                <span className="text-sm font-black text-[#5D4037] truncate max-w-[100px]">
+                                    {userName || "Ingresar"}
+                                </span>
+                                {/* Mobile Text */}
+                                <span className="md:hidden text-xs font-bold text-[#5D4037]">
+                                    {userName ? "Perfil" : "Ingresar"}
+                                </span>
+                            </div>
                         </div>
-                        <div className="flex flex-col leading-none hidden md:flex">
-                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
-                                {userName ? "Hola," : "Bienvenido"}
-                            </span>
-                            <span className="text-sm font-black text-[#5D4037] truncate max-w-[100px]">
-                                {userName || "Ingresar"}
-                            </span>
-                        </div>
-                        {/* Mobile Text */}
-                        <span className="md:hidden text-xs font-bold text-[#5D4037]">
-                            {userName ? "Perfil" : "Ingresar"}
-                        </span>
                     </div>
 
                     {/* CENTER: Toggle Pickup/Delivery */}
@@ -177,63 +189,66 @@ export function Header() {
                         </Link>
                     </div>
                 </div>
-            </header>
+            </header >
 
             {/* Profile Sidebar */}
-            <ProfileSidebar isOpen={showProfile} onClose={() => setShowProfile(false)} />
+            < ProfileSidebar isOpen={showProfile} onClose={() => setShowProfile(false)
+            } />
 
             {/* Location Modal */}
-            {showLocationModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 animate-in fade-in zoom-in duration-200">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-bold text-gray-800">{t.delivery_title}</h3>
-                            <button onClick={() => setShowLocationModal(false)} className="text-gray-400 hover:text-gray-600">
-                                ✕
-                            </button>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-sm font-semibold text-gray-600 mb-1 block">{t.phone_label}</label>
-                                <input
-                                    type="tel"
-                                    value={tempPhone}
-                                    onChange={(e) => setTempPhone(e.target.value)}
-                                    placeholder={t.phone_placeholder}
-                                    className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#FF5722] focus:border-[#FF5722] outline-none"
-                                />
+            {
+                showLocationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+                        <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 animate-in fade-in zoom-in duration-200">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-xl font-bold text-gray-800">{t.delivery_title}</h3>
+                                <button onClick={() => setShowLocationModal(false)} className="text-gray-400 hover:text-gray-600">
+                                    ✕
+                                </button>
                             </div>
 
-                            <div>
-                                <label className="text-sm font-semibold text-gray-600 mb-1 block">{t.addr_label}</label>
-                                <textarea
-                                    value={tempAddress}
-                                    onChange={(e) => setTempAddress(e.target.value)}
-                                    placeholder={t.addr_placeholder}
-                                    className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#FF5722] focus:border-[#FF5722] outline-none resize-none h-24"
-                                />
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-sm font-semibold text-gray-600 mb-1 block">{t.phone_label}</label>
+                                    <input
+                                        type="tel"
+                                        value={tempPhone}
+                                        onChange={(e) => setTempPhone(e.target.value)}
+                                        placeholder={t.phone_placeholder}
+                                        className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#FF5722] focus:border-[#FF5722] outline-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-sm font-semibold text-gray-600 mb-1 block">{t.addr_label}</label>
+                                    <textarea
+                                        value={tempAddress}
+                                        onChange={(e) => setTempAddress(e.target.value)}
+                                        placeholder={t.addr_placeholder}
+                                        className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#FF5722] focus:border-[#FF5722] outline-none resize-none h-24"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={handleGetLocation}
+                                    disabled={isLocating}
+                                    className="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-blue-200"
+                                >
+                                    <MapPin className="w-5 h-5" />
+                                    {isLocating ? t.getting_gps : t.get_gps}
+                                </button>
+
+                                <button
+                                    onClick={saveDeliveryInfo}
+                                    className="w-full bg-[#FF5722] text-white font-bold py-3 rounded-xl hover:bg-[#F4511E] transition-colors shadow-lg shadow-orange-200"
+                                >
+                                    {t.confirm_btn}
+                                </button>
                             </div>
-
-                            <button
-                                onClick={handleGetLocation}
-                                disabled={isLocating}
-                                className="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-blue-200"
-                            >
-                                <MapPin className="w-5 h-5" />
-                                {isLocating ? t.getting_gps : t.get_gps}
-                            </button>
-
-                            <button
-                                onClick={saveDeliveryInfo}
-                                className="w-full bg-[#FF5722] text-white font-bold py-3 rounded-xl hover:bg-[#F4511E] transition-colors shadow-lg shadow-orange-200"
-                            >
-                                {t.confirm_btn}
-                            </button>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
         </>
     );
 }
