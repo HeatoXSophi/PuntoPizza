@@ -36,22 +36,22 @@ export function Contact() {
         {
             icon: MapPin,
             title: "Ubicación",
-            details: ["Av. Principal, Santa Cruz", "Aragua, Venezuela"],
+            details: ["Puerta Maraven, Urb. Manaure", "Calle Aguirre", "Punto Fijo / Falcón"],
         },
         {
             icon: Phone,
             title: "Teléfono",
-            details: ["+58 424 680 2805", "+58 243 123 4567"],
+            details: ["+58 424 680 2805"],
         },
         {
             icon: Clock,
             title: "Horario",
-            details: ["Lun - Dom: 11:00 AM - 11:00 PM", "Delivery disponible"],
+            details: ["Lun - Dom: 6:00 PM - 11:00 PM", "Delivery Disponible"],
         },
         {
-            icon: Mail,
-            title: "Email",
-            details: ["info@santacruzpizzeria.com", "pedidos@santacruzpizzeria.com"],
+            icon: Instagram,
+            title: "Instagram",
+            details: ["@Santacruz.pf"],
         },
     ];
 
