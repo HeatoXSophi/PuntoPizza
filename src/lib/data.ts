@@ -1,46 +1,64 @@
 export const products = [
-    {
-        id: "1",
-        name: "Pepperoni Lovers",
-        description: "Doble pepperoni, extra queso mozzarella y salsa de tomate especial.",
-        price: 12.99,
-        category: "medium", // Mapped to a pizza size
-        image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400",
-        isPopular: true,
-    },
-    {
-        id: "2",
-        name: "Suprema",
-        description: "Pepperoni, salchicha italiana, pimientos, cebolla y aceitunas negras.",
-        price: 14.50,
-        category: "family", // Mapped to a pizza size
-        image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400",
-        isSpicy: true,
-    },
-    {
-        id: "3",
-        name: "Combo Familiar",
-        description: "2 Pizzas Grandes + Coca Cola 2L + Palitos de Ajo.",
-        price: 25.99,
-        category: "combos",
-        image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-        id: "4",
-        name: "Coca Cola",
-        description: "Botella de 2 Litros.",
-        price: 3.50,
-        category: "drinks",
-        image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-        id: "5",
-        name: "Brownie con Helado",
-        description: "Delicioso brownie caliente con helado de vainilla.",
-        price: 5.99,
-        category: "desserts",
-        image: "https://images.unsplash.com/photo-1564355808539-22fda35bed7e?auto=format&fit=crop&q=80&w=400",
-    },
+    // --- PIZZAS PEQUEÑA (Personal) ---
+    { id: "p-mar-s", name: "Margarita", description: "Salsa de tomate, mozzarella fresca y albahaca.", price: 7.99, category: "personal", image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-jyq-s", name: "Jamón y Queso", description: "Clásica combinación de jamón y mozzarella.", price: 8.50, category: "personal", image: "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-pep-s", name: "Pepperoni", description: "Doble pepperoni y mozzarella.", price: 8.99, category: "personal", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400", isPopular: true },
+    { id: "p-cho-s", name: "Chorizo", description: "Chorizo español y pimientos.", price: 8.99, category: "personal", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-veg-s", name: "Vegetariana", description: "Pimientos, cebolla, champiñones, maíz y aceitunas.", price: 8.50, category: "personal", image: "https://images.unsplash.com/photo-1571407970349-bc16f63433cd?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-anc-s", name: "Anchoas", description: "Anchoas, alcaparras y aceitunas negras.", price: 9.50, category: "personal", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-pri-s", name: "Primavera", description: "Jamón, maíz y tocineta.", price: 9.50, category: "personal", image: "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-toc-s", name: "Tocineta", description: "Tocineta crujiente y extra queso.", price: 9.50, category: "personal", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-esp-s", name: "Especial", description: "Jamón, pepperoni, cebolla, pimentón y aceitunas.", price: 10.50, category: "personal", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-sc-s", name: "Santa Cruz", description: "La especialidad de la casa con ingredientes secretos.", price: 11.00, category: "personal", image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-2s-s", name: "2 Sabores", description: "Mitad y mitad de tus sabores favoritos.", price: 9.99, category: "personal", image: "https://images.unsplash.com/photo-1571407970349-bc16f63433cd?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-4s-s", name: "4 Sabores", description: "Cuatro estaciones de sabor en una pizza.", price: 10.99, category: "personal", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400" },
+
+    // --- PIZZAS MEDIANA ---
+    { id: "p-mar-m", name: "Margarita", description: "Salsa de tomate, mozzarella fresca y albahaca.", price: 11.99, category: "medium", image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-jyq-m", name: "Jamón y Queso", description: "Clásica combinación de jamón y mozzarella.", price: 12.50, category: "medium", image: "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-pep-m", name: "Pepperoni", description: "Doble pepperoni y mozzarella.", price: 12.99, category: "medium", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400", isPopular: true },
+    { id: "p-cho-m", name: "Chorizo", description: "Chorizo español y pimientos.", price: 12.99, category: "medium", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-veg-m", name: "Vegetariana", description: "Pimientos, cebolla, champiñones, maíz y aceitunas.", price: 12.50, category: "medium", image: "https://images.unsplash.com/photo-1571407970349-bc16f63433cd?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-anc-m", name: "Anchoas", description: "Anchoas, alcaparras y aceitunas negras.", price: 13.50, category: "medium", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400", isSpicy: true },
+    { id: "p-pri-m", name: "Primavera", description: "Jamón, maíz y tocineta.", price: 13.50, category: "medium", image: "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-toc-m", name: "Tocineta", description: "Tocineta crujiente y extra queso.", price: 13.50, category: "medium", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-esp-m", name: "Especial", description: "Jamón, pepperoni, cebolla, pimentón y aceitunas.", price: 14.50, category: "medium", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-sc-m", name: "Santa Cruz", description: "La especialidad de la casa con ingredientes secretos.", price: 15.00, category: "medium", image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-2s-m", name: "2 Sabores", description: "Mitad y mitad de tus sabores favoritos.", price: 13.99, category: "medium", image: "https://images.unsplash.com/photo-1571407970349-bc16f63433cd?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-4s-m", name: "4 Sabores", description: "Cuatro estaciones de sabor en una pizza.", price: 14.99, category: "medium", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400" },
+
+    // --- PIZZAS GRANDE ---
+    { id: "p-mar-l", name: "Margarita", description: "Salsa de tomate, mozzarella fresca y albahaca.", price: 15.99, category: "large", image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-jyq-l", name: "Jamón y Queso", description: "Clásica combinación de jamón y mozzarella.", price: 16.50, category: "large", image: "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-pep-l", name: "Pepperoni", description: "Doble pepperoni y mozzarella.", price: 16.99, category: "large", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400", isPopular: true },
+    { id: "p-cho-l", name: "Chorizo", description: "Chorizo español y pimientos.", price: 16.99, category: "large", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-veg-l", name: "Vegetariana", description: "Pimientos, cebolla, champiñones, maíz y aceitunas.", price: 16.50, category: "large", image: "https://images.unsplash.com/photo-1571407970349-bc16f63433cd?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-anc-l", name: "Anchoas", description: "Anchoas, alcaparras y aceitunas negras.", price: 17.50, category: "large", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400", isSpicy: true },
+    { id: "p-pri-l", name: "Primavera", description: "Jamón, maíz y tocineta.", price: 17.50, category: "large", image: "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-toc-l", name: "Tocineta", description: "Tocineta crujiente y extra queso.", price: 17.50, category: "large", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-esp-l", name: "Especial", description: "Jamón, pepperoni, cebolla, pimentón y aceitunas.", price: 18.50, category: "large", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-sc-l", name: "Santa Cruz", description: "La especialidad de la casa con ingredientes secretos.", price: 19.00, category: "large", image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-2s-l", name: "2 Sabores", description: "Mitad y mitad de tus sabores favoritos.", price: 17.99, category: "large", image: "https://images.unsplash.com/photo-1571407970349-bc16f63433cd?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-4s-l", name: "4 Sabores", description: "Cuatro estaciones de sabor en una pizza.", price: 18.99, category: "large", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400" },
+
+    // --- PIZZAS FAMILIARES ---
+    { id: "p-mar-f", name: "Margarita", description: "Salsa de tomate, mozzarella fresca y albahaca.", price: 19.99, category: "family", image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-jyq-f", name: "Jamón y Queso", description: "Clásica combinación de jamón y mozzarella.", price: 20.50, category: "family", image: "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-pep-f", name: "Pepperoni", description: "Doble pepperoni y mozzarella.", price: 20.99, category: "family", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400", isPopular: true },
+    { id: "p-cho-f", name: "Chorizo", description: "Chorizo español y pimientos.", price: 20.99, category: "family", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-veg-f", name: "Vegetariana", description: "Pimientos, cebolla, champiñones, maíz y aceitunas.", price: 20.50, category: "family", image: "https://images.unsplash.com/photo-1571407970349-bc16f63433cd?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-anc-f", name: "Anchoas", description: "Anchoas, alcaparras y aceitunas negras.", price: 21.50, category: "family", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400", isSpicy: true },
+    { id: "p-pri-f", name: "Primavera", description: "Jamón, maíz y tocineta.", price: 21.50, category: "family", image: "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-toc-f", name: "Tocineta", description: "Tocineta crujiente y extra queso.", price: 21.50, category: "family", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-esp-f", name: "Especial", description: "Jamón, pepperoni, cebolla, pimentón y aceitunas.", price: 22.50, category: "family", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-sc-f", name: "Santa Cruz", description: "La especialidad de la casa con ingredientes secretos.", price: 23.00, category: "family", image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-2s-f", name: "2 Sabores", description: "Mitad y mitad de tus sabores favoritos.", price: 21.99, category: "family", image: "https://images.unsplash.com/photo-1571407970349-bc16f63433cd?auto=format&fit=crop&q=80&w=400" },
+    { id: "p-4s-f", name: "4 Sabores", description: "Cuatro estaciones de sabor en una pizza.", price: 22.99, category: "family", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400" },
+
+    // --- OTHER CATEGORIES ---
+    { id: "c-1", name: "Combo Familiar", description: "2 Pizzas Grandes + Coca Cola 2L + Palitos de Ajo.", price: 25.99, category: "combos", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400", isPopular: true },
+    { id: "d-1", name: "Coca Cola", description: "Botella de 2 Litros.", price: 3.50, category: "drinks", image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=400" },
+    { id: "ds-1", name: "Brownie con Helado", description: "Delicioso brownie caliente con helado de vainilla.", price: 5.99, category: "desserts", image: "https://images.unsplash.com/photo-1564355808539-22fda35bed7e?auto=format&fit=crop&q=80&w=400" },
 ];
 
 export const categories = [
