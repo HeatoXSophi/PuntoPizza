@@ -1,37 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import React from "react";
-import { Header } from "@/components/layout/Header";
-import { FloatingCart } from "@/components/layout/FloatingCart";
-import { CartSidebar } from "@/components/layout/CartSidebar";
+import dynamic from "next/dynamic";
 import { Toaster } from "sonner";
 import Link from "next/link";
+import React from "react";
 
-// Error Boundary para capturar errores y mostrar tu pantalla de fallback
+// Carga tus componentes con SSR desactivado
+// IMPORTANTE: Usamos .then(mod => mod.Component) porque son exportaciones nombradas (named exports)
+const Header = dynamic(() => import("@/components/layout/Header").then(mod => mod.Header), { ssr: false });
+const FloatingCart = dynamic(() => import("@/components/layout/FloatingCart").then(mod => mod.FloatingCart), { ssr: false });
+const CartSidebar = dynamic(() => import("@/components/layout/CartSidebar").then(mod => mod.CartSidebar), { ssr: false });
+
+// Error Boundary y Fallback
 class ErrorBoundary extends React.Component<{ children: React.ReactNode; fallback: React.ReactNode }, { hasError: boolean }> {
     constructor(props: any) {
         super(props);
         this.state = { hasError: false };
     }
-
-    static getDerivedStateFromError() {
-        return { hasError: true };
-    }
-
-    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-        console.error("Error en el layout:", error, errorInfo);
-    }
-
-    render() {
-        if (this.state.hasError) {
-            return this.props.fallback;
-        }
-        return this.props.children;
-    }
+    static getDerivedStateFromError() { return { hasError: true }; }
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) { console.error("Layout Error:", error, errorInfo); }
+    render() { return this.state.hasError ? this.props.fallback : this.props.children; }
 }
 
-// Pantalla de error personalizada
 const CustomErrorFallback = () => (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
         <div className="bg-white rounded-lg shadow-xl p-8 max-w-md text-center">
@@ -48,12 +39,20 @@ const CustomErrorFallback = () => (
 );
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
-    // Estado para el año (solo cliente, evita hidratación)
-    const [currentYear, setCurrentYear] = useState<string>("");
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
-        setCurrentYear(new Date().getFullYear().toString());
+        setIsClient(true);
+        // Soluciona el error de icono 404 (opcional)
+        if (!document.querySelector('link[rel="icon"]')) {
+            const link = document.createElement('link');
+            link.rel = 'icon';
+            link.href = '/favicon.ico';
+            document.head.appendChild(link);
+        }
     }, []);
+
+    if (!isClient) return null; // No renderiza nada hasta que estemos en el cliente
 
     return (
         <ErrorBoundary fallback={<CustomErrorFallback />}>
@@ -92,7 +91,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                         </div>
                     </div>
                     <div className="border-t border-gray-700 pt-8 text-center text-xs">
-                        <p>&copy; {currentYear || 2024} Santa Cruz Pizzería. Todos los derechos reservados.</p>
+                        <p>&copy; {new Date().getFullYear()} Santa Cruz Pizzería. Todos los derechos reservados.</p>
                     </div>
                 </footer>
 
