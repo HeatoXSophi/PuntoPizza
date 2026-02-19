@@ -67,39 +67,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                 <FloatingCart />
                 <CartSidebar />
 
-                <footer className="mt-auto bg-[#2E2E2E] text-gray-400 py-12 px-4">
-                    <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                        <div>
-                            <h4 className="text-white font-bold mb-4 uppercase tracking-wider">Santa Cruz Pizzería</h4>
-                            <p className="text-sm">La mejor pizza de la ciudad, directo a tu casa.</p>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-bold mb-4 uppercase tracking-wider">Legal</h4>
-                            <ul className="space-y-2 text-sm">
-                                <li><Link href="/privacy" className="hover:text-white transition-colors">Política de Privacidad</Link></li>
-                                <li><Link href="/terms" className="hover:text-white transition-colors">Términos y Condiciones</Link></li>
-                                <li><Link href="/cookies" className="hover:text-white transition-colors">Política de Cookies</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-bold mb-4 uppercase tracking-wider">Contacto</h4>
-                            <ul className="space-y-2 text-sm">
-                                <li><a href="https://wa.me/584246802805" className="hover:text-white transition-colors">WhatsApp: 0424-6802805</a></li>
-                                <li><a href="mailto:contacto@santacruzpizza.com" className="hover:text-white transition-colors">Email: contacto@santacruz.com</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-white font-bold mb-4 uppercase tracking-wider">Admin</h4>
-                            <Link href="/admin" className="text-sm hover:text-white transition-colors bg-white/10 px-3 py-1 rounded-md inline-block">
-                                Acceso Interno
-                            </Link>
-                        </div>
-                    </div>
-                    <div className="border-t border-gray-700 pt-8 text-center text-xs">
-                        {/* Use state for year to ensure client-side rendering matches */}
-                        <p>&copy; {year || 2026} Santa Cruz Pizzería. Todos los derechos reservados.</p>
-                    </div>
-                </footer>
+
 
                 <Toaster position="bottom-right" />
             </div>
