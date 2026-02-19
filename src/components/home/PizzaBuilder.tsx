@@ -70,12 +70,31 @@ export function PizzaBuilder() {
                                             style={{ zIndex: ing.zIndex }}
                                         >
                                             {/* Scattered Ingredients */}
-                                            {Array.from({ length: 15 }).map((_, i) => {
-                                                // Deterministic random positions based on index
-                                                const randomAngle = (i * 137.5) * (Math.PI / 180); // Golden angle
-                                                const randomRadius = 30 + (i * 4); // Spread out
-                                                const top = 50 + Math.sin(randomAngle) * (randomRadius / 2.5) + '%';
-                                                const left = 50 + Math.cos(randomAngle) * (randomRadius / 2.5) + '%';
+                                            {Array.from({ length: 12 }).map((_, i) => {
+                                                // Get index of current ingredient type for offset
+                                                const ingIndex = INGREDIENTS.findIndex(Item => Item.id === ing.id);
+
+                                                // Deterministic random positions with offset per ingredient type
+                                                // We use a different prime number multiplier for each layer to avoid patterns aligning
+                                                const seed = i + (ingIndex * 100);
+
+                                                // Fibonacci spiral distribution for even coverage
+                                                const goldenRatio = 0.618033988749895;
+                                                const angle = 2 * Math.PI * goldenRatio * seed;
+
+                                                // Distribute distance from center (leave gap in middle and don't touch edges)
+                                                // root(i) provides better area distribution than just i
+                                                const maxRadius = 40; // max % from center
+                                                const minRadius = 10;
+                                                const normalizedDist = Math.sqrt((i + 1) / 12);
+                                                const dist = minRadius + (normalizedDist * (maxRadius - minRadius));
+
+                                                // Add some "jitter" so it's not a perfect mathematical spiral
+                                                const jitterX = Math.sin(seed * 11) * 5;
+                                                const jitterY = Math.cos(seed * 7) * 5;
+
+                                                const top = 50 + (Math.sin(angle) * dist) + jitterY + '%';
+                                                const left = 50 + (Math.cos(angle) * dist) + jitterX + '%';
 
                                                 return (
                                                     <div
@@ -84,7 +103,7 @@ export function PizzaBuilder() {
                                                         style={{
                                                             top,
                                                             left,
-                                                            transform: `translate(-50%, -50%) rotate(${i * 45}deg)`,
+                                                            transform: `translate(-50%, -50%) rotate(${seed * 45}deg)`,
                                                         }}
                                                     >
                                                         <ing.icon />
