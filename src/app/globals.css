@@ -19,45 +19,52 @@
   .text-shadow {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+
+  .font-heading {
+    font-family: var(--font-heading), serif;
+  }
 }
 
 @layer base {
   :root {
     --background: 0 0% 98%;
-    --foreground: 20 14.3% 4.1%;
+    --foreground: 222 47% 11%;
+    /* Midnight Blue #0F172A */
 
     --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 14 96% 57%;
-    /* Vibrant Orange #FF5722 */
+    --primary: 14 100% 50%;
+    /* Vibrant Orange-Red #FF4500 */
     --primary-foreground: 60 9.1% 97.8%;
 
     --secondary: 48 100% 96%;
-    /* Light Yellow/Beige for tags */
-    --secondary-foreground: 20 14.3% 4.1%;
+    --secondary-foreground: 222 47% 11%;
 
     --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
+    --muted-foreground: 215 16% 47%;
 
     --accent: 60 4.8% 95.9%;
-    --accent-foreground: 24 9.8% 10%;
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 60 9.1% 97.8%;
 
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
-    --ring: 14 96% 57%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 14 100% 50%;
     --radius: 1rem;
+
+    --font-heading: var(--font-fraunces);
+    --font-body: var(--font-outfit);
   }
 
   .dark {
-    --background: 0 0% 98%;
-    --foreground: 20 14.3% 4.1%;
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
   }
 
   * {

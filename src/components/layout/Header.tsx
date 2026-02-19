@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { DICTIONARY } from "@/lib/dictionary";
 import Link from "next/link";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
+import { motion } from "framer-motion";
 
 export function Header() {
     const {
@@ -178,12 +179,24 @@ export function Header() {
 
                         {/* Cart Button */}
                         <Link href="/cart">
-                            <div className="relative bg-[#FF5722] p-2 rounded-full shadow-md text-white hover:bg-[#F4511E] transition-colors cursor-pointer">
-                                <ShoppingCart className="w-5 h-5" />
+                            <div className="relative group">
+                                <motion.div
+                                    key={items?.length}
+                                    initial={{ scale: 1 }}
+                                    animate={{ scale: [1, 1.2, 1] }}
+                                    transition={{ duration: 0.3 }}
+                                    className="bg-primary p-2 rounded-full shadow-md text-white hover:bg-orange-600 transition-colors cursor-pointer"
+                                >
+                                    <ShoppingCart className="w-5 h-5" />
+                                </motion.div>
                                 {(items?.length || 0) > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                                    <motion.span
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white"
+                                    >
                                         {items?.length || 0}
-                                    </span>
+                                    </motion.span>
                                 )}
                             </div>
                         </Link>

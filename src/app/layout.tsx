@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google"; // Switch to Outfit for that rounded/modern look
+import { Outfit, Fraunces } from "next/font/google"; // Switch to Outfit for that rounded/modern look
 import "./globals.css";
 import { ClientLayout } from "@/components/layout/ClientLayout";
 
-const outfit = Outfit({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
 
 export const metadata: Metadata = {
   title: "Santa Cruz Pizzería | La Mejor Pizza de la Ciudad",
@@ -75,7 +76,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#FF5722" />
       </head>
-      <body className={outfit.className} suppressHydrationWarning>
+      <body className={`${outfit.variable} ${fraunces.variable} font-sans antialiased`} suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

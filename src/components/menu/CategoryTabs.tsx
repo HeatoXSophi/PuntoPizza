@@ -23,9 +23,9 @@ export function CategoryTabs({ categories, activeCategory, onSelectCategory }: C
                         key={cat.id}
                         onClick={() => onSelectCategory(cat.id)}
                         className={cn(
-                            "relative px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wide transition-all duration-200 flex-shrink-0 border",
+                            "relative px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wide transition-all duration-200 flex-shrink-0 border font-heading",
                             isActive
-                                ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-orange-500/30"
+                                ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-orange-500/30 scale-105"
                                 : "bg-white text-muted-foreground border-transparent shadow-sm hover:bg-gray-50"
                         )}
                     >
