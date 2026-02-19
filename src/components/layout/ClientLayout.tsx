@@ -1,26 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Toaster } from "sonner";
 import Link from "next/link";
-import React from "react";
+import React, { ReactNode, ErrorInfo } from "react";
 
-// Carga tus componentes con SSR desactivado
-// IMPORTANTE: Usamos .then(mod => mod.Component) porque son exportaciones nombradas (named exports)
-const Header = dynamic(() => import("@/components/layout/Header").then(mod => mod.Header), { ssr: false });
-const FloatingCart = dynamic(() => import("@/components/layout/FloatingCart").then(mod => mod.FloatingCart), { ssr: false });
-const CartSidebar = dynamic(() => import("@/components/layout/CartSidebar").then(mod => mod.CartSidebar), { ssr: false });
+// Carga dinámica con SSR desactivado para evitar problemas de hidratación
+// IMPORTANTE: .then(mod => mod.Component) se usa porque NO son export default
+const Header = dynamic(() => import("@/components/layout/Header").then(mod => mod.Header), {
+    ssr: false,
+    loading: () => <div className="h-16 bg-[#FFF8E1] shadow-sm" />
+});
+const FloatingCart = dynamic(() => import("@/components/layout/FloatingCart").then(mod => mod.FloatingCart), {
+    ssr: false,
+    loading: () => null
+});
+const CartSidebar = dynamic(() => import("@/components/layout/CartSidebar").then(mod => mod.CartSidebar), {
+    ssr: false,
+    loading: () => null
+});
 
-// Error Boundary y Fallback
-class ErrorBoundary extends React.Component<{ children: React.ReactNode; fallback: React.ReactNode }, { hasError: boolean }> {
-    constructor(props: any) {
+// Error Boundary para capturar fallos
+class ErrorBoundary extends React.Component<{ children: ReactNode; fallback: ReactNode }, { hasError: boolean }> {
+    constructor(props: { children: ReactNode; fallback: ReactNode }) {
         super(props);
         this.state = { hasError: false };
     }
     static getDerivedStateFromError() { return { hasError: true }; }
-    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) { console.error("Layout Error:", error, errorInfo); }
-    render() { return this.state.hasError ? this.props.fallback : this.props.children; }
+    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        console.error("🔴 Layout Error:", error, errorInfo);
+    }
+    render() {
+        return this.state.hasError ? this.props.fallback : this.props.children;
+    }
 }
 
 const CustomErrorFallback = () => (
@@ -28,37 +40,29 @@ const CustomErrorFallback = () => (
         <div className="bg-white rounded-lg shadow-xl p-8 max-w-md text-center">
             <h2 className="text-2xl font-bold text-red-500 mb-2">¡Ups! Algo estalló 💥</h2>
             <p className="text-gray-600 mb-6">Error Técnico Detectado</p>
-            <button onClick={() => window.location.reload()} className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-md mr-2 mb-2">
+            <button
+                onClick={() => window.location.reload()}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-md mb-2"
+            >
                 Intentar de nuevo
-            </button>
-            <button onClick={() => window.location.href = "/"} className="border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold py-2 px-6 rounded-md">
-                Recargar App Completa
             </button>
         </div>
     </div>
 );
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
-    const [isClient, setIsClient] = useState(false);
+    // Client-side date generation to avoid hydration mismatch
+    const [year, setYear] = React.useState<number | null>(null);
 
-    useEffect(() => {
-        setIsClient(true);
-        // Soluciona el error de icono 404 (opcional)
-        if (!document.querySelector('link[rel="icon"]')) {
-            const link = document.createElement('link');
-            link.rel = 'icon';
-            link.href = '/favicon.ico';
-            document.head.appendChild(link);
-        }
+    React.useEffect(() => {
+        setYear(new Date().getFullYear());
     }, []);
-
-    if (!isClient) return null; // No renderiza nada hasta que estemos en el cliente
 
     return (
         <ErrorBoundary fallback={<CustomErrorFallback />}>
             <div className="flex min-h-screen flex-col pb-24 md:pb-0 bg-[#F5F5F7]">
                 <Header />
-                {children}
+                <main className="flex-grow">{children}</main>
                 <FloatingCart />
                 <CartSidebar />
 
@@ -85,13 +89,14 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                         </div>
                         <div>
                             <h4 className="text-white font-bold mb-4 uppercase tracking-wider">Admin</h4>
-                            <Link href="/admin" className="text-sm hover:text-white transition-colors bg-white/10 px-3 py-1 rounded-md">
+                            <Link href="/admin" className="text-sm hover:text-white transition-colors bg-white/10 px-3 py-1 rounded-md inline-block">
                                 Acceso Interno
                             </Link>
                         </div>
                     </div>
                     <div className="border-t border-gray-700 pt-8 text-center text-xs">
-                        <p>&copy; {new Date().getFullYear()} Santa Cruz Pizzería. Todos los derechos reservados.</p>
+                        {/* Use state for year to ensure client-side rendering matches */}
+                        <p>&copy; {year || 2026} Santa Cruz Pizzería. Todos los derechos reservados.</p>
                     </div>
                 </footer>
 
