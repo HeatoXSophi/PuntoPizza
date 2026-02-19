@@ -88,8 +88,9 @@ export function Features() {
                         Lo que nos hace
                         <span className="text-[#FF5722]"> especiales</span>
                     </h2>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Más de 10 años de experiencia nos respaldan. Conoce las razones por las que somos la pizzería favorita de Santa Cruz.
+                    <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
+                        Más de 10 años de experiencia nos respaldan. Conoce las razones por las que somos
+                        la pizza favorita de Punto Fijo.
                     </p>
                 </motion.div>
 
