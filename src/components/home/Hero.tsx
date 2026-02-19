@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Clock, MapPin, Star, PlayCircle } from "lucide-react";
+import { ArrowRight, Clock, MapPin, Star, PlayCircle, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
 
@@ -98,11 +98,13 @@ export function Hero() {
                     </Link>
 
                     <a
-                        href="tel:+584246802805"
+                        href="https://wa.me/584246802805"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="flex items-center gap-3 px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/20 text-white text-lg font-semibold rounded-full hover:bg-white/10 transition-all duration-300 group"
                     >
-                        <PlayCircle className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
-                        <span>Ordenar por Teléfono</span>
+                        <MessageCircle className="w-6 h-6 text-green-500 group-hover:scale-110 transition-transform" />
+                        <span>Ordenar por WhatsApp</span>
                     </a>
                 </motion.div>
 
