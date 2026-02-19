@@ -108,7 +108,7 @@ export function Header() {
                             <img
                                 src="/logo.png"
                                 alt="Santa Cruz"
-                                className="h-10 w-auto md:h-12 object-contain"
+                                className="h-20 w-auto md:h-24 object-contain"
                             />
                         </Link>
 

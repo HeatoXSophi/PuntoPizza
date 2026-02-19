@@ -62,7 +62,7 @@ export function Hero() {
                         <img
                             src="/logo.png"
                             alt="Santa Cruz Pizza Logo"
-                            className="w-48 md:w-64 h-auto drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                            className="w-[30rem] md:w-[40rem] h-auto drop-shadow-2xl hover:scale-105 transition-transform duration-500"
                         />
                     </motion.div>
 
