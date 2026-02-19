@@ -4,18 +4,31 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ShoppingCart, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
+import { useCartStore } from "@/lib/store";
 import { PizzaBaseSVG, PepperoniSVG, MushroomSVG, OliveSVG, OnionSVG, PepperSVG } from "./PizzaAssets";
 
+// Extended ingredients list based on user request
+// Note: We're reusing some SVGs for new ingredients for now to keep the code clean
+// In a real production app, we would create unique SVGs for each new ingredient.
 const INGREDIENTS = [
-    { id: "pepperoni", name: "Pepperoni", icon: PepperoniSVG, zIndex: 10, price: 2.00 },
-    { id: "mushrooms", name: "Champiñones", icon: MushroomSVG, zIndex: 20, price: 1.50 },
-    { id: "olives", name: "Aceitunas", icon: OliveSVG, zIndex: 30, price: 1.00 },
+    // Bases / Veggies
+    { id: "tomato", name: "Tomate", icon: PepperoniSVG, color: "#FF6347", zIndex: 15, price: 0.50 }, // Reuse/Recolor
+    { id: "onion", name: "Cebolla", icon: OnionSVG, zIndex: 50, price: 0.50 },
     { id: "peppers", name: "Pimentón", icon: PepperSVG, zIndex: 40, price: 1.00 },
-    { id: "onions", name: "Cebolla", icon: OnionSVG, zIndex: 50, price: 0.50 },
+    { id: "corn", name: "Maíz", icon: OliveSVG, color: "#FFD700", zIndex: 45, price: 0.50 }, // Reuse/Recolor
+    { id: "olives", name: "Aceitunas", icon: OliveSVG, zIndex: 30, price: 1.00 },
+
+    // Meats
+    { id: "pepperoni", name: "Pepperoni", icon: PepperoniSVG, zIndex: 10, price: 2.00 },
+    { id: "chorizo", name: "Chorizo", icon: PepperoniSVG, color: "#CD5C5C", zIndex: 12, price: 2.00 }, // Reuse/Recolor
+    { id: "ham", name: "Jamón", icon: MushroomSVG, color: "#FFC0CB", zIndex: 20, price: 1.50 }, // Reuse shape
+    { id: "bacon", name: "Tocineta", icon: MushroomSVG, color: "#8B4513", zIndex: 25, price: 2.00 }, // Reuse shape
+    { id: "anchovies", name: "Anchoas", icon: PepperSVG, color: "#708090", zIndex: 35, price: 2.50 }, // Reuse shape
 ];
 
 export function PizzaBuilder() {
     const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+    const addItem = useCartStore((state) => state.addItem);
 
     const toggleIngredient = (id: string) => {
         setSelectedIngredients((prev) =>
@@ -29,7 +42,33 @@ export function PizzaBuilder() {
     };
 
     const handleAddToCart = () => {
-        toast.success("¡Pizza personalizada agregada al carrito! (Simulado)");
+        if (selectedIngredients.length === 0) {
+            toast.error("¡Agrega al menos un ingrediente!");
+            return;
+        }
+
+        const basePrice = 10;
+        const ingredientsPrice = selectedIngredients.reduce((acc, id) => {
+            const ing = INGREDIENTS.find(i => i.id === id);
+            return acc + (ing ? ing.price : 0);
+        }, 0);
+        const totalPrice = basePrice + ingredientsPrice;
+
+        const ingredientNames = selectedIngredients
+            .map(id => INGREDIENTS.find(i => i.id === id)?.name)
+            .join(", ");
+
+        addItem({
+            id: `custom-pizza-${Date.now()}`,
+            name: "Pizza Personalizada",
+            description: `Ingredientes: ${ingredientNames}`,
+            price: totalPrice,
+            image: "/images/pizza-custom.png", // Fallback or placeholder
+            category: "Personalizada"
+        });
+
+        toast.success("¡Tu Pizza Personalizada ha sido agregada al carrito! 🛒");
+        resetBuilder();
     };
 
     return (
@@ -104,9 +143,11 @@ export function PizzaBuilder() {
                                                             top,
                                                             left,
                                                             transform: `translate(-50%, -50%) rotate(${seed * 45}deg)`,
+                                                            color: ing.color // Apply color override if exists
                                                         }}
                                                     >
-                                                        <ing.icon />
+                                                        {/* Clone SVG to apply color */}
+                                                        <ing.icon style={{ fill: ing.color, stroke: ing.color ? 'rgba(0,0,0,0.2)' : undefined }} />
                                                     </div>
                                                 );
                                             })}
@@ -139,7 +180,7 @@ export function PizzaBuilder() {
                                 Elige tus Ingredientes
                             </h3>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                                 {INGREDIENTS.map((ing) => {
                                     const isSelected = selectedIngredients.includes(ing.id);
                                     return (
@@ -149,27 +190,27 @@ export function PizzaBuilder() {
                                             whileTap={{ scale: 0.98 }}
                                             onClick={() => toggleIngredient(ing.id)}
                                             className={`
-                                                relative flex items-center gap-4 p-3 rounded-2xl border-2 transition-all duration-200 text-left group
+                                                relative flex flex-col items-center justify-center gap-2 p-3 rounded-2xl border-2 transition-all duration-200 text-center group
                                                 ${isSelected
                                                     ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
                                                     : 'border-gray-100 bg-gray-50/50 hover:border-primary/30 hover:bg-white'
                                                 }
                                             `}
                                         >
-                                            <div className="w-12 h-12 relative flex-shrink-0">
-                                                <ing.icon />
+                                            <div className="w-8 h-8 relative flex-shrink-0 text-primary">
+                                                <ing.icon style={{ fill: ing.color }} />
                                             </div>
-                                            <div className="flex-1">
-                                                <span className={`block font-bold text-sm ${isSelected ? 'text-primary' : 'text-gray-700'}`}>
+                                            <div className="flex-1 flex flex-col">
+                                                <span className={`block font-bold text-xs ${isSelected ? 'text-primary' : 'text-gray-700'}`}>
                                                     {ing.name}
                                                 </span>
-                                                <span className="text-xs text-gray-400 font-medium">
+                                                <span className="text-[10px] text-gray-400 font-medium">
                                                     +${ing.price.toFixed(2)}
                                                 </span>
                                             </div>
                                             {isSelected && (
-                                                <div className="bg-primary text-white p-1 rounded-full absolute top-3 right-3 shadow-sm">
-                                                    <Check className="w-3 h-3" />
+                                                <div className="bg-primary text-white p-0.5 rounded-full absolute top-2 right-2 shadow-sm">
+                                                    <Check className="w-2 h-2" />
                                                 </div>
                                             )}
                                         </motion.button>
