@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag, Trash2, MessageCircle } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { useHydrated } from "@/hooks/use-hydrated";
+import Image from "next/image";
 
 export function CartSidebar() {
     const isOpen = useCartStore((state) => state.isCartOpen);
@@ -105,8 +106,13 @@ export function CartSidebar() {
                                                 className="flex gap-4 p-4 bg-gray-50 rounded-2xl"
                                             >
                                                 {/* Item Image */}
-                                                <div className="w-20 h-20 bg-[#FFAB91]/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                                                    <span className="text-4xl">{item.image}</span>
+                                                <div className="w-20 h-20 bg-[#FFAB91]/20 rounded-xl relative overflow-hidden flex-shrink-0">
+                                                    <Image
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
                                                 </div>
 
                                                 {/* Item Details */}
