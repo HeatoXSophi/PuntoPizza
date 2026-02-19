@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Flame } from "lucide-react";
+import Image from "next/image";
 import { useCartStore } from "@/lib/store";
 import { DICTIONARY } from "@/lib/dictionary";
 import { toast } from "sonner";
 import { products as menuItems } from "@/lib/data"; // Use shared data
+import { ProductCard } from "@/components/menu/ProductCard"; // Reuse component
 
 const categories = [
     { id: "all", name: "Todas" },
@@ -35,9 +37,6 @@ export function Menu() {
     const { language } = useCartStore();
     const t = DICTIONARY[language || "es"] || DICTIONARY.es;
     const [activeCategory, setActiveCategory] = useState("all");
-    const addItem = useCartStore((state) => state.addItem);
-    const setCartOpen = useCartStore((state) => state.setCartOpen);
-
     // Dynamic translation for tabs
     const categoriesWithLabels = menuCategories.map(c => ({
         id: c.id,
@@ -48,19 +47,6 @@ export function Menu() {
     const filteredProducts = activeCategory === "all"
         ? menuItems
         : menuItems.filter(p => p.category === activeCategory);
-
-    const handleAddToCart = (item: any) => {
-        addItem({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            image: item.image,
-            category: item.category,
-            description: item.description || ""
-        });
-        toast.success("Producto agregado al carrito");
-        setCartOpen(true);
-    };
 
     return (
         <section id="menu" className="py-24 bg-white relative overflow-hidden">
@@ -124,59 +110,16 @@ export function Menu() {
                 >
                     <AnimatePresence mode="popLayout">
                         {filteredProducts.map((item) => (
-                            <motion.div
-                                key={item.id}
-                                layout
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.3 }}
-                                className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100"
-                            >
-                                {/* Image Area */}
-                                <div className="relative h-48 bg-gradient-to-br from-[#FFAB91]/20 to-[#FFAB91]/40 flex items-center justify-center">
-                                    <span className="text-7xl transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
-                                        {item.image}
-                                    </span>
-
-                                    {/* Badges */}
-                                    <div className="absolute top-3 left-3 flex gap-2">
-                                        {item.isPopular && (
-                                            <span className="px-2.5 py-1 bg-[#FF5722] text-white text-xs font-semibold rounded-full">
-                                                Popular
-                                            </span>
-                                        )}
-                                        {item.isSpicy && (
-                                            <span className="px-2.5 py-1 bg-red-500 text-white text-xs font-semibold rounded-full flex items-center gap-1">
-                                                <Flame className="w-3 h-3" />
-                                                Picante
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Content */}
-                                <div className="p-5">
-                                    <div className="flex items-start justify-between gap-2 mb-2">
-                                        <h3 className="text-lg font-bold text-gray-900">
-                                            {item.name}
-                                        </h3>
-                                        <span className="text-xl font-bold text-[#FF5722]">
-                                            ${item.price.toFixed(2)}
-                                        </span>
-                                    </div>
-                                    <p className="text-gray-500 text-sm mb-4 line-clamp-2">
-                                        {item.description}
-                                    </p>
-                                    <button
-                                        onClick={() => handleAddToCart(item)}
-                                        className="w-full flex items-center justify-center gap-2 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-[#FF5722] transition-colors duration-300"
-                                    >
-                                        <Plus className="w-5 h-5" />
-                                        Agregar al Carrito
-                                    </button>
-                                </div>
-                            </motion.div>
+                            <div key={item.id} className="h-full">
+                                <ProductCard
+                                    id={item.id}
+                                    name={item.name}
+                                    description={item.description}
+                                    price={item.price}
+                                    category={item.category}
+                                    image={item.image}
+                                />
+                            </div>
                         ))}
                     </AnimatePresence>
                 </motion.div>
