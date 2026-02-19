@@ -10,7 +10,7 @@ import { Contact } from "@/components/home/Contact";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white" suppressHydrationWarning={true}>
       <Hero />
       <Features />
       <Menu />
