@@ -13,6 +13,7 @@ export interface Product {
     available?: boolean;
     isPopular?: boolean;
     isSpicy?: boolean;
+    baseIngredients?: string[];
 }
 
 export interface CartItem extends Product {

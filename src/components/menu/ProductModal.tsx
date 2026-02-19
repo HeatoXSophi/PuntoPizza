@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Plus, Minus, ShoppingCart } from "lucide-react";
+import { Plus, Minus, ShoppingCart, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types";
 import { extraIngredients } from "@/lib/data";
@@ -19,13 +19,17 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
     const addItem = useCartStore((state) => state.addItem);
     const setCartOpen = useCartStore((state) => state.setCartOpen);
 
-    const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+    // State for extra ingredients
+    const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
+    // State for removed base ingredients
+    const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
     const [quantity, setQuantity] = useState(1);
 
     // Reset state when product changes
     useEffect(() => {
         if (isOpen) {
-            setSelectedIngredients([]);
+            setSelectedExtras([]);
+            setRemovedIngredients([]);
             setQuantity(1);
         }
     }, [isOpen, product]);
@@ -33,187 +37,205 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
     if (!product) return null;
 
     const basePrice = product.price;
-    const ingredientsTotal = selectedIngredients.reduce((total, ingredientId) => {
+    const extrasTotal = selectedExtras.reduce((total, ingredientId) => {
         const ingredient = extraIngredients.find(i => i.id === ingredientId);
         return total + (ingredient ? ingredient.price : 0);
     }, 0);
 
-    const unitPrice = basePrice + ingredientsTotal;
+    const unitPrice = basePrice + extrasTotal;
     const totalPrice = unitPrice * quantity;
 
-    const toggleIngredient = (id: string) => {
-        setSelectedIngredients(prev =>
+    const toggleExtra = (id: string) => {
+        setSelectedExtras(prev =>
             prev.includes(id)
                 ? prev.filter(i => i !== id)
                 : [...prev, id]
         );
     };
 
+    const toggleRemoveIngredient = (ingredientName: string) => {
+        setRemovedIngredients(prev =>
+            prev.includes(ingredientName)
+                ? prev.filter(i => i !== ingredientName)
+                : [...prev, ingredientName]
+        );
+    };
+
     const handleAddToCart = () => {
-        // Construct description with extras
-        const extrasNames = selectedIngredients
+        // Construct description 
+        let finalDescription = product.description;
+        const notes = [];
+
+        if (removedIngredients.length > 0) {
+            notes.push(`Sin: ${removedIngredients.join(", ")}`);
+        }
+
+        const extrasNames = selectedExtras
             .map(id => extraIngredients.find(i => i.id === id)?.name)
             .filter(Boolean)
             .join(", ");
 
-        const fullDescription = extrasNames
-            ? `${product.description} \n+ Extras: ${extrasNames}`
-            : product.description;
+        if (extrasNames) {
+            notes.push(`Extras: ${extrasNames}`);
+        }
 
-        // Add item to cart with custom price and ID
-        // Note: In a real app, you might want a unique ID per customization
-        // For simplicity, we'll append timestamp or similar if needed, 
-        // but store currently aggregates by ID. If we want separate items for custom pizzas,
-        // we might need to generate a composite ID.
-        const customId = selectedIngredients.length > 0
-            ? `${product.id}-custom-${Date.now()}`
+        if (notes.length > 0) {
+            finalDescription += ` (${notes.join(" | ")})`;
+        }
+
+        const customId = (selectedExtras.length > 0 || removedIngredients.length > 0)
+            ? `${product.id}-cust-${Date.now()}`
             : product.id;
 
-        addItem({
-            id: customId,
-            name: product.name,
-            price: unitPrice, // Using unit price as store likely handles quantity multiplication
-            image: product.image,
-            category: product.category,
-            description: fullDescription,
-            // Pass quantity if store supports adding multiple at once, 
-            // otherwise loop or update store to accept quantity
-        });
-
-        // Since the current addItem doesn't accept quantity, we might need to call it multiple times 
-        // OR update the store. For now, let's assume single add or update usage.
-        // If the store only adds 1, we Loop? No, let's just add one for now or 
-        // update the store to accept quantity in a future step if strictly needed.
-        // Actually, looking at store.ts: addItem takes Omit<CartItem, "quantity"> and sets qty to 1.
-        // To support quantity, we'd need to loop or modify store. 
-        // Let's loop for now to be safe without touching store logic yet.
-        for (let i = 1; i < quantity; i++) {
+        // Loop for quantity
+        for (let i = 0; i < quantity; i++) {
             addItem({
-                id: customId,
+                id: customId, // Note: with loop same ID might be issue if logic merges, but here timestamp helps unique batch
                 name: product.name,
                 price: unitPrice,
                 image: product.image,
                 category: product.category,
-                description: fullDescription
+                description: finalDescription
             });
         }
 
-        toast.success(`Agregado: ${product.name} ${extrasNames ? "(con extras)" : ""}`);
+        toast.success(`Agregado: ${product.name}`);
         onClose();
         setCartOpen(true);
     };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
-            <div className="flex flex-col md:flex-row h-full">
-                {/* Image Section */}
-                <div className="w-full md:w-1/2 relative min-h-[250px] md:min-h-full bg-gray-100">
+            <div className="flex flex-col h-full bg-white">
+                {/* Header Image */}
+                <div className="relative w-full h-[250px] shrink-0">
                     <Image
                         src={product.image}
                         alt={product.name}
                         fill
                         className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 50vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6 md:hidden">
-                        <h2 className="text-3xl font-black text-white">{product.name}</h2>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+                        {/* Mobile Title Overlay */}
                     </div>
                 </div>
 
-                {/* Content Section */}
-                <div className="w-full md:w-1/2 p-6 flex flex-col">
-                    <div className="hidden md:block mb-4">
-                        <h2 className="text-3xl font-black text-gray-900 mb-2">{product.name}</h2>
-                        <p className="text-gray-500 text-sm">{product.description}</p>
-                    </div>
+                <div className="flex-1 overflow-y-auto">
+                    <div className="p-5 pb-32"> {/* Padding bottom for sticky footer */}
+                        {/* Title & Desc */}
+                        <div className="text-center mb-6">
+                            <h2 className="text-2xl font-black text-gray-900 mb-1">{product.name}</h2>
+                            <p className="text-gray-500 text-sm leading-relaxed">{product.description}</p>
 
-                    <div className="md:hidden mb-6">
-                        <p className="text-gray-500 text-sm">{product.description}</p>
-                    </div>
+                            {/* Centralized Quantity & Price */}
+                            <div className="flex items-center justify-center gap-4 mt-4">
+                                <div className="bg-[#FFF8E1] px-4 py-1 rounded-full border border-orange-200">
+                                    <span className="text-xl font-black text-gray-900">${basePrice.toFixed(2)}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                        className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-[#FF9800] text-[#FF9800] font-bold hover:bg-orange-50 transition-colors"
+                                    >
+                                        <Minus className="w-5 h-5" />
+                                    </button>
+                                    <span className="text-lg font-bold w-4 text-center">{quantity}</span>
+                                    <button
+                                        onClick={() => setQuantity(quantity + 1)}
+                                        className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-[#FF9800] text-[#FF9800] font-bold hover:bg-orange-50 transition-colors"
+                                    >
+                                        <Plus className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin">
-                        <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                            Personaliza tu pizza
-                            <span className="text-xs font-normal text-gray-400">(Opcional)</span>
-                        </h3>
-
-                        <div className="space-y-3">
-                            {extraIngredients.map((ingredient) => (
-                                <label
-                                    key={ingredient.id}
-                                    className={`
-                                        flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all
-                                        ${selectedIngredients.includes(ingredient.id)
-                                            ? "border-[#FF5722] bg-orange-50"
-                                            : "border-gray-100 hover:border-orange-200"
-                                        }
-                                    `}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className={`
-                                            w-5 h-5 rounded border flex items-center justify-center transition-colors
-                                            ${selectedIngredients.includes(ingredient.id)
-                                                ? "bg-[#FF5722] border-[#FF5722]"
-                                                : "border-gray-300"
-                                            }
-                                        `}>
-                                            {selectedIngredients.includes(ingredient.id) && (
-                                                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            )}
+                        {/* ELIMINAR INGREDIENTES */}
+                        {product.baseIngredients && product.baseIngredients.length > 0 && (
+                            <div className="mb-8">
+                                <h3 className="font-black text-gray-900 border-b pb-2 mb-4 uppercase text-sm tracking-wider">
+                                    Eliminar Ingredientes
+                                </h3>
+                                <div className="space-y-2 bg-orange-50/50 p-2 rounded-xl">
+                                    {product.baseIngredients.map((ing) => (
+                                        <div key={ing} className="flex items-center justify-between p-2">
+                                            <span className={`text-gray-700 font-medium ${removedIngredients.includes(ing) ? "line-through text-gray-400" : ""}`}>
+                                                {ing}
+                                            </span>
+                                            <button
+                                                onClick={() => toggleRemoveIngredient(ing)}
+                                                className={`
+                                                    px-4 py-1 rounded-full text-xs font-bold transition-all
+                                                    ${removedIngredients.includes(ing)
+                                                        ? "bg-gray-200 text-gray-500 hover:bg-gray-300"
+                                                        : "bg-[#FF9800] text-white hover:bg-[#F57C00] shadow-sm"
+                                                    }
+                                                `}
+                                            >
+                                                {removedIngredients.includes(ing) ? "AGREGAR" : "ELIMINAR"}
+                                            </button>
                                         </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* AGREGAR INGREDIENTES */}
+                        <div>
+                            <h3 className="font-black text-gray-900 border-b pb-2 mb-4 uppercase text-sm tracking-wider">
+                                Agregar Ingredientes (Max. 10)
+                            </h3>
+                            <div className="space-y-1">
+                                {extraIngredients.map((ingredient) => (
+                                    <div
+                                        key={ingredient.id}
+                                        className={`
+                                            flex items-center justify-between p-3 rounded-lg border transition-all
+                                            ${selectedExtras.includes(ingredient.id)
+                                                ? "bg-green-50 border-green-200"
+                                                : "bg-gray-50 border-transparent hover:bg-gray-100"
+                                            }
+                                        `}
+                                    >
                                         <span className="font-medium text-gray-700">{ingredient.name}</span>
+                                        <div className="flex items-center gap-3">
+                                            <span className="font-bold text-gray-900 text-sm">
+                                                {ingredient.price.toFixed(2)}€
+                                            </span>
+                                            <button
+                                                onClick={() => toggleExtra(ingredient.id)}
+                                                className={`
+                                                    px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1
+                                                    ${selectedExtras.includes(ingredient.id)
+                                                        ? "bg-red-500 text-white hover:bg-red-600"
+                                                        : "bg-[#FF9800] text-white hover:bg-[#F57C00] shadow-sm"
+                                                    }
+                                                `}
+                                            >
+                                                {selectedExtras.includes(ingredient.id) ? "QUITAR" : "AÑADE"}
+                                            </button>
+                                        </div>
                                     </div>
-                                    <span className="font-bold text-[#FF5722]">
-                                        +${ingredient.price.toFixed(2)}
-                                    </span>
-                                    <input
-                                        type="checkbox"
-                                        className="hidden"
-                                        checked={selectedIngredients.includes(ingredient.id)}
-                                        onChange={() => toggleIngredient(ingredient.id)}
-                                    />
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Footer / Actions */}
-                    <div className="mt-6 pt-6 border-t border-gray-100 flex flex-col gap-4">
-                        {/* Quantity & Total */}
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3 bg-gray-100 rounded-full p-1">
-                                <button
-                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm text-gray-600 hover:text-[#FF5722] disabled:opacity-50"
-                                    disabled={quantity <= 1}
-                                >
-                                    <Minus className="w-4 h-4" />
-                                </button>
-                                <span className="font-bold text-gray-900 w-4 text-center">{quantity}</span>
-                                <button
-                                    onClick={() => setQuantity(quantity + 1)}
-                                    className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm text-gray-600 hover:text-[#FF5722]"
-                                >
-                                    <Plus className="w-4 h-4" />
-                                </button>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Total</p>
-                                <p className="text-2xl font-black text-[#FF5722]">${totalPrice.toFixed(2)}</p>
+                                ))}
                             </div>
                         </div>
-
-                        {/* Add Button */}
-                        <button
-                            onClick={handleAddToCart}
-                            className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold text-lg hover:bg-[#FF5722] transition-colors flex items-center justify-center gap-2 shadow-lg shadow-gray-900/10"
-                        >
-                            <ShoppingCart className="w-5 h-5" />
-                            Agregar al Pedido
-                        </button>
                     </div>
+                </div>
+
+                {/* Sticky Footer Button */}
+                <div className="absolute bottom-0 left-0 w-full bg-white border-t p-4 shadow-2xl z-20">
+                    <button
+                        onClick={handleAddToCart}
+                        className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
+                    >
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-900">
+                            <ShoppingCart className="w-5 h-5 fill-current" />
+                        </div>
+                        <span>AGREGAR AL PEDIDO</span>
+                        <span className="bg-white/20 px-3 py-1 rounded-full text-sm">
+                            ${totalPrice.toFixed(2)}
+                        </span>
+                    </button>
                 </div>
             </div>
         </Modal>
