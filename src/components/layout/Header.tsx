@@ -28,14 +28,6 @@ export function Header() {
     const [tempAddress, setTempAddress] = useState("");
     const [tempPhone, setTempPhone] = useState("");
     const [isLocating, setIsLocating] = useState(false);
-    const [mounted, setMounted] = useState(false);
-
-    // Prevent hydration mismatch
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    if (!mounted) return null;
 
     // Get current dictionary
     const t = DICTIONARY[language || "es"] || DICTIONARY.es;

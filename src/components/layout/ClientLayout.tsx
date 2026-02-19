@@ -7,10 +7,11 @@ import React, { ReactNode, ErrorInfo } from "react";
 
 // Carga dinámica con SSR desactivado para evitar problemas de hidratación
 // IMPORTANTE: .then(mod => mod.Component) se usa porque NO son export default
-const Header = dynamic(() => import("@/components/layout/Header").then(mod => mod.Header), {
-    ssr: false,
-    loading: () => <div className="h-16 bg-[#FFF8E1] shadow-sm" />
-});
+import { Header } from "@/components/layout/Header";
+
+// Carga dinámica con SSR desactivado para evitar problemas de hidratación
+// FloatingCart y CartSidebar se mantienen en cliente puro
+// FloatingCart y CartSidebar se mantienen en cliente puro
 const FloatingCart = dynamic(() => import("@/components/layout/FloatingCart").then(mod => mod.FloatingCart), {
     ssr: false,
     loading: () => null
