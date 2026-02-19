@@ -45,7 +45,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                     </div>
                 </div>
                 <div className="border-t border-gray-700 pt-8 text-center text-xs">
-                    <p>&copy; {new Date().getFullYear()} Santa Cruz Pizzería. Todos los derechos reservados.</p>
+                    <p>&copy; <span suppressHydrationWarning>{new Date().getFullYear()}</span> Santa Cruz Pizzería. Todos los derechos reservados.</p>
                 </div>
             </footer>
 
