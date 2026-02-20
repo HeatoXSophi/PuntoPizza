@@ -1,9 +1,30 @@
--- 1. Add variants column (Safe to run multiple times)
+-- 1. FIX MISSING COLUMNS (Run this block first)
 DO $$ 
 BEGIN 
+    -- Check and add is_available
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'products' AND column_name = 'is_available') THEN 
+        ALTER TABLE products ADD COLUMN is_available boolean DEFAULT true; 
+    END IF;
+
+    -- Check and add is_popular
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'products' AND column_name = 'is_popular') THEN 
+        ALTER TABLE products ADD COLUMN is_popular boolean DEFAULT false; 
+    END IF;
+
+    -- Check and add is_spicy
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'products' AND column_name = 'is_spicy') THEN 
+        ALTER TABLE products ADD COLUMN is_spicy boolean DEFAULT false; 
+    END IF;
+
+    -- Check and add variants
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'products' AND column_name = 'variants') THEN 
         ALTER TABLE products ADD COLUMN variants jsonb DEFAULT NULL; 
-    END IF; 
+    END IF;
+    
+    -- Check and add image_url (just in case)
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'products' AND column_name = 'image_url') THEN 
+        ALTER TABLE products ADD COLUMN image_url text; 
+    END IF;
 END $$;
 
 -- 2. Upsert Categories
