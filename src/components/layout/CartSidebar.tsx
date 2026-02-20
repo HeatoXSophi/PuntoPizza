@@ -5,6 +5,7 @@ import { X, Minus, Plus, ShoppingBag, Trash2, MessageCircle } from "lucide-react
 import { useCartStore } from "@/lib/store";
 import { useHydrated } from "@/hooks/use-hydrated";
 import Image from "next/image";
+import Link from "next/link";
 
 export function CartSidebar() {
     const isOpen = useCartStore((state) => state.isCartOpen);
@@ -197,13 +198,14 @@ export function CartSidebar() {
                                 </div>
 
                                 {/* Checkout Button */}
-                                <button
-                                    onClick={handleWhatsAppOrder}
-                                    className="w-full flex items-center justify-center gap-2 py-4 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors shadow-lg shadow-green-500/30"
+                                <Link
+                                    href="/cart"
+                                    onClick={() => setCartOpen(false)}
+                                    className="w-full flex items-center justify-center gap-2 py-4 bg-[#FF5722] text-white font-bold rounded-xl hover:bg-[#F4511E] transition-colors shadow-lg shadow-orange-500/20"
                                 >
-                                    <MessageCircle className="w-5 h-5" />
-                                    Pedir por WhatsApp
-                                </button>
+                                    Ir a Pagar
+                                    <ShoppingBag className="w-5 h-5" />
+                                </Link>
 
                                 <p className="text-center text-gray-500 text-xs mt-3">
                                     Te contactaremos para confirmar tu pedido
