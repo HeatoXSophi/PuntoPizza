@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { CategoryManager } from "./CategoryManager";
 import { AdminOrders } from "@/components/admin/AdminOrders";
 import { DataMigration } from "@/components/admin/DataMigration";
+import { ProductManager } from "@/components/admin/ProductManager";
 
 export default function AdminPage() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -67,6 +68,9 @@ export default function AdminPage() {
             </header>
 
             <main className="p-6 max-w-7xl mx-auto space-y-8">
+                {/* Data Migration Tool (Only visible if needed) */}
+                <DataMigration />
+
                 {/* Live Orders Section (Priority) */}
                 <AdminOrders />
 
