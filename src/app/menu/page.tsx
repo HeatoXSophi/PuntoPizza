@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabase";
 export const revalidate = 0; // Disable cache for now to see updates immediately
 
 async function getMenuData() {
+    if (!supabase) return { categories: [], products: [] };
+
     // Fetch Categories
     const { data: categories } = await supabase
         .from('categories')
