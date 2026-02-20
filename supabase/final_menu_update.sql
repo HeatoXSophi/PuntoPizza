@@ -9,15 +9,11 @@ END $$;
 -- 2. Upsert Categories
 INSERT INTO categories (id, name, order_index) VALUES 
 ('pastas', 'Pastas', 5),
-('postres', 'Postres', 6)
+('postres', 'Postres', 6),
+('bebidas', 'Bebidas', 7)
 ON CONFLICT (id) DO NOTHING;
 
 -- 3. Insert Pastas with Variants
--- We use ON CONFLICT DO NOTHING to avoid duplicates if run multiple times, assuming name+category_id unique constraint or just name? 
--- The schema doesn't seem to have a unique constraint on name, but let's just insert.
--- To prevent duplicates better, we can check existence or just delete old ones with same name? 
--- Let's just insert for now, user can delete duplicates in admin if they occur (simplest for this context).
-
 INSERT INTO products (category_id, name, description, price, is_available, variants) VALUES
 ('pastas', 'Bologna', 'Salsa bolognesa clásica con carne', 45.00, true, 
  '[{"name": "Tipo de Pasta", "options": ["Linguini", "Caracol", "Rigatoni"], "required": true}]'::jsonb),
@@ -34,3 +30,14 @@ INSERT INTO products (category_id, name, description, price, is_available) VALUE
 ('postres', 'Torta Chocolate', 'Intensa torta de chocolate con ganache', 28.00, true),
 ('postres', 'Torta Moka', 'Suave torta con toque de café', 26.00, true),
 ('postres', 'Marquesa', 'Postre frío de galletas y chocolate', 20.00, true);
+
+-- 5. Insert Drinks
+INSERT INTO products (category_id, name, description, price, is_available, variants) VALUES
+('bebidas', 'Refrescos', 'Gaseosas variadas bien frías', 2.50, true, 
+ '[{"name": "Sabor", "options": ["Coca Cola", "Sprite", "Fanta"], "required": true}]'::jsonb),
+
+('bebidas', 'Agua Mineral', 'Botella de agua natural o con gas', 1.50, true, 
+ '[{"name": "Tipo", "options": ["Natural", "Con Gas"], "required": true}]'::jsonb),
+
+('bebidas', 'Cerveza', 'Cerveza nacional o importada', 3.50, true, 
+ '[{"name": "Marca", "options": ["Pilsen", "Corona", "Stella"], "required": true}]'::jsonb);

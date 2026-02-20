@@ -25,43 +25,7 @@ interface Product {
 
 
 
-<div className="col-span-2 border-t pt-4 mt-2">
-    <div className="flex justify-between items-center mb-2">
-        <label className="block text-sm font-bold text-gray-600">Opciones / Variantes</label>
-        <button onClick={addVariant} className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded hover:bg-blue-100">+ Agregar Opción</button>
-    </div>
 
-    {editingProduct.variants?.map((variant, idx) => (
-        <div key={idx} className="bg-gray-50 p-3 rounded-lg mb-2 border border-gray-200 relative group">
-            <button onClick={() => removeVariant(idx)} className="absolute top-2 right-2 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Trash2 className="w-4 h-4" />
-            </button>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase">Nombre (Ej: Tipo de Pasta)</label>
-                    <input
-                        value={variant.name}
-                        onChange={e => updateVariant(idx, "name", e.target.value)}
-                        className="w-full border p-2 rounded text-sm"
-                        placeholder="Nombre de la opción"
-                    />
-                </div>
-                <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase">Opciones (Separa con comas)</label>
-                    <input
-                        value={variant.options.join(", ")}
-                        onChange={e => updateVariant(idx, "options", e.target.value)}
-                        className="w-full border p-2 rounded text-sm"
-                        placeholder="Ej: Linguini, Caracol, Rigatoni"
-                    />
-                </div>
-            </div>
-        </div>
-    ))}
-    {(!editingProduct.variants || editingProduct.variants.length === 0) && (
-        <p className="text-xs text-gray-400 italic text-center py-2">Sin opciones extra (El cliente solo pide el producto tal cual).</p>
-    )}
-</div>
 
 // ... rest of the form ...
 
@@ -323,6 +287,45 @@ export function ProductManager() {
                                 <option value="">Seleccionar Categoría...</option>
                                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
+                        </div>
+
+                        {/* Variants Section */}
+                        <div className="col-span-2 border-t pt-4 mt-2">
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="block text-sm font-bold text-gray-600">Opciones / Variantes</label>
+                                <button onClick={addVariant} className="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded hover:bg-blue-100">+ Agregar Opción</button>
+                            </div>
+
+                            {editingProduct.variants?.map((variant, idx) => (
+                                <div key={idx} className="bg-gray-50 p-3 rounded-lg mb-2 border border-gray-200 relative group">
+                                    <button onClick={() => removeVariant(idx)} className="absolute top-2 right-2 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-500 uppercase">Nombre (Ej: Tipo de Pasta)</label>
+                                            <input
+                                                value={variant.name}
+                                                onChange={e => updateVariant(idx, "name", e.target.value)}
+                                                className="w-full border p-2 rounded text-sm"
+                                                placeholder="Nombre de la opción"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-500 uppercase">Opciones (Separa con comas)</label>
+                                            <input
+                                                value={variant.options.join(", ")}
+                                                onChange={e => updateVariant(idx, "options", e.target.value)}
+                                                className="w-full border p-2 rounded text-sm"
+                                                placeholder="Ej: Linguini, Caracol, Rigatoni"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            {(!editingProduct.variants || editingProduct.variants.length === 0) && (
+                                <p className="text-xs text-gray-400 italic text-center py-2">Sin opciones extra (El cliente solo pide el producto tal cual).</p>
+                            )}
                         </div>
                     </div>
 
