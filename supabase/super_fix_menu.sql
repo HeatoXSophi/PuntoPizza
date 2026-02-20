@@ -94,9 +94,10 @@ INSERT INTO products (category_id, name, description, price, is_available, is_po
 ('medium', 'Pepperoni', 'Doble pepperoni y mozzarella.', 12.99, true, true, 'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=400');
 
 -- Re-Ensure Pastas/Desserts/Drinks exist with correct IDs
-DELETE FROM products WHERE category_id = 'pastas'; -- delete old wrong id items
-DELETE FROM products WHERE category_id = 'postres';
-DELETE FROM products WHERE category_id = 'bebidas';
+-- Re-Ensure Pastas/Desserts/Drinks exist with correct IDs
+DELETE FROM products WHERE category_id IN ('pastas', 'pasta'); -- Delete Spanish AND English IDs to avoid dupes
+DELETE FROM products WHERE category_id IN ('postres', 'desserts');
+DELETE FROM products WHERE category_id IN ('bebidas', 'drinks');
 
 -- Insert correct ones
 INSERT INTO products (category_id, name, description, price, is_available, variants) VALUES
