@@ -24,6 +24,9 @@ export function WhatsAppCheckout() {
     const [paymentProof, setPaymentProof] = useState<string | null>(null);
     const [bcvRate, setBcvRate] = useState<number | null>(null);
 
+    const [gpsLocation, setGpsLocation] = useState<string | null>(null);
+    const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
     useEffect(() => {
         const fetchRate = async () => {
             const rate = await getBCVRate();
@@ -44,6 +47,29 @@ export function WhatsAppCheckout() {
                 setPaymentProof(reader.result as string);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handleGetLocation = () => {
+        setIsLoadingLocation(true);
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    const mapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                    setGpsLocation(mapsUrl);
+                    setIsLoadingLocation(false);
+                    toast.success("Ubicación detectada correctamente");
+                },
+                (error) => {
+                    console.error("Error getting location:", error);
+                    setIsLoadingLocation(false);
+                    toast.error("No se pudo obtener la ubicación. Por favor escríbela manualmente.");
+                }
+            );
+        } else {
+            setIsLoadingLocation(false);
+            toast.error("La geolocalización no es soportada por este navegador.");
         }
     };
 
@@ -86,43 +112,54 @@ export function WhatsAppCheckout() {
 
         // 1. Construct the message
         let message = `🍕 *NUEVO PEDIDO (${deliveryType === "delivery" ? "DELIVERY" : "PICKUP"})* 🍕\n`;
-        message += `📅 ID: ${orderId}\n\n`;
+        message += `📅 ID: ${orderId}\n`;
         message += `👤 *Cliente:* ${formData.name}\n`;
+        message += `📱 *Teléfono:* ${formData.phone || "N/A"}\n\n`;
 
         if (deliveryType === "delivery") {
-            message += `📍 *Dirección:* ${formData.address}\n`;
-            message += `🗺️ *Maps:* https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formData.address)}\n`;
+            message += `📍 *Dirección de Entrega:*\n${formData.address}\n`;
+            if (gpsLocation) {
+                message += `🛰️ *Ubicación GPS:* ${gpsLocation}\n`;
+            } else {
+                message += `🗺️ *Maps (Ref):* https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formData.address)}\n`;
+            }
+            message += `\n`;
         } else {
-            message += `📍 *Retiro en Tienda*\n`;
+            message += `📍 *RETIRO EN TIENDA*\n\n`;
         }
 
-        message += `📱 *Teléfono:* ${formData.phone || "N/A"}\n`;
-        message += `💰 *Método Pago:* ${formData.paymentMethod}\n`;
+        message += `💰 *MÉTODO DE PAGO: ${formData.paymentMethod.toUpperCase()}*\n`;
 
         if (formData.paymentMethod === "Pago Móvil") {
-            message += `🔢 *Ref:* ${formData.paymentReference}\n`;
-            message += `📸 *Comprobante:* (Ver imagen adjunta)\n`;
+            message += `🔢 *Referencia:* ${formData.paymentReference}\n`;
+            message += `📸 *Comprobante:* (Ver imagen que enviaré a continuación)\n`;
         } else if (formData.paymentMethod === "Efectivo" && formData.cashAmount) {
             message += `💵 *Paga con:* $${parseFloat(formData.cashAmount).toFixed(2)}\n`;
             message += `🔄 *Cambio:* $${changeAmount.toFixed(2)}\n`;
         }
 
-        message += `\n📝 *Pedido:*\n`;
+        message += `\n📝 *DETALLE DEL PEDIDO:*\n`;
 
         items.forEach((item) => {
-            message += `- ${item.quantity}x ${item.name} ($${item.totalPrice ? item.totalPrice.toFixed(2) : item.price.toFixed(2)})\n`;
+            message += `• ${item.quantity}x ${item.name}`;
+            if (item.totalPrice) {
+                message += ` - $${item.totalPrice.toFixed(2)}`;
+            }
+            message += `\n`;
+
             if (item.selectedIngredients && item.selectedIngredients.length > 0) {
                 const extras = item.selectedIngredients.map((i) => (i as { name: string }).name).join(", ");
-                message += `  _Extras: ${extras}_\n`;
-            } else if (item.name.includes("Pizza") && item.description) {
-                message += `  _(${item.description})_\n`;
+                message += `  + Extras: ${extras}\n`;
+            }
+            if (item.name.includes("Pizza") && item.description && (!item.selectedIngredients || item.selectedIngredients.length === 0)) {
+                message += `  (${item.description})\n`;
             }
         });
 
         if (deliveryType === "delivery") {
             message += `\n🚚 *Envío:* $${deliveryFee.toFixed(2)}`;
         }
-        message += `\n💵 *TOTAL USD:* $${finalTotal.toFixed(2)}`;
+        message += `\n💰 *TOTAL USD:* $${finalTotal.toFixed(2)}`;
         if (bcvRate) {
             message += `\n🇻🇪 *TOTAL BS:* Bs. ${totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             message += `\n📊 *Tasa BCV:* ${bcvRate.toFixed(2)}`;
@@ -130,13 +167,13 @@ export function WhatsAppCheckout() {
 
         // 2. Encode for URL
         const encodedMessage = encodeURIComponent(message);
-        const whatsappNumber = "584121234567";
+        const whatsappNumber = "584246802805"; // Corrected Number
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
         // 3. Optional: Send to internal webhook
         await webhookService.sendEvent("ORDER_CREATED", {
             orderId,
-            customer: formData,
+            customer: { ...formData, gpsLocation },
             items,
             total: finalTotal,
             totalBs,
@@ -207,15 +244,38 @@ export function WhatsAppCheckout() {
                 </div>
 
                 {deliveryType === "delivery" && (
-                    <div className="relative">
-                        <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            name="address"
-                            placeholder="Dirección de Entrega"
-                            className="pl-9"
-                            value={formData.address}
-                            onChange={handleChange}
-                        />
+                    <div className="space-y-3">
+                        <div className="relative">
+                            <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                name="address"
+                                placeholder="Dirección de Entrega (Punto de referencia)"
+                                className="pl-9"
+                                value={formData.address}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full gap-2 text-blue-600 border-blue-200 hover:bg-blue-50"
+                            onClick={handleGetLocation}
+                            disabled={isLoadingLocation}
+                        >
+                            <MapPin className="w-4 h-4" />
+                            {isLoadingLocation ? "Detectando ubicación..." : "📍 Usar mi ubicación actual (GPS)"}
+                        </Button>
+
+                        {gpsLocation && (
+                            <div className="text-xs text-green-600 flex items-center gap-1 bg-green-50 p-2 rounded border border-green-200">
+                                <span className="font-bold">✓ Ubicación GPS lista:</span>
+                                <a href={gpsLocation} target="_blank" rel="noopener noreferrer" className="underline truncate flex-1">
+                                    {gpsLocation}
+                                </a>
+                            </div>
+                        )}
                     </div>
                 )}
 
