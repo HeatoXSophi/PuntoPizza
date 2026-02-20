@@ -41,11 +41,32 @@ async function getMenuData() {
 
     return {
         categories: mappedCategories,
-        products: mappedProducts
+        products: mappedProducts,
+        debugError: null,
+        rawCount: products?.length ?? 0
     };
 }
 
 export default async function MenuPage() {
-    const { categories, products } = await getMenuData();
+    const { categories, products, debugError, rawCount } = await getMenuData();
+
+    // DEBUG MODE: If products are empty, show diagnostic info
+    if (products.length === 0) {
+        return (
+            <div className="p-8 bg-red-50 text-red-800">
+                <h2 className="text-xl font-bold mb-4">⚠️ Modo Diagnóstico: Menú Vacío</h2>
+                <ul className="list-disc pl-5 space-y-2">
+                    <li><strong>Conexión Supabase:</strong> {supabase ? "✅ Activa" : "❌ FALLÓ (Variable es null)"}</li>
+                    <li><strong>Productos encontrados en DB:</strong> {rawCount}</li>
+                    <li><strong>Error de Debug:</strong> {JSON.stringify(debugError)}</li>
+                </ul>
+                <div className="mt-6 border-t border-red-200 pt-4">
+                    <p className="mb-2 font-semibold">Intentando cargar interfaz de todas formas:</p>
+                    <MenuBuilder categories={categories} initialProducts={products} />
+                </div>
+            </div>
+        );
+    }
+
     return <MenuBuilder categories={categories} initialProducts={products} />;
 }
