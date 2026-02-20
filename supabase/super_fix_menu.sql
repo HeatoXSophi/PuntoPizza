@@ -26,6 +26,10 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'products' AND column_name = 'image_url') THEN 
         ALTER TABLE products ADD COLUMN image_url text; 
     END IF;
+    -- created_at (Critical for Sorting)
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'products' AND column_name = 'created_at') THEN 
+        ALTER TABLE products ADD COLUMN created_at timestamp with time zone DEFAULT timezone('utc'::text, now());
+    END IF;
 END $$;
 
 -- 2. Ensure RLS is Public
