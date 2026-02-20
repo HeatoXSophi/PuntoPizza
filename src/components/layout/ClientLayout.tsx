@@ -8,6 +8,9 @@ import React, { ReactNode, ErrorInfo } from "react";
 // Carga dinámica con SSR desactivado para evitar problemas de hidratación
 // IMPORTANTE: .then(mod => mod.Component) se usa porque NO son export default
 import { Header } from "@/components/layout/Header";
+import { supabase } from "@/lib/supabase";
+import { auth } from "@/lib/auth";
+import { useCartStore } from "@/lib/store";
 
 // Carga dinámica con SSR desactivado para evitar problemas de hidratación
 // FloatingCart y CartSidebar se mantienen en cliente puro
@@ -54,9 +57,56 @@ const CustomErrorFallback = () => (
 export function ClientLayout({ children }: { children: React.ReactNode }) {
     // Client-side date generation to avoid hydration mismatch
     const [year, setYear] = React.useState<number | null>(null);
+    const { setUser, setUserName, setPhoneNumber, setAddress, setEmail } = useCartStore();
 
     React.useEffect(() => {
         setYear(new Date().getFullYear());
+
+        // Auth Listener
+        const initAuth = async () => {
+            if (!supabase) return;
+
+            // 1. Get initial session
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                setUser(session.user);
+                setEmail(session.user.email || "");
+
+                // Fetch profile
+                const profile = await auth.getProfile(session.user.id);
+                if (profile) {
+                    setUserName(profile.full_name);
+                    setPhoneNumber(profile.phone);
+                    setAddress(profile.address);
+                }
+            }
+
+            // 2. Listen for changes
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+                if (event === 'SIGNED_IN' && session?.user) {
+                    setUser(session.user);
+                    setEmail(session.user.email || "");
+                    const profile = await auth.getProfile(session.user.id);
+                    if (profile) {
+                        setUserName(profile.full_name);
+                        setPhoneNumber(profile.phone);
+                        setAddress(profile.address);
+                    }
+                } else if (event === 'SIGNED_OUT') {
+                    setUser(null);
+                    setUserName("");
+                    setPhoneNumber("");
+                    setAddress("");
+                    setEmail("");
+                }
+            });
+
+            return () => {
+                subscription.unsubscribe();
+            };
+        };
+
+        initAuth();
     }, []);
 
     return (
