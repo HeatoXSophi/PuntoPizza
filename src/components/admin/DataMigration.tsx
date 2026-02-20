@@ -11,29 +11,45 @@ export function DataMigration() {
     const [migrated, setMigrated] = useState(false);
 
     const handleMigration = async () => {
-        if (!supabase) return;
+        if (!supabase) {
+            toast.error("Error: Supabase no está inicializado");
+            return;
+        }
         setLoading(true);
         try {
+            console.log("Starting Migration...");
             // 1. Migrate Categories
-            console.log("Migrating categories...");
+            console.log("Migrating categories...", categories.length);
             for (const cat of categories) {
                 // Check if exists
-                const { data: existing } = await supabase.from('categories').select('id').eq('id', cat.id).single();
+                const { data: existing, error: fetchError } = await supabase.from('categories').select('id').eq('id', cat.id).maybeSingle();
+
+                if (fetchError) {
+                    console.error("Error checking category:", fetchError);
+                    throw fetchError;
+                }
+
                 if (!existing) {
                     const { error } = await supabase.from('categories').insert({
                         id: cat.id,
                         name: cat.name,
-                        order_index: 0 // You might want to map index if array is ordered
+                        order_index: 0
                     });
-                    if (error) throw error;
+                    if (error) {
+                        console.error("Error inserting category " + cat.name, error);
+                        throw error;
+                    }
                 }
             }
 
             // 2. Migrate Products
-            console.log("Migrating products...");
+            console.log("Migrating products...", products.length);
             for (const prod of products) {
-                // We will rely on name to check existence since IDs are changing from string to UUID
-                const { data: existing } = await supabase.from('products').select('id').eq('name', prod.name).eq('category_id', prod.category).single();
+                const { data: existing, error: fetchError } = await supabase.from('products').select('id').eq('name', prod.name).eq('category_id', prod.category).maybeSingle();
+
+                if (fetchError) {
+                    console.error("Error checking product:", fetchError);
+                }
 
                 if (!existing) {
                     const { error } = await supabase.from('products').insert({
@@ -45,24 +61,23 @@ export function DataMigration() {
                         is_available: true,
                         is_popular: prod.isPopular || false,
                         is_spicy: prod.isSpicy || false,
-                        // baseIngredients: prod.baseIngredients // Note: We need to handle this field if we want to keep it. Schema needed JSONB or text array.
-                        // content_schema.sql didn't have base_ingredients. 
-                        // I will skip it for now or add it later if the user requests.
-                        // Ideally I should have checked schema.
                     });
                     if (error) {
                         console.error("Error inserting product:", prod.name, error);
-                        // Don't throw, continue
+                        // Don't throw to allow partial success, but log it
                     }
                 }
             }
 
             toast.success("¡Migración completada con éxito!");
             setMigrated(true);
+            // Force reload to see changes
+            window.location.reload();
 
         } catch (error: any) {
-            console.error(error);
-            toast.error("Error en la migración: " + error.message);
+            console.error("Migration Fatal Error:", error);
+            // Show more details in toast
+            toast.error("Error en la migración: " + (error.message || error.details || "Check console"));
         } finally {
             setLoading(false);
         }
