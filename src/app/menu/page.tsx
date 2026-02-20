@@ -13,7 +13,7 @@ async function getMenuData() {
         .order('order_index');
 
     // Fetch Products
-    const { data: products } = await supabase
+    const { data: products, error: productsError } = await supabase
         .from('products')
         .select('*')
         .eq('is_available', true) // Only available items? Or let MenuBuilder filter?
@@ -42,7 +42,7 @@ async function getMenuData() {
     return {
         categories: mappedCategories,
         products: mappedProducts,
-        debugError: null,
+        debugError: productsError,
         rawCount: products?.length ?? 0
     };
 }
