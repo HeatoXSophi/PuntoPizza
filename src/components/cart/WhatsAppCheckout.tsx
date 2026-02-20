@@ -18,10 +18,8 @@ export function WhatsAppCheckout() {
         phone: "",
         paymentMethod: "Efectivo",
         paymentReference: "",
-        cashAmount: "", // New field for cash amount
+        cashAmount: "",
     });
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [paymentProof, setPaymentProof] = useState<string | null>(null);
     const [bcvRate, setBcvRate] = useState<number | null>(null);
 
     const [gpsLocation, setGpsLocation] = useState<string | null>(null);
@@ -37,17 +35,6 @@ export function WhatsAppCheckout() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPaymentProof(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
     };
 
     const handleGetLocation = () => {
@@ -85,10 +72,6 @@ export function WhatsAppCheckout() {
         if (formData.paymentMethod === "Pago Móvil") {
             if (!formData.paymentReference) {
                 toast.error("Por favor indica el número de referencia del pago");
-                return;
-            }
-            if (!paymentProof) {
-                toast.error("Por favor adjunta la captura del pago");
                 return;
             }
         }
@@ -132,7 +115,7 @@ export function WhatsAppCheckout() {
 
         if (formData.paymentMethod === "Pago Móvil") {
             message += `🔢 *Referencia:* ${formData.paymentReference}\n`;
-            message += `📸 *Comprobante:* (Ver imagen que enviaré a continuación)\n`;
+            message += `📸 *Comprobante:* (Pendiente por enviar en el chat)\n`;
         } else if (formData.paymentMethod === "Efectivo" && formData.cashAmount) {
             message += `💵 *Paga con:* $${parseFloat(formData.cashAmount).toFixed(2)}\n`;
             message += `🔄 *Cambio:* $${changeAmount.toFixed(2)}\n`;
@@ -141,18 +124,16 @@ export function WhatsAppCheckout() {
         message += `\n📝 *DETALLE DEL PEDIDO:*\n`;
 
         items.forEach((item) => {
-            message += `• ${item.quantity}x ${item.name}`;
+            // Include Category/Size in the name
+            message += `• ${item.quantity}x ${item.name} (${item.category || "General"})`;
             if (item.totalPrice) {
                 message += ` - $${item.totalPrice.toFixed(2)}`;
             }
             message += `\n`;
 
-            if (item.selectedIngredients && item.selectedIngredients.length > 0) {
-                const extras = item.selectedIngredients.map((i) => (i as { name: string }).name).join(", ");
-                message += `  + Extras: ${extras}\n`;
-            }
-            if (item.name.includes("Pizza") && item.description && (!item.selectedIngredients || item.selectedIngredients.length === 0)) {
-                message += `  (${item.description})\n`;
+            // Always show description if available (contains extras/notes)
+            if (item.description) {
+                message += `  _${item.description}_\n`;
             }
         });
 
@@ -180,7 +161,6 @@ export function WhatsAppCheckout() {
             rate: bcvRate,
             deliveryType,
             rawMessage: message,
-            paymentProof
         });
 
         // Save Order to History
@@ -196,7 +176,7 @@ export function WhatsAppCheckout() {
 
         // 4. Open WhatsApp
         window.open(whatsappUrl, "_blank");
-        toast.success("Abriendo WhatsApp... ¡No olvides pegar/enviar la foto!");
+        toast.success("Abriendo WhatsApp... ¡Por favor envía captura de tu pago!");
     };
 
     if (items.length === 0) return null;
@@ -228,7 +208,7 @@ export function WhatsAppCheckout() {
             <p className="text-sm text-muted-foreground text-center">
                 {formData.paymentMethod === "Efectivo"
                     ? "Paga al recibir tu pedido."
-                    : "Realiza el pago y sube el comprobante."}
+                    : "Realiza el pago y envía el comprobante por WhatsApp."}
             </p>
 
             <div className="space-y-3">
@@ -356,40 +336,12 @@ export function WhatsAppCheckout() {
                             className="bg-white"
                         />
 
-                        {/* Hidden File Input */}
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            accept="image/*"
-                            className="hidden"
-                        />
-
-                        {/* Custom Upload Area */}
-                        <div
-                            className="flex flex-col items-center justify-center w-full p-4 border-2 border-dashed border-gray-300 rounded-lg bg-white cursor-pointer hover:bg-gray-50 transition-colors group relative overflow-hidden"
-                            onClick={() => fileInputRef.current?.click()}
-                        >
-                            {paymentProof ? (
-                                <>
-                                    <div className="relative h-32 w-full">
-                                        <Image
-                                            src={paymentProof}
-                                            alt="Comprobante"
-                                            fill
-                                            className="object-contain"
-                                        />
-                                    </div>
-                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                                        <span className="text-white text-xs font-bold">Cambiar imagen</span>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="text-center group-hover:scale-105 transition-transform">
-                                    <p className="text-sm text-gray-500 font-medium">📸 Subir Comprobante</p>
-                                    <p className="text-xs text-gray-400">Click para seleccionar imagen</p>
-                                </div>
-                            )}
+                        <div className="p-3 bg-yellow-50 text-yellow-800 text-xs rounded border border-yellow-200 flex items-start gap-2">
+                            <span>⚠️</span>
+                            <p>
+                                <strong>Importante:</strong> Al finalizar el pedido, se abrirá WhatsApp.
+                                Por favor envía la captura de pantalla de tu pago en ese chat.
+                            </p>
                         </div>
                     </div>
                 )}
