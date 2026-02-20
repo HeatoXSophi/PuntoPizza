@@ -29,6 +29,7 @@ export function ProductManager() {
     const [uploading, setUploading] = useState<string | null>(null);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isCreating, setIsCreating] = useState(false);
+    const [activeTab, setActiveTab] = useState<string>("all"); // "all" or category_id
 
     // Initial load
     useEffect(() => {
@@ -39,7 +40,7 @@ export function ProductManager() {
         if (!supabase) return;
         setLoading(true);
         try {
-            const { data: cats } = await supabase.from("categories").select("*").order("name");
+            const { data: cats } = await supabase.from("categories").select("*").order("order_index", { ascending: true });
             const { data: prods } = await supabase.from("products").select("*").order("created_at", { ascending: false });
 
             setCategories(cats || []);
@@ -163,6 +164,42 @@ export function ProductManager() {
                 </div>
 
                 <div className="space-y-5">
+                    <div className="flex justify-center">
+                        {/* Image Uploader for Edit/Create */}
+                        <div className="relative w-32 h-32 bg-gray-100 rounded-xl overflow-hidden group shadow-inner border border-gray-200">
+                            {editingProduct.image_url ? (
+                                <img src={editingProduct.image_url} alt={editingProduct.name} className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                                    <Camera className="w-8 h-8 mb-1" />
+                                    <span className="text-[10px]">Subir Foto</span>
+                                </div>
+                            )}
+
+                            {/* Overlay Upload Input */}
+                            <label className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity backdrop-blur-[1px]">
+                                {uploading === "editing" ? (
+                                    <Loader2 className="w-8 h-8 text-white animate-spin" />
+                                ) : (
+                                    <>
+                                        <Camera className="w-8 h-8 text-white mb-1" />
+                                        <span className="text-xs text-white font-bold">Cambiar</span>
+                                    </>
+                                )}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) handleImageUpload(file, editingProduct.id || "temp-" + Date.now());
+                                    }}
+                                    disabled={!!uploading}
+                                />
+                            </label>
+                        </div>
+                    </div>
+
                     <div className="grid md:grid-cols-2 gap-5">
                         <div className="col-span-2">
                             <label className="block text-sm font-bold text-gray-600 mb-1">Nombre del Producto</label>
@@ -252,6 +289,13 @@ export function ProductManager() {
         )
     }
 
+    const groupedProducts = categories.map(cat => ({
+        ...cat,
+        items: products.filter(p => p.category_id === cat.id)
+    }));
+
+    const uncategorizedItems = products.filter(p => !categories.find(c => c.id === p.category_id));
+
     return (
         <div className="bg-white p-6 rounded-xl shadow-sm border">
             <div className="flex justify-between items-center mb-6">
@@ -272,69 +316,92 @@ export function ProductManager() {
                     <Loader2 className="w-8 h-8 animate-spin text-gray-300" />
                 </div>
             ) : (
-                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                    {products.map((prod) => (
-                        <div key={prod.id} className={`flex items-center gap-4 p-3 border rounded-xl transition-all duration-200 ${!prod.is_available ? 'bg-gray-50 opacity-75' : 'bg-white hover:border-orange-200 hover:shadow-md'}`}>
-                            {/* Image Uploader */}
-                            <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 group shadow-inner">
-                                {prod.image_url ? (
-                                    <img src={prod.image_url} alt={prod.name} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                        <Camera className="w-8 h-8" />
+                <div className="space-y-8">
+                    {groupedProducts.map((cat) => (
+                        <div key={cat.id} className="border-b last:border-0 pb-6 last:pb-0">
+                            <div className="flex items-center justify-between mb-4 sticky top-0 bg-white py-2 z-10">
+                                <h3 className="font-bold text-lg text-gray-700 flex items-center gap-2">
+                                    <span className="w-2 h-6 bg-orange-400 rounded-full"></span>
+                                    {cat.name}
+                                </h3>
+                                <span className="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-1 rounded-full">{cat.items.length} productos</span>
+                            </div>
+
+                            <div className="grid gap-3">
+                                {cat.items.map((prod) => (
+                                    <div key={prod.id} className={`flex items-center gap-4 p-3 border rounded-xl transition-all duration-200 ${!prod.is_available ? 'bg-gray-50 opacity-75' : 'bg-white hover:border-orange-200 hover:shadow-md'}`}>
+                                        {/* Thumbnail */}
+                                        <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 group shadow-sm">
+                                            {prod.image_url ? (
+                                                <img src={prod.image_url} alt={prod.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                                    <Camera className="w-6 h-6" />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-bold text-gray-800 truncate">{prod.name}</h3>
+                                                {!prod.is_available && <span className="text-[10px] bg-gray-200 text-gray-600 px-1.5 rounded font-bold">AGOTADO</span>}
+                                                {prod.is_popular && <span className="text-[10px] bg-yellow-100 text-yellow-600 px-1.5 rounded font-bold">TOP</span>}
+                                            </div>
+                                            <p className="text-xs text-gray-500 line-clamp-1">{prod.description}</p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-sm font-bold text-[#FF5722] bg-orange-50 px-2 rounded-md">${prod.price}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex gap-1">
+                                            <button
+                                                onClick={() => toggleAvailability(prod)}
+                                                className={`p-2 rounded-lg transition-colors ${prod.is_available ? 'text-green-500 hover:bg-green-50' : 'text-gray-400 hover:bg-gray-100'}`}
+                                            >
+                                                {prod.is_available ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                                            </button>
+                                            <button onClick={() => setEditingProduct(prod)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={() => handleDelete(prod.id)} className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors">
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {cat.items.length === 0 && (
+                                    <div className="text-center py-4 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                                        <p className="text-xs text-gray-400">Esta categoría está vacía</p>
+                                        <button
+                                            onClick={() => {
+                                                setEditingProduct({ id: "", name: "", description: "", price: 0, category_id: cat.id, is_available: true });
+                                                setIsCreating(true);
+                                            }}
+                                            className="text-xs font-bold text-orange-500 hover:underline mt-1"
+                                        >
+                                            + Agregar producto aquí
+                                        </button>
                                     </div>
                                 )}
-
-                                {/* Overlay Upload Input */}
-                                <label className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity backdrop-blur-[1px]">
-                                    {uploading === prod.id ? (
-                                        <Loader2 className="w-6 h-6 text-white animate-spin" />
-                                    ) : (
-                                        <Camera className="w-6 h-6 text-white" />
-                                    )}
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) handleImageUpload(file, prod.id);
-                                        }}
-                                        disabled={!!uploading}
-                                    />
-                                </label>
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                    <h3 className="font-bold text-gray-800 truncate">{prod.name}</h3>
-                                    {!prod.is_available && <span className="text-[10px] bg-gray-200 text-gray-600 px-1.5 rounded font-bold">AGOTADO</span>}
-                                    {prod.is_popular && <span className="text-[10px] bg-yellow-100 text-yellow-600 px-1.5 rounded font-bold">TOP</span>}
-                                </div>
-                                <p className="text-xs text-gray-500 line-clamp-1">{prod.description}</p>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <span className="text-sm font-bold text-[#FF5722] bg-orange-50 px-2 rounded-md">${prod.price}</span>
-                                    <span className="text-[10px] text-gray-400 bg-gray-100 px-2 rounded-full">{categories.find(c => c.id === prod.category_id)?.name}</span>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col gap-1">
-                                <button
-                                    onClick={() => toggleAvailability(prod)}
-                                    title={prod.is_available ? "Marcar como agotado" : "Marcar como disponible"}
-                                    className={`p-2 rounded-lg transition-colors ${prod.is_available ? 'text-green-500 hover:bg-green-50' : 'text-gray-400 hover:bg-gray-100'}`}
-                                >
-                                    {prod.is_available ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                                </button>
-                                <button onClick={() => setEditingProduct(prod)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" title="Editar">
-                                    <Edit2 className="w-4 h-4" />
-                                </button>
-                                <button onClick={() => handleDelete(prod.id)} className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors" title="Eliminar">
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
                             </div>
                         </div>
                     ))}
+
+                    {uncategorizedItems.length > 0 && (
+                        <div className="border-t pt-6 bg-red-50/50 p-4 rounded-xl">
+                            <h3 className="font-bold text-lg text-red-500 mb-4">Sin Categoría <span className="text-xs bg-red-100 px-2 py-1 rounded ml-2 text-red-600">Revisar</span></h3>
+                            <div className="grid gap-3">
+                                {uncategorizedItems.map(prod => (
+                                    <div key={prod.id} className="flex items-center gap-4 p-3 border border-red-100 bg-white rounded-xl">
+                                        <span className="text-red-500 font-bold flex-1">{prod.name}</span>
+                                        <button onClick={() => setEditingProduct(prod)} className="text-blue-500 underline text-sm">Asignar Categoría</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {products.length === 0 && (
                         <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed">
                             <p className="text-gray-400 mb-2">No hay productos aún.</p>
