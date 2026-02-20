@@ -1,56 +1,31 @@
--- Enable UUID extension
-create extension if not exists "uuid-ossp";
-
--- 1. Create Categories Table
-create table if not exists categories (
-  id text primary key,
-  name text not null,
-  sort_order int default 0,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
--- 2. Create Products Table
-create table if not exists products (
-  id uuid default uuid_generate_v4() primary key,
-  name text not null,
-  description text,
-  price numeric not null,
-  category_id text references categories(id),
-  image_url text,
-  available boolean default true,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
--- 3. Create Orders Table
-create table if not exists orders (
-  id uuid default uuid_generate_v4() primary key,
-  user_data jsonb not null default '{}'::jsonb,
-  items jsonb not null default '[]'::jsonb,
+-- Create a table for orders
+create table orders (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   total numeric not null,
-  status text default 'pending',
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+  status text default 'pending' check (status in ('pending', 'confirmed', 'delivered', 'cancelled')),
+  delivery_type text not null,
+  address text,
+  phone text,
+  payment_method text,
+  items jsonb not null -- Stores the array of items (product, variations, quantity)
 );
 
--- 4. Enable Row Level Security (RLS)
-alter table categories enable row level security;
-alter table products enable row level security;
+-- Set up Row Level Security (RLS)
 alter table orders enable row level security;
 
--- 5. Create Policies (Public Read Access for Menu)
-create policy "Public Categories are viewable by everyone" 
-  on categories for select using (true);
+-- Policy: Users can insert their own orders
+create policy "Users can insert their own orders"
+  on orders for insert
+  with check (auth.uid() = user_id);
 
-create policy "Public Products are viewable by everyone" 
-  on products for select using (true);
+-- Policy: Users can view their own orders
+create policy "Users can view their own orders"
+  on orders for select
+  using (auth.uid() = user_id);
 
--- 6. Create Policies (Orders: Insert for everyone, Select for individual not implemented yet)
-create policy "Anyone can create an order" 
-  on orders for insert with check (true);
-
--- 7. Storage Bucket (Optional but recommended for images)
-insert into storage.buckets (id, name, public) 
-values ('product-images', 'product-images', true)
-on conflict (id) do nothing;
-
-create policy "Public Images are viewable by everyone"
-  on storage.objects for select using ( bucket_id = 'product-images' );
+-- Policy: Admins can view all orders (Optional, if you have an admin role)
+-- create policy "Admins can view all orders"
+--   on orders for select
+--   using (auth.jwt() ->> 'role' = 'admin');

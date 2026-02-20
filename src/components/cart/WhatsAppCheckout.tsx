@@ -163,7 +163,35 @@ export function WhatsAppCheckout() {
             rawMessage: message,
         });
 
-        // Save Order to History
+        // --- NEW: Save Order to Supabase (Cloud History) ---
+        const user = useCartStore.getState().user;
+
+        if (user) {
+            try {
+                // Save to Cloud
+                const { orders } = await import("@/lib/orders");
+                await orders.create({
+                    user_id: user.id,
+                    items: items,
+                    total: finalTotal,
+                    delivery_type: deliveryType,
+                    address: formData.address,
+                    phone: formData.phone,
+                    payment_method: formData.paymentMethod,
+                    status: "pending"
+                });
+                toast.success("Pedido guardado en tu historial");
+            } catch (error) {
+                console.error("Failed to save order to cloud:", error);
+                // Don't block the user, just log it. The WhatsApp message is the priority.
+            }
+        } else {
+            // Optional: You could force login here, but for retention it's better to let them buy
+            // and maybe ask them to register later to "Save this order".
+            console.log("User not logged in, skipping cloud save");
+        }
+
+        // Save Order to Local History (Redundancy)
         const orderData = {
             id: orderId,
             date: new Date().toISOString(),

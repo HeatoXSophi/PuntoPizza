@@ -210,6 +210,16 @@ export function ProfileSidebar({ isOpen, onClose }: { isOpen: boolean; onClose: 
                                 </div>
                             </div>
 
+                            {/* --- ORDER HISTORY --- */}
+                            <div>
+                                <h3 className="text-gray-800 font-bold text-lg mb-3 flex items-center gap-2">
+                                    <Pizza className="w-5 h-5 text-[#FF5722]" />
+                                    Mis Pedidos Recientes
+                                </h3>
+
+                                <OrdersList />
+                            </div>
+
                             <button
                                 onClick={handleLogout}
                                 disabled={isLoading}
@@ -340,5 +350,56 @@ export function ProfileSidebar({ isOpen, onClose }: { isOpen: boolean; onClose: 
                 </div>
             </div>
         </>
+    );
+}
+
+function OrdersList() {
+    const [ordersList, setOrdersList] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Load orders inside component to avoid hydration issues and ensure updated data
+        const fetchOrders = async () => {
+            try {
+                const { orders } = await import("@/lib/orders");
+                const data = await orders.getMyOrders();
+                setOrdersList(data || []);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOrders();
+    }, []);
+
+    if (loading) return <div className="text-sm text-gray-400 text-center py-4">Cargando pedidos...</div>;
+
+    if (ordersList.length === 0) {
+        return (
+            <div className="bg-gray-50 rounded-xl p-6 text-center border border-dashed border-gray-300">
+                <p className="text-gray-400 text-sm">Aún no tienes pedidos guardados.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+            {ordersList.map((order) => (
+                <div key={order.id} className="bg-white border rounded-lg p-3 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p className="text-xs font-bold text-gray-500">{new Date(order.created_at).toLocaleDateString()}</p>
+                        <p className="text-sm font-bold text-gray-800">
+                            {order.items?.length || 0} Artículos
+                        </p>
+                        <p className="text-xs text-gray-500 capitalize">{order.status === 'pending' ? 'Pendiente' : order.status}</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-[#FF5722] font-bold">${order.total.toFixed(2)}</p>
+                        <p className="text-[10px] text-gray-400 uppercase">{order.payment_method}</p>
+                    </div>
+                </div>
+            ))}
+        </div>
     );
 }

@@ -5,6 +5,8 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { CategoryManager } from "./CategoryManager";
+import { AdminOrders } from "@/components/admin/AdminOrders";
+import { DataMigration } from "@/components/admin/DataMigration";
 
 export default function AdminPage() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -52,7 +54,10 @@ export default function AdminPage() {
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
             <header className="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-                <h1 className="text-xl font-bold text-[#5D4037]">Santa Cruz Admin</h1>
+                <div className="flex items-center gap-2">
+                    <h1 className="text-xl font-bold text-[#5D4037]">Santa Cruz Admin</h1>
+                    <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">EN VIVO</span>
+                </div>
                 <button
                     onClick={() => setIsAuthenticated(false)}
                     className="text-sm text-red-500 font-semibold"
@@ -61,20 +66,17 @@ export default function AdminPage() {
                 </button>
             </header>
 
-            <main className="p-6 max-w-6xl mx-auto space-y-8">
+            <main className="p-6 max-w-7xl mx-auto space-y-8">
+                {/* Live Orders Section (Priority) */}
+                <AdminOrders />
+
                 {/* Dashboard Sections */}
                 <div className="grid lg:grid-cols-2 gap-8">
                     {/* Categories Section */}
                     <CategoryManager />
 
-                    {/* Products Section Placeholder */}
-                    <div className="bg-white p-6 rounded-xl shadow-sm border h-fit">
-                        <h2 className="text-lg font-bold mb-4">Productos</h2>
-                        <p className="text-gray-500 text-sm mb-4">Sube fotos, edita precios y configura ingredientes extra.</p>
-                        <button className="bg-emerald-50 text-emerald-600 px-4 py-2 rounded-lg font-bold text-sm hover:bg-emerald-100 w-full">
-                            Próximamente...
-                        </button>
-                    </div>
+                    {/* Products Section */}
+                    <ProductManager />
                 </div>
             </main>
         </div>
