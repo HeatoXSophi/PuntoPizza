@@ -103,20 +103,11 @@ export function Header() {
             <header className="bg-[#FFF8E1] shadow-sm sticky top-0 z-50 transition-all">
                 <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
 
-                    {/* LEFT: Logo & Profile */}
-                    <div className="flex items-center gap-2 w-1/3">
-                        {/* Logo */}
-                        <Link href="/" className="shrink-0 mr-1 md:mr-2">
-                            <img
-                                src="/logo.png"
-                                alt="Santa Cruz"
-                                className="h-20 w-auto md:h-24 object-contain"
-                            />
-                        </Link>
-
-                        {/* Profile / Login */}
+                    {/* LEFT: Profile & Logo */}
+                    <div className="flex items-center gap-2 md:gap-3 flex-1">
+                        {/* Profile / Login - Hidden on mobile because it's in BottomNav */}
                         <div
-                            className="flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity"
+                            className="hidden md:flex items-center gap-1.5 md:gap-2 cursor-pointer hover:opacity-70 transition-opacity shrink-0 order-1"
                             onClick={() => setProfileOpen(true)}
                         >
                             <div className="bg-white p-2 rounded-full shadow-sm text-[#FF5722]">
@@ -126,15 +117,24 @@ export function Header() {
                                 <span className="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-wider">
                                     {userName ? "Hola," : "Bienvenido"}
                                 </span>
-                                <span className="text-xs md:text-sm font-black text-[#5D4037] truncate max-w-[80px] md:max-w-[100px]">
+                                <span className="text-xs md:text-sm font-black text-[#5D4037] truncate max-w-[70px] md:max-w-[100px]">
                                     {userName || "Ingresar"}
                                 </span>
                             </div>
                         </div>
+
+                        {/* Logo */}
+                        <Link href="/" className="shrink-0 order-2">
+                            <img
+                                src="/logo.png"
+                                alt="Santa Cruz"
+                                className="h-14 md:h-20 lg:h-24 w-auto object-contain"
+                            />
+                        </Link>
                     </div>
 
                     {/* CENTER: Toggle Pickup/Delivery */}
-                    <div className="flex justify-center w-1/3">
+                    <div className="flex justify-center flex-none">
                         <div className="flex bg-white rounded-full p-1 shadow-md border border-gray-100">
                             <button
                                 onClick={handlePickupClick}
@@ -154,7 +154,7 @@ export function Header() {
                     </div>
 
                     {/* RIGHT: Language, Cart, WhatsApp */}
-                    <div className="flex items-center justify-end gap-2 md:gap-4 w-1/3">
+                    <div className="flex items-center justify-end gap-2 md:gap-4 flex-1">
                         {/* Language Button (Hidden on very small screens to save space) */}
                         <button
                             onClick={toggleLanguage}

@@ -12,7 +12,6 @@ import { supabase } from "@/lib/supabase";
 import { auth } from "@/lib/auth";
 import { useCartStore } from "@/lib/store";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { InstallAppPrompt } from "@/components/layout/InstallAppPrompt";
 
 // Carga dinámica con SSR desactivado para evitar problemas de hidratación
 // FloatingCart y CartSidebar se mantienen en cliente puro
@@ -121,7 +120,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                 </div>
                 <CartSidebar />
                 <BottomNav />
-                <InstallAppPrompt />
 
 
 

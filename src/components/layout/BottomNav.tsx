@@ -27,16 +27,16 @@ export function BottomNav() {
             </div>
 
             {/* Center Logo - The "Hump" */}
-            <div className="absolute left-1/2 -translate-x-1/2 -top-10">
-                <div className="w-24 h-24 bg-white rounded-full shadow-lg border-4 border-gray-100 flex items-center justify-center transition-transform hover:scale-110 overflow-hidden">
+            <div className="absolute left-1/2 -translate-x-1/2 -top-8">
+                <Link href="/" className="w-20 h-20 bg-white rounded-full shadow-lg border-2 border-[#43A047] flex items-center justify-center transition-transform hover:scale-110 overflow-hidden">
                     <Image
-                        src="/logo-v2.png"
+                        src="/logo.png"
                         alt="Logo"
-                        width={200}
-                        height={200}
-                        className="object-contain w-full h-full scale-[2.5]"
+                        width={80}
+                        height={80}
+                        className="object-contain w-14 h-14"
                     />
-                </div>
+                </Link>
             </div>
 
             {/* Right Icons */}
