@@ -38,8 +38,11 @@ interface CartState {
     isProfileOpen: boolean;
     setProfileOpen: (isOpen: boolean) => void;
     // Auth State
-    user: any | null; // Use proper User type from supabase if possible
+    user: any | null;
     setUser: (user: any) => void;
+    // App Mode
+    isAppMode: boolean;
+    setAppMode: (isApp: boolean) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -123,6 +126,8 @@ export const useCartStore = create<CartState>()(
             setCartOpen: (isOpen: boolean) => set({ isCartOpen: isOpen }),
             isProfileOpen: false,
             setProfileOpen: (isOpen: boolean) => set({ isProfileOpen: isOpen }),
+            isAppMode: false,
+            setAppMode: (isApp: boolean) => set({ isAppMode: isApp }),
         }),
         {
             name: "cart-storage",
@@ -151,7 +156,8 @@ export const useCartStore = create<CartState>()(
                 email: state.email,
                 location: state.location,
                 language: state.language,
-                user: state.user
+                user: state.user,
+                isAppMode: state.isAppMode
             }),
         }
     )

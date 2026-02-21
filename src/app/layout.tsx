@@ -74,7 +74,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/manifest" />
         <meta name="theme-color" content="#FF5722" />
       </head>
       <body className={`${outfit.variable} ${fraunces.variable} font-sans antialiased`} suppressHydrationWarning>
