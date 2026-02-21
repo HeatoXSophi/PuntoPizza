@@ -11,7 +11,6 @@ import { supabase } from "@/lib/supabase";
 import { auth } from "@/lib/auth";
 import { useCartStore } from "@/lib/store";
 
-// Carga dinámica con SSR desactivado para evitar problemas de hidratación
 const FloatingCart = dynamic(() => import("@/components/layout/FloatingCart").then(mod => mod.FloatingCart), {
     ssr: false,
     loading: () => null
@@ -21,7 +20,6 @@ const CartSidebar = dynamic(() => import("@/components/layout/CartSidebar").then
     loading: () => null
 });
 
-// Error Boundary para capturar fallos
 class ErrorBoundary extends React.Component<{ children: ReactNode; fallback: ReactNode }, { hasError: boolean }> {
     constructor(props: { children: ReactNode; fallback: ReactNode }) {
         super(props);
@@ -52,52 +50,34 @@ const CustomErrorFallback = () => (
 );
 
 /**
- * Detect App Mode SYNCHRONOUSLY before any React render.
- * This eliminates the race condition where SplashScreen reads
- * isAppMode=false because the useEffect hasn't fired yet.
+ * Detect NATIVE App Mode only.
+ * This ONLY fires for the native Android WebView wrapper, NOT for:
+ * - Regular website visitors (desktop or mobile browser)
+ * - PWA installed users
+ * - Any other mobile browser
  *
- * Detection methods (any one triggers app mode):
+ * Detection methods (native app only):
  * 1. Native app injects window.__NATIVE_APP_MODE__ = true via injectedJS
- * 2. URL has ?mode=app parameter
- * 3. User-Agent contains "android" AND "wv" (WebView indicator)
- * 4. Browser is in standalone display mode (PWA installed)
- * 5. Zustand persisted state already has isAppMode=true from a previous session
+ * 2. URL has ?mode=app parameter (set by native App.js WebView source)
  */
-function detectAppModeSynchronously(): boolean {
+function detectNativeAppMode(): boolean {
     if (typeof window === 'undefined') return false;
 
-    // Method 1: Native app injected flag (fastest, most reliable)
+    // Method 1: Native app injected flag (most reliable)
     if ((window as any).__NATIVE_APP_MODE__ === true) return true;
 
-    // Method 2: URL parameter
+    // Method 2: URL parameter set by native WebView
     try {
         const url = new URL(window.location.href);
         if (url.searchParams.get('mode') === 'app') return true;
-    } catch { }
-
-    // Method 3: WebView User-Agent detection
-    const ua = navigator.userAgent.toLowerCase();
-    if (ua.includes('android') && ua.includes('wv')) return true;
-
-    // Method 4: Standalone PWA mode
-    if (window.matchMedia('(display-mode: standalone)').matches) return true;
-
-    // Method 5: Previously persisted app mode in Zustand storage
-    try {
-        const stored = localStorage.getItem('cart-storage');
-        if (stored) {
-            const parsed = JSON.parse(stored);
-            if (parsed?.state?.isAppMode === true) return true;
-        }
     } catch { }
 
     return false;
 }
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
-    // CRITICAL: Detect app mode synchronously during initial render
-    // NOT in a useEffect (which fires after render and causes the race condition)
-    const initialAppMode = React.useMemo(() => detectAppModeSynchronously(), []);
+    // Detect native app mode synchronously (only for native WebView)
+    const isNativeApp = React.useMemo(() => detectNativeAppMode(), []);
 
     const [showSplash, setShowSplash] = React.useState(true);
     const {
@@ -105,14 +85,14 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         isAppMode, setAppMode, isProfileOpen, setProfileOpen
     } = useCartStore();
 
-    // Set app mode immediately on first render
+    // Set app mode in store immediately if native app detected
     React.useEffect(() => {
-        if (initialAppMode) {
+        if (isNativeApp) {
             setAppMode(true);
         }
-    }, [initialAppMode, setAppMode]);
+    }, [isNativeApp, setAppMode]);
 
-    // Also listen for the native app's custom event (backup detection)
+    // Backup: listen for the native app's custom event
     React.useEffect(() => {
         const handler = () => setAppMode(true);
         window.addEventListener('nativeAppMode', handler);
@@ -120,7 +100,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
     }, [setAppMode]);
 
     React.useEffect(() => {
-        // Init Auth
         const initAuth = async () => {
             if (!supabase) return;
 
@@ -161,8 +140,8 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         initAuth();
     }, []);
 
-    // Use the synchronously detected value OR the store value (whichever is true)
-    const effectiveAppMode = initialAppMode || isAppMode;
+    // Only true for native WebView app, never for regular web visitors
+    const effectiveAppMode = isNativeApp || isAppMode;
 
     return (
         <ErrorBoundary fallback={<CustomErrorFallback />}>

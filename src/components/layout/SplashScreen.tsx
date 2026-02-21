@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 interface SplashScreenProps {
     onFinish: () => void;
-    isAppMode?: boolean; // Passed directly from ClientLayout to avoid race condition
+    isAppMode?: boolean;
 }
 
 export function SplashScreen({ onFinish, isAppMode: propAppMode }: SplashScreenProps) {
@@ -17,7 +17,6 @@ export function SplashScreen({ onFinish, isAppMode: propAppMode }: SplashScreenP
     const { setProfileOpen, isAppMode: storeAppMode } = useCartStore();
     const router = useRouter();
 
-    // Use the prop if provided, otherwise fall back to the store value
     const isAppMode = propAppMode ?? storeAppMode;
 
     useEffect(() => {
@@ -27,13 +26,19 @@ export function SplashScreen({ onFinish, isAppMode: propAppMode }: SplashScreenP
             } else {
                 onFinish();
             }
-        }, 2500); // Slightly faster for better UX
+        }, 2500);
 
         return () => clearTimeout(timer);
     }, [isAppMode, onFinish]);
 
+    // FIX: When auth is clicked, FIRST close the splash, THEN open profile sidebar
+    // Previously the splash (z-100) stayed on top and blocked the profile sidebar
     const handleAuthClick = () => {
-        setProfileOpen(true);
+        onFinish();                        // 1. Close splash screen
+        router.push("/menu");              // 2. Navigate to menu
+        setTimeout(() => {
+            setProfileOpen(true);          // 3. Open profile sidebar (after navigation)
+        }, 300);
     };
 
     const handleContinue = () => {
@@ -48,7 +53,7 @@ export function SplashScreen({ onFinish, isAppMode: propAppMode }: SplashScreenP
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.4 }}
                 className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FF5722] p-8"
             >
                 {step === "logo" ? (
@@ -83,7 +88,6 @@ export function SplashScreen({ onFinish, isAppMode: propAppMode }: SplashScreenP
                         animate={{ y: 0, opacity: 1 }}
                         className="w-full max-w-sm flex flex-col items-center gap-6"
                     >
-                        {/* Smaller Logo in Auth view */}
                         <div className="w-32 h-32 bg-white rounded-full p-2 shadow-lg mb-4 flex items-center justify-center overflow-hidden">
                             <img src="/logo.png" alt="Logo" className="w-24 h-24 object-contain" />
                         </div>
