@@ -21,11 +21,12 @@ export function Header() {
         language,
         setLanguage,
         userName,
-        items
+        items,
+        isProfileOpen,
+        setProfileOpen
     } = useCartStore();
 
     const [showLocationModal, setShowLocationModal] = useState(false);
-    const [showProfile, setShowProfile] = useState(false);
     const [tempAddress, setTempAddress] = useState("");
     const [tempPhone, setTempPhone] = useState("");
     const [isLocating, setIsLocating] = useState(false);
@@ -116,21 +117,17 @@ export function Header() {
                         {/* Profile / Login */}
                         <div
                             className="flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity"
-                            onClick={() => setShowProfile(true)}
+                            onClick={() => setProfileOpen(true)}
                         >
                             <div className="bg-white p-2 rounded-full shadow-sm text-[#FF5722]">
                                 <User className="w-5 h-5" />
                             </div>
-                            <div className="flex flex-col leading-none hidden md:flex">
-                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                            <div className="flex flex-col leading-none">
+                                <span className="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-wider">
                                     {userName ? "Hola," : "Bienvenido"}
                                 </span>
-                                <span className="text-sm font-black text-[#5D4037] truncate max-w-[100px]">
+                                <span className="text-xs md:text-sm font-black text-[#5D4037] truncate max-w-[80px] md:max-w-[100px]">
                                     {userName || "Ingresar"}
-                                </span>
-                                {/* Mobile Text */}
-                                <span className="md:hidden text-xs font-bold text-[#5D4037]">
-                                    {userName ? "Perfil" : "Ingresar"}
                                 </span>
                             </div>
                         </div>
@@ -205,7 +202,7 @@ export function Header() {
             </header >
 
             {/* Profile Sidebar */}
-            < ProfileSidebar isOpen={showProfile} onClose={() => setShowProfile(false)
+            < ProfileSidebar isOpen={isProfileOpen} onClose={() => setProfileOpen(false)
             } />
 
             {/* Location Modal */}

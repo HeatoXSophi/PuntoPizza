@@ -35,6 +35,8 @@ interface CartState {
     isCartOpen: boolean;
     toggleCart: () => void;
     setCartOpen: (isOpen: boolean) => void;
+    isProfileOpen: boolean;
+    setProfileOpen: (isOpen: boolean) => void;
     // Auth State
     user: any | null; // Use proper User type from supabase if possible
     setUser: (user: any) => void;
@@ -119,6 +121,8 @@ export const useCartStore = create<CartState>()(
             isCartOpen: false,
             toggleCart: () => set((state) => ({ isCartOpen: !state.isCartOpen })),
             setCartOpen: (isOpen: boolean) => set({ isCartOpen: isOpen }),
+            isProfileOpen: false,
+            setProfileOpen: (isOpen: boolean) => set({ isProfileOpen: isOpen }),
         }),
         {
             name: "cart-storage",

@@ -6,20 +6,24 @@ import Link from "next/link";
 import { useCartStore } from "@/lib/store";
 
 export function BottomNav() {
-    const count = useCartStore((state) => state.items.length);
+    const { items, setProfileOpen } = useCartStore();
+    const count = items.length;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 h-16 bg-[#43A047] flex items-center justify-between px-6 z-50 text-white rounded-t-xl shadow-[0_-4px_10px_rgba(0,0,0,0.1)]">
+        <div className="fixed bottom-0 left-0 right-0 h-16 bg-[#43A047] flex items-center justify-between px-6 z-50 text-white rounded-t-xl shadow-[0_-4px_10px_rgba(0,0,0,0.1)] md:hidden">
             {/* Left Icons */}
             <div className="flex gap-8">
                 <Link href="/" className="flex flex-col items-center gap-1 opacity-100">
                     <Heart className="w-6 h-6 fill-white" />
                     <span className="text-[10px] font-bold">FAVS</span>
                 </Link>
-                <Link href="/profile" className="flex flex-col items-center gap-1 opacity-90 hover:opacity-100">
+                <button
+                    onClick={() => setProfileOpen(true)}
+                    className="flex flex-col items-center gap-1 opacity-90 hover:opacity-100"
+                >
                     <User className="w-6 h-6" />
                     <span className="text-[10px] font-bold">MI CUENTA</span>
-                </Link>
+                </button>
             </div>
 
             {/* Center Logo - The "Hump" */}

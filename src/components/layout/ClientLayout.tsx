@@ -11,6 +11,8 @@ import { Header } from "@/components/layout/Header";
 import { supabase } from "@/lib/supabase";
 import { auth } from "@/lib/auth";
 import { useCartStore } from "@/lib/store";
+import { BottomNav } from "@/components/layout/BottomNav";
+import { InstallAppPrompt } from "@/components/layout/InstallAppPrompt";
 
 // Carga dinámica con SSR desactivado para evitar problemas de hidratación
 // FloatingCart y CartSidebar se mantienen en cliente puro
@@ -114,8 +116,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             <div className="flex min-h-screen flex-col pb-24 md:pb-0 bg-[#F5F5F7]">
                 <Header />
                 <main className="flex-grow">{children}</main>
-                <FloatingCart />
+                <div className="hidden md:block">
+                    <FloatingCart />
+                </div>
                 <CartSidebar />
+                <BottomNav />
+                <InstallAppPrompt />
 
 
 
