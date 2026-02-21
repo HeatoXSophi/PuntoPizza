@@ -5,9 +5,22 @@ import Image from "next/image";
 import { Plus, Minus, ShoppingCart, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types";
-import { extraIngredients } from "@/lib/data";
 import { useCartStore } from "@/lib/store";
 import { Modal } from "@/components/ui/modal";
+
+// Extra ingredients available for customization
+const extraIngredients = [
+    { id: "extra-queso", name: "Extra Queso", price: 1.50 },
+    { id: "pepperoni", name: "Pepperoni", price: 2.00 },
+    { id: "champinones", name: "Champiñones", price: 1.50 },
+    { id: "aceitunas", name: "Aceitunas", price: 1.00 },
+    { id: "pimenton", name: "Pimentón", price: 1.00 },
+    { id: "cebolla", name: "Cebolla", price: 0.75 },
+    { id: "tocineta", name: "Tocineta", price: 2.50 },
+    { id: "jamon", name: "Jamón", price: 2.00 },
+    { id: "maiz", name: "Maíz", price: 1.00 },
+    { id: "anchoas", name: "Anchoas", price: 2.50 },
+];
 
 interface ProductModalProps {
     product: Product | null;

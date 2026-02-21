@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { Plus } from "lucide-react";
+import { Plus, Check } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, useAnimate } from "framer-motion";
+import { useState } from "react";
 
 interface ProductCardProps {
     id: string;
@@ -18,16 +19,31 @@ interface ProductCardProps {
 
 export function ProductCard({ id, name, description, price, category, image, onClick }: ProductCardProps) {
     const addItem = useCartStore((state) => state.addItem);
+    const [justAdded, setJustAdded] = useState(false);
+    const [scope, animate] = useAnimate();
 
-    const handleAdd = (e: React.MouseEvent) => {
+    const handleAdd = async (e: React.MouseEvent) => {
         e.stopPropagation();
+
+        // Trigger add-to-cart animation
+        setJustAdded(true);
+
+        // Animate the image "bouncing" as feedback
+        if (scope.current) {
+            await animate(scope.current, { scale: [1, 1.15, 0.95, 1] }, { duration: 0.4 });
+        }
+
         if (onClick) {
             onClick();
         } else {
-            // Fallback if no onClick provided (though we plan to always provide it)
             addItem({ id, name, price, image, category, description });
-            toast.success(`Agregado: ${name}`);
+            toast.success(`Agregado: ${name}`, {
+                icon: "🛒",
+                duration: 1500,
+            });
         }
+
+        setTimeout(() => setJustAdded(false), 1200);
     };
 
     return (
@@ -37,7 +53,10 @@ export function ProductCard({ id, name, description, price, category, image, onC
             onClick={onClick}
         >
             {/* Circle Image Wrapper */}
-            <div className="relative w-full aspect-square mb-[-25px] z-10 filter drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-300">
+            <div
+                ref={scope}
+                className="relative w-full aspect-square mb-[-25px] z-10 filter drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-300"
+            >
                 <motion.div
                     whileHover={{ scale: 1.1, rotate: 2 }}
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}
@@ -56,25 +75,32 @@ export function ProductCard({ id, name, description, price, category, image, onC
             {/* Price & Add Row - "The Pill" */}
             <motion.div
                 whileTap={{ scale: 0.95 }}
-                className="bg-[#FFF8E1] rounded-full px-1 pl-4 py-0.5 flex items-center gap-2 shadow-sm border border-[#FFE082] z-20 mb-3 scale-90 origin-top hover:shadow-md transition-shadow"
-                onClick={(e) => e.stopPropagation()} // Prevent double click
+                className="bg-[#FFF8E1] dark:bg-gray-800 rounded-full px-1 pl-4 py-0.5 flex items-center gap-2 shadow-sm border border-[#FFE082] dark:border-gray-700 z-20 mb-3 scale-90 origin-top hover:shadow-md transition-shadow"
+                onClick={(e) => e.stopPropagation()}
             >
-                <span className="font-extrabold text-[#5D4037] text-base font-body">
+                <span className="font-extrabold text-[#5D4037] dark:text-orange-300 text-base font-body">
                     ${price.toFixed(2)}
                 </span>
                 <motion.button
                     whileTap={{ scale: 0.8, rotate: 90 }}
-                    className="w-7 h-7 rounded-full bg-white border border-[#FF9800] flex items-center justify-center text-[#FF9800] hover:bg-[#FF9800] hover:text-white transition-colors"
+                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${justAdded
+                            ? "bg-green-500 text-white border-green-500"
+                            : "bg-white dark:bg-gray-700 border border-[#FF9800] text-[#FF9800] hover:bg-[#FF9800] hover:text-white"
+                        }`}
                     onClick={handleAdd}
                 >
-                    <Plus className="w-4 h-4 stroke-[3]" />
+                    {justAdded ? (
+                        <Check className="w-4 h-4 stroke-[3]" />
+                    ) : (
+                        <Plus className="w-4 h-4 stroke-[3]" />
+                    )}
                 </motion.button>
             </motion.div>
 
             {/* Info */}
             <div className="text-center px-1 w-full">
-                <h3 className="font-black text-xs uppercase tracking-wide text-gray-900 mb-1 leading-tight font-heading group-hover:text-primary transition-colors">{name}</h3>
-                <p className="text-[10px] text-gray-500 leading-tight line-clamp-2 px-1 font-body">
+                <h3 className="font-black text-xs uppercase tracking-wide text-gray-900 dark:text-gray-100 mb-1 leading-tight font-heading group-hover:text-primary transition-colors">{name}</h3>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight line-clamp-2 px-1 font-body">
                     {description}
                 </p>
             </div>

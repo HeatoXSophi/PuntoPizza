@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Flame } from "lucide-react";
 import Image from "next/image";
 import { useCartStore } from "@/lib/store";
 import { DICTIONARY } from "@/lib/dictionary";
 import { toast } from "sonner";
-import { products as menuItems } from "@/lib/data"; // Use shared data
-import { ProductCard } from "@/components/menu/ProductCard"; // Reuse component
+import { supabase } from "@/lib/supabase";
+import { ProductCard } from "@/components/menu/ProductCard";
 import { ProductModal } from "@/components/menu/ProductModal";
+import { Product } from "@/types";
 
 const categories = [
     { id: "all", name: "Todas" },
@@ -36,9 +37,36 @@ const menuCategories = [
 
 export function Menu() {
     const { language } = useCartStore();
-    const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const t = DICTIONARY[language || "es"] || DICTIONARY.es;
     const [activeCategory, setActiveCategory] = useState("all");
+    const [menuItems, setMenuItems] = useState<Product[]>([]);
+
+    useEffect(() => {
+        async function loadProducts() {
+            if (!supabase) return;
+            const { data } = await supabase
+                .from("products")
+                .select("*")
+                .eq("is_available", true)
+                .order("created_at", { ascending: false });
+
+            if (data) {
+                setMenuItems(data.map((p: any) => ({
+                    id: p.id,
+                    name: p.name,
+                    description: p.description,
+                    price: Number(p.price),
+                    category: p.category_id,
+                    image: p.image_url || "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400",
+                    isPopular: p.is_popular,
+                    isSpicy: p.is_spicy,
+                })));
+            }
+        }
+        loadProducts();
+    }, []);
+
     // Dynamic translation for tabs
     const categoriesWithLabels = menuCategories.map(c => ({
         id: c.id,
@@ -48,7 +76,7 @@ export function Menu() {
     // Filter products
     const filteredProducts = activeCategory === "all"
         ? menuItems
-        : menuItems.filter(p => p.category === activeCategory);
+        : menuItems.filter((p: Product) => p.category === activeCategory);
 
     return (
         <section id="menu" className="py-24 bg-white relative overflow-hidden">

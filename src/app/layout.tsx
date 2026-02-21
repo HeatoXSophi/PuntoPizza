@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Outfit, Fraunces } from "next/font/google"; // Switch to Outfit for that rounded/modern look
+import { Outfit, Fraunces } from "next/font/google";
 import "./globals.css";
 import { ClientLayout } from "@/components/layout/ClientLayout";
+import { Footer } from "@/components/layout/Footer";
 
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Santa Cruz Pizzería",
     description: "La mejor pizza de Punto Fijo, a un click. Pide online ahora.",
-    url: "https://punto-pizza.vercel.app",
+    url: "https://santacruzpizzeria.vercel.app",
     siteName: "Santa Cruz Pizzería",
     images: [
       {
@@ -51,7 +52,7 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "Restaurant",
     "name": "Santa Cruz Pizzería",
-    "image": "https://punto-pizza.vercel.app/og-image.jpg",
+    "image": "https://santacruzpizzeria.vercel.app/og-image.jpg",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Urb. Manaure, Puerta Maraven",
@@ -64,9 +65,9 @@ export default function RootLayout({
       "latitude": 11.7067,
       "longitude": -70.1872
     },
-    "url": "https://punto-pizza.vercel.app",
+    "url": "https://santacruzpizzeria.vercel.app",
     "telephone": "+584246802805",
-    "menu": "https://punto-pizza.vercel.app/menu",
+    "menu": "https://santacruzpizzeria.vercel.app/menu",
     "servesCuisine": "Pizza"
   };
 
@@ -89,5 +90,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-import { Footer } from "@/components/layout/Footer";

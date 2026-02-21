@@ -27,6 +27,7 @@ export function AdminOrders() {
         fetchOrders();
 
         // Real-time subscription
+        if (!supabase) return;
         const channel = supabase
             .channel('admin-orders')
             .on(
@@ -50,7 +51,7 @@ export function AdminOrders() {
             .subscribe();
 
         return () => {
-            supabase.removeChannel(channel);
+            supabase?.removeChannel(channel);
         };
     }, []);
 

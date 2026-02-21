@@ -8,6 +8,11 @@
     border-top: 1px solid rgba(0, 0, 0, 0.05);
   }
 
+  .dark .glass {
+    background-color: rgba(30, 30, 30, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
   .shadow-card {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
@@ -29,7 +34,6 @@
   :root {
     --background: 0 0% 98%;
     --foreground: 222 47% 11%;
-    /* Midnight Blue #0F172A */
 
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
@@ -38,7 +42,6 @@
     --popover-foreground: 222 47% 11%;
 
     --primary: 14 100% 50%;
-    /* Vibrant Orange-Red #FF4500 */
     --primary-foreground: 60 9.1% 97.8%;
 
     --secondary: 48 100% 96%;
@@ -63,8 +66,33 @@
   }
 
   .dark {
-    --background: 222 47% 11%;
+    --background: 222 47% 7%;
     --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 14 100% 55%;
+    --primary-foreground: 60 9.1% 97.8%;
+
+    --secondary: 222 47% 15%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 222 47% 15%;
+    --muted-foreground: 215 16% 65%;
+
+    --accent: 222 47% 15%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 60 9.1% 97.8%;
+
+    --border: 222 47% 18%;
+    --input: 222 47% 18%;
+    --ring: 14 100% 55%;
   }
 
   * {
@@ -75,6 +103,11 @@
     background-color: #F9FAFB;
     color: var(--foreground);
     font-feature-settings: "rlig" 1, "calt" 1;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dark body {
+    background-color: hsl(222 47% 7%);
   }
 
   /* Hide scrollbar for Chrome, Safari and Opera */
@@ -85,11 +118,8 @@
   /* Hide scrollbar for IE, Edge and Firefox */
   .scrollbar-hide {
     -ms-overflow-style: none;
-    /* IE and Edge */
     scrollbar-width: none;
-    /* Firefox */
   }
-
 }
 
 /* Hero Pattern */
@@ -100,4 +130,26 @@
 /* Contact Pattern */
 .bg-contact-pattern {
   background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FF5722' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom animations */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
