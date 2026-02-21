@@ -178,14 +178,14 @@ export function Header() {
                         </a>
 
                         {/* Cart Button */}
-                        <Link href="/cart">
+                        <Link href="/cart" className="flex-shrink-0">
                             <div className="relative group">
                                 <motion.div
                                     key={items?.length}
                                     initial={{ scale: 1 }}
                                     animate={{ scale: [1, 1.2, 1] }}
                                     transition={{ duration: 0.3 }}
-                                    className="bg-primary p-2 rounded-full shadow-md text-white hover:bg-orange-600 transition-colors cursor-pointer"
+                                    className="bg-[#FF5722] p-2.5 rounded-full shadow-md text-white hover:bg-[#E64A19] transition-colors cursor-pointer flex items-center justify-center min-w-[42px] min-h-[42px]"
                                 >
                                     <ShoppingCart className="w-5 h-5" />
                                 </motion.div>
@@ -193,7 +193,7 @@ export function Header() {
                                     <motion.span
                                         initial={{ scale: 0 }}
                                         animate={{ scale: 1 }}
-                                        className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white"
+                                        className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm"
                                     >
                                         {items?.length || 0}
                                     </motion.span>

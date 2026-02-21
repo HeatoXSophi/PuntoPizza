@@ -92,7 +92,7 @@ export function Hero() {
                 >
                     <Link
                         href="/menu"
-                        className="group relative px-8 py-4 bg-primary text-white text-lg font-bold rounded-full overflow-hidden shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 hover:scale-105"
+                        className="group relative px-8 py-4 bg-green-600 text-white text-lg font-bold rounded-full overflow-hidden shadow-2xl hover:shadow-green-500/50 transition-all duration-300 hover:scale-105"
                     >
                         <span className="relative z-10 flex items-center gap-2">
                             {t.hero_cta_menu}
