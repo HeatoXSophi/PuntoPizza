@@ -46,7 +46,7 @@ export function ProductCard({ id, name, description, price, category, image, onC
         setTimeout(() => setJustAdded(false), 1200);
     };
 
-    const isRectangular = category === "family" || category === "Familiar" || name.includes("Doble Sabor") || name.includes("4 Sabores");
+    const isRectangular = category === "family" || category === "Familiar" || category === "promos" || category === "Promociones" || name.includes("Doble Sabor") || name.includes("4 Sabores");
 
     return (
         <motion.div
