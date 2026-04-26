@@ -8,19 +8,35 @@ import { Product } from "@/types";
 import { useCartStore } from "@/lib/store";
 import { Modal } from "@/components/ui/modal";
 
-// Extra ingredients available for customization
-const extraIngredients = [
-    { id: "extra-queso", name: "Extra Queso", price: 1.50 },
-    { id: "pepperoni", name: "Pepperoni", price: 2.00 },
-    { id: "champinones", name: "Champiñones", price: 1.50 },
-    { id: "aceitunas", name: "Aceitunas", price: 1.00 },
-    { id: "pimenton", name: "Pimentón", price: 1.00 },
-    { id: "cebolla", name: "Cebolla", price: 0.75 },
-    { id: "tocineta", name: "Tocineta", price: 2.50 },
-    { id: "jamon", name: "Jamón", price: 2.00 },
-    { id: "maiz", name: "Maíz", price: 1.00 },
-    { id: "anchoas", name: "Anchoas", price: 2.50 },
+// Precios por ingrediente según tamaño de pizza
+// P = Pequeña  |  G = Mediana  |  F = Grande  |  XL = Familiar
+const EXTRAS_CATALOG = [
+    { id: "queso",    name: "Queso",          prices: { personal: 2.00, mediana: 3.00, grande: 4.00, family: 5.00 } },
+    { id: "pimenton", name: "Pimentón",      prices: { personal: 0.75, mediana: 1.00, grande: 1.50, family: 2.00 } },
+    { id: "cebolla",  name: "Cebolla",        prices: { personal: 0.70, mediana: 1.00, grande: 1.50, family: 2.00 } },
+    { id: "anchoas",  name: "Anchoas",        prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
+    { id: "aceitunas",name: "Aceitunas",      prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
+    { id: "champinones",name:"Champiñones",  prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
+    { id: "maiz",     name: "Maíz",           prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
+    { id: "chorizo",  name: "Chorizo Criollo",prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
+    { id: "tocineta", name: "Tocineta",       prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
+    { id: "pepperoni",name: "Pepperoni",      prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
+    { id: "carne",    name: "Carne",          prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
 ];
+
+type SizeKey = "personal" | "mediana" | "grande" | "family";
+
+function getSizeKey(category: string): SizeKey {
+    if (category === "family" || category === "familiar") return "family";
+    if (category === "grande")  return "grande";
+    if (category === "mediana") return "mediana";
+    return "personal";
+}
+
+function buildExtraIngredients(category: string) {
+    const size = getSizeKey(category);
+    return EXTRAS_CATALOG.map(e => ({ id: e.id, name: e.name, price: e.prices[size] }));
+}
 
 interface ProductModalProps {
     product: Product | null;
@@ -50,6 +66,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
     if (!product) return null;
 
     const basePrice = product.price;
+    const extraIngredients = buildExtraIngredients(product.category);
     const extrasTotal = selectedExtras.reduce((total, ingredientId) => {
         const ingredient = extraIngredients.find(i => i.id === ingredientId);
         return total + (ingredient ? ingredient.price : 0);
