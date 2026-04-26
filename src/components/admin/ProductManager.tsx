@@ -7,9 +7,9 @@ import { Loader2, Camera, Trash2, Plus, Edit2, Save, X, Eye, EyeOff, Flame, Zoom
 
 // ─── Image Adjuster Modal ─────────────────────────────────────────────────────
 interface ImageAdjusterProps {
-    src: string;           // blob URL of the original file
+    src: string;
     isRectangular?: boolean;
-    onConfirm: (blob: Blob) => void;
+    onConfirm: (blob: Blob) => Promise<void>;
     onCancel: () => void;
 }
 
@@ -22,48 +22,40 @@ function ImageAdjuster({ src, isRectangular, onConfirm, onCancel }: ImageAdjuste
     const [zoom, setZoom] = useState(1);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const [dragging, setDragging] = useState(false);
+    const [confirming, setConfirming] = useState(false);
     const dragStart = useRef({ x: 0, y: 0, ox: 0, oy: 0 });
 
-    // Draw whenever zoom/offset change
     const draw = useCallback(() => {
         const canvas = canvasRef.current;
         const img = imgRef.current;
         if (!canvas || !img) return;
         const ctx = canvas.getContext("2d")!;
         ctx.clearRect(0, 0, FRAME_W, FRAME_H);
-
         const iw = img.naturalWidth  * zoom;
         const ih = img.naturalHeight * zoom;
-
-        // Center by default then apply offset
         const dx = (FRAME_W - iw) / 2 + offset.x;
         const dy = (FRAME_H - ih) / 2 + offset.y;
         ctx.drawImage(img, dx, dy, iw, ih);
     }, [zoom, offset, FRAME_W, FRAME_H]);
 
-    // Load image
     useEffect(() => {
         const img = new Image();
+        img.crossOrigin = "anonymous";
         img.onload = () => { imgRef.current = img; draw(); };
         img.src = src;
     }, [src]);
 
     useEffect(() => { draw(); }, [draw]);
 
-    // Mouse/touch handlers
     const onMouseDown = (e: React.MouseEvent) => {
         setDragging(true);
         dragStart.current = { x: e.clientX, y: e.clientY, ox: offset.x, oy: offset.y };
     };
     const onMouseMove = (e: React.MouseEvent) => {
         if (!dragging) return;
-        const dx = e.clientX - dragStart.current.x;
-        const dy = e.clientY - dragStart.current.y;
-        setOffset({ x: dragStart.current.ox + dx, y: dragStart.current.oy + dy });
+        setOffset({ x: dragStart.current.ox + (e.clientX - dragStart.current.x), y: dragStart.current.oy + (e.clientY - dragStart.current.y) });
     };
     const onMouseUp = () => setDragging(false);
-
-    // Touch handlers
     const onTouchStart = (e: React.TouchEvent) => {
         const t = e.touches[0];
         setDragging(true);
@@ -72,15 +64,21 @@ function ImageAdjuster({ src, isRectangular, onConfirm, onCancel }: ImageAdjuste
     const onTouchMove = (e: React.TouchEvent) => {
         if (!dragging) return;
         const t = e.touches[0];
-        const dx = t.clientX - dragStart.current.x;
-        const dy = t.clientY - dragStart.current.y;
-        setOffset({ x: dragStart.current.ox + dx, y: dragStart.current.oy + dy });
+        setOffset({ x: dragStart.current.ox + (t.clientX - dragStart.current.x), y: dragStart.current.oy + (t.clientY - dragStart.current.y) });
     };
 
     const handleConfirm = () => {
         const canvas = canvasRef.current;
-        if (!canvas) return;
-        canvas.toBlob(blob => { if (blob) onConfirm(blob); }, "image/jpeg", 0.92);
+        if (!canvas || confirming) return;
+        setConfirming(true);
+        canvas.toBlob(async (blob) => {
+            if (blob) {
+                try { await onConfirm(blob); }
+                catch { setConfirming(false); }
+            } else {
+                setConfirming(false);
+            }
+        }, "image/jpeg", 0.92);
     };
 
     return (
@@ -91,10 +89,9 @@ function ImageAdjuster({ src, isRectangular, onConfirm, onCancel }: ImageAdjuste
                         <h3 className="font-bold text-gray-800 text-lg">Ajustar Imagen</h3>
                         <p className="text-xs text-gray-500 flex items-center gap-1"><Move className="w-3 h-3" /> Arrastra para mover · Usa el slider para el zoom</p>
                     </div>
-                    <button onClick={onCancel} className="p-2 hover:bg-gray-100 rounded-full"><X className="w-5 h-5 text-gray-400" /></button>
+                    <button onClick={onCancel} disabled={confirming} className="p-2 hover:bg-gray-100 rounded-full disabled:opacity-50"><X className="w-5 h-5 text-gray-400" /></button>
                 </div>
 
-                {/* Canvas Preview */}
                 <div className="flex justify-center">
                     <canvas
                         ref={canvasRef}
@@ -112,30 +109,24 @@ function ImageAdjuster({ src, isRectangular, onConfirm, onCancel }: ImageAdjuste
                     />
                 </div>
 
-                {/* Zoom Slider */}
                 <div className="flex items-center gap-3">
                     <ZoomOut className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                    <input
-                        type="range" min="0.3" max="3" step="0.01"
-                        value={zoom}
+                    <input type="range" min="0.3" max="3" step="0.01" value={zoom}
                         onChange={e => setZoom(parseFloat(e.target.value))}
-                        className="flex-1 accent-orange-500"
-                    />
+                        className="flex-1 accent-orange-500" disabled={confirming} />
                     <ZoomIn className="w-5 h-5 text-gray-400 flex-shrink-0" />
                     <span className="text-xs text-gray-500 w-10 text-right">{Math.round(zoom * 100)}%</span>
                 </div>
 
-                {/* Reset */}
-                <button
-                    onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }}
-                    className="text-xs text-orange-500 hover:underline text-center"
-                >Restablecer posición</button>
+                <button onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }}
+                    disabled={confirming}
+                    className="text-xs text-orange-500 hover:underline text-center disabled:opacity-40">Restablecer posición</button>
 
-                {/* Action buttons */}
                 <div className="flex gap-3 pt-2">
-                    <button onClick={onCancel} className="flex-1 py-3 border border-gray-300 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition-colors">Cancelar</button>
-                    <button onClick={handleConfirm} className="flex-1 py-3 bg-[#FF5722] text-white rounded-xl font-bold hover:bg-[#F4511E] transition-colors shadow-lg shadow-orange-200 flex items-center justify-center gap-2">
-                        <Save className="w-4 h-4" /> Confirmar
+                    <button onClick={onCancel} disabled={confirming} className="flex-1 py-3 border border-gray-300 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50">Cancelar</button>
+                    <button onClick={handleConfirm} disabled={confirming}
+                        className="flex-1 py-3 bg-[#FF5722] text-white rounded-xl font-bold hover:bg-[#F4511E] transition-colors shadow-lg shadow-orange-200 flex items-center justify-center gap-2 disabled:opacity-70">
+                        {confirming ? <><Loader2 className="w-4 h-4 animate-spin" /> Subiendo...</> : <><Save className="w-4 h-4" /> Confirmar</>}
                     </button>
                 </div>
             </div>
@@ -292,32 +283,44 @@ export function ProductManager() {
         }
     }
 
-    async function handleImageUpload(blob: Blob, productId: string, ext = "jpg") {
-        if (!supabase) return;
+    async function handleImageUpload(blob: Blob, productId: string): Promise<void> {
         try {
-            setUploading(productId === "creating" ? "editing" : productId);
-            const fileName = `product-${productId.replace(/[^a-zA-Z0-9-]/g, '')}-${Date.now()}.${ext}`;
+            // Fallback: always convert to data-URL first so the image shows
+            // even if Supabase Storage upload fails
+            const dataUrl = await new Promise<string>((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as string);
+                reader.readAsDataURL(blob);
+            });
 
-            // 1. Upload to Supabase Storage
-            const { error: uploadError } = await supabase.storage
-                .from('product-images')
-                .upload(fileName, blob, { contentType: 'image/jpeg', upsert: true });
+            // Try to upload to Supabase Storage
+            if (supabase) {
+                try {
+                    setUploading("editing");
+                    const fileName = `product-${productId.replace(/[^a-zA-Z0-9-]/g, '')}-${Date.now()}.jpg`;
+                    const { error: uploadError } = await supabase.storage
+                        .from('product-images')
+                        .upload(fileName, blob, { contentType: 'image/jpeg', upsert: true });
 
-            if (uploadError) throw uploadError;
+                    if (!uploadError) {
+                        const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(fileName);
+                        setEditingProduct(prev => prev ? ({ ...prev, image_url: publicUrl }) : null);
+                        toast.success("✅ Foto ajustada. Presiona Guardar para confirmar.");
+                        return;
+                    }
+                    // Storage failed — fall through to data-URL fallback
+                    console.warn("Storage upload failed, using data-URL fallback:", uploadError.message);
+                } finally {
+                    setUploading(null);
+                }
+            }
 
-            // 2. Get Public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('product-images')
-                .getPublicUrl(fileName);
-
-            // 3. Update state (user still clicks Guardar to persist)
-            setEditingProduct(prev => prev ? ({ ...prev, image_url: publicUrl }) : null);
+            // Fallback: save data-URL directly in the product record
+            setEditingProduct(prev => prev ? ({ ...prev, image_url: dataUrl }) : null);
             toast.success("✅ Foto ajustada. Presiona Guardar para confirmar.");
-        } catch (error) {
-            console.error(error);
-            toast.error("Error subiendo imagen");
-        } finally {
-            setUploading(null);
+        } catch (err) {
+            console.error(err);
+            toast.error("Error procesando la imagen");
         }
     }
 
@@ -327,12 +330,11 @@ export function ProductManager() {
             <ImageAdjuster
                 src={adjustingImage.blobUrl}
                 isRectangular={isRect}
-                onConfirm={(blob) => {
+                onConfirm={async (blob) => {
+                    await handleImageUpload(blob, adjustingImage.productId);
                     setAdjustingImage(null);
-                    handleImageUpload(blob, adjustingImage.productId);
                 }}
                 onCancel={() => {
-                    URL.revokeObjectURL(adjustingImage.blobUrl);
                     setAdjustingImage(null);
                 }}
             />
