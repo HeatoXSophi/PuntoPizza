@@ -263,7 +263,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                                                     <span className="font-medium text-gray-700">{ingredient.name}</span>
                                                     <div className="flex items-center gap-3">
                                                         <span className="font-bold text-gray-900 text-sm">
-                                                            {ingredient.price.toFixed(2)}€
+                                                            +${ingredient.price.toFixed(2)}
                                                         </span>
                                                         <button
                                                             onClick={() => toggleExtra(ingredient.id)}
