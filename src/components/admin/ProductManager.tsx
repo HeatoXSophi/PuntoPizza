@@ -151,6 +151,8 @@ interface Product {
     is_popular?: boolean;
     is_spicy?: boolean;
     variants?: Variant[] | null;
+    /** -1 = sin límite (default), 0 = desactivado, 1-N = máximo */
+    extras_limit?: number;
 }
 
 
@@ -458,6 +460,43 @@ export function ProductManager() {
                                 <option value="">Seleccionar Categoría...</option>
                                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
+                        </div>
+
+                        {/* Extras Limit Section */}
+                        <div className="col-span-2 border-t pt-4 mt-2">
+                            <div className="mb-3">
+                                <label className="block text-sm font-bold text-gray-700 mb-1">🧂 Ingredientes Extra del Cliente</label>
+                                <p className="text-xs text-gray-400">Controla cuántos ingredientes extra puede seleccionar el cliente en este producto.</p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {[
+                                    { value: 0,  label: "🚫 Desactivado",  desc: "Sin extras" },
+                                    { value: 1,  label: "1 extra",          desc: "Max. 1" },
+                                    { value: 2,  label: "2 extras",         desc: "Max. 2" },
+                                    { value: 3,  label: "3 extras",         desc: "Max. 3" },
+                                    { value: 4,  label: "4 extras",         desc: "Max. 4" },
+                                    { value: -1, label: "♾️ Sin límite",    desc: "Libre" },
+                                ].map(({ value, label }) => {
+                                    const current = editingProduct.extras_limit ?? -1;
+                                    const isActive = current === value;
+                                    return (
+                                        <button
+                                            key={value}
+                                            type="button"
+                                            onClick={() => setEditingProduct({ ...editingProduct, extras_limit: value })}
+                                            className={`px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all ${
+                                                isActive
+                                                    ? value === 0
+                                                        ? "bg-red-50 border-red-400 text-red-700"
+                                                        : "bg-orange-50 border-orange-400 text-orange-700"
+                                                    : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300"
+                                            }`}
+                                        >
+                                            {label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         {/* Variants Section */}

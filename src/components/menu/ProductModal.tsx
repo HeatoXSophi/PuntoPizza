@@ -59,11 +59,13 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
     const totalPrice = unitPrice * quantity;
 
     const toggleExtra = (id: string) => {
-        setSelectedExtras(prev =>
-            prev.includes(id)
-                ? prev.filter(i => i !== id)
-                : [...prev, id]
-        );
+        const limit = product.extrasLimit ?? -1;
+        setSelectedExtras(prev => {
+            if (prev.includes(id)) return prev.filter(i => i !== id);  // always allow removal
+            if (limit === 0) return prev;                               // extras blocked
+            if (limit > 0 && prev.length >= limit) return prev;        // limit reached
+            return [...prev, id];
+        });
     };
 
     const toggleRemoveIngredient = (ingredientName: string) => {
@@ -194,44 +196,68 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                         )}
 
                         {/* AGREGAR INGREDIENTES */}
-                        <div>
-                            <h3 className="font-black text-gray-900 border-b pb-2 mb-4 uppercase text-sm tracking-wider">
-                                Agregar Ingredientes (Max. 10)
-                            </h3>
-                            <div className="space-y-1">
-                                {extraIngredients.map((ingredient) => (
-                                    <div
-                                        key={ingredient.id}
-                                        className={`
-                                            flex items-center justify-between p-3 rounded-lg border transition-all
-                                            ${selectedExtras.includes(ingredient.id)
-                                                ? "bg-green-50 border-green-200"
-                                                : "bg-gray-50 border-transparent hover:bg-gray-100"
-                                            }
-                                        `}
-                                    >
-                                        <span className="font-medium text-gray-700">{ingredient.name}</span>
-                                        <div className="flex items-center gap-3">
-                                            <span className="font-bold text-gray-900 text-sm">
-                                                {ingredient.price.toFixed(2)}€
+                        {(() => {
+                            const limit = product.extrasLimit ?? -1;
+                            if (limit === 0) return null; // Desactivado por el admin
+
+                            const limitReached = limit > 0 && selectedExtras.length >= limit;
+                            const headerLabel = limit === -1
+                                ? "Agregar Ingredientes"
+                                : `Agregar Ingredientes — ${selectedExtras.length} / ${limit}`;
+
+                            return (
+                                <div>
+                                    <div className="flex items-center justify-between border-b pb-2 mb-4">
+                                        <h3 className="font-black text-gray-900 uppercase text-sm tracking-wider">
+                                            {headerLabel}
+                                        </h3>
+                                        {limit > 0 && (
+                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                                                limitReached ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600"
+                                            }`}>
+                                                {limitReached ? "Límite alcanzado" : `Máx. ${limit}`}
                                             </span>
-                                            <button
-                                                onClick={() => toggleExtra(ingredient.id)}
-                                                className={`
-                                                    px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1
-                                                    ${selectedExtras.includes(ingredient.id)
-                                                        ? "bg-red-500 text-white hover:bg-red-600"
-                                                        : "bg-[#FF9800] text-white hover:bg-[#F57C00] shadow-sm"
-                                                    }
-                                                `}
-                                            >
-                                                {selectedExtras.includes(ingredient.id) ? "QUITAR" : "AÑADE"}
-                                            </button>
-                                        </div>
+                                        )}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
+                                    <div className="space-y-1">
+                                        {extraIngredients.map((ingredient) => {
+                                            const isSelected = selectedExtras.includes(ingredient.id);
+                                            const isDisabled = !isSelected && limitReached;
+                                            return (
+                                                <div
+                                                    key={ingredient.id}
+                                                    className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+                                                        isSelected ? "bg-green-50 border-green-200" :
+                                                        isDisabled ? "bg-gray-50 border-transparent opacity-50" :
+                                                        "bg-gray-50 border-transparent hover:bg-gray-100"
+                                                    }`}
+                                                >
+                                                    <span className="font-medium text-gray-700">{ingredient.name}</span>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="font-bold text-gray-900 text-sm">
+                                                            {ingredient.price.toFixed(2)}€
+                                                        </span>
+                                                        <button
+                                                            onClick={() => toggleExtra(ingredient.id)}
+                                                            disabled={isDisabled}
+                                                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 disabled:cursor-not-allowed ${
+                                                                isSelected
+                                                                    ? "bg-red-500 text-white hover:bg-red-600"
+                                                                    : isDisabled
+                                                                    ? "bg-gray-300 text-gray-500"
+                                                                    : "bg-[#FF9800] text-white hover:bg-[#F57C00] shadow-sm"
+                                                            }`}
+                                                        >
+                                                            {isSelected ? "QUITAR" : "AÑADE"}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </div>
                 </div>
 

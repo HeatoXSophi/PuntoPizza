@@ -23,6 +23,8 @@ export interface Product {
     baseIngredients?: string[];
     variants?: ProductVariant[];
     created_at?: string;
+    /** -1 = sin límite, 0 = desactivado, 1-N = máximo N extras */
+    extrasLimit?: number;
 }
 
 export interface CartItem extends Product {
