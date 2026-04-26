@@ -6,20 +6,22 @@ import { AdminOrders } from "@/components/admin/AdminOrders";
 import { DataMigration } from "@/components/admin/DataMigration";
 import { ProductManager } from "@/components/admin/ProductManager";
 import { AdminAnalytics } from "@/components/admin/AdminAnalytics";
-import { BarChart3, ShoppingBag, Package, FolderOpen, Database } from "lucide-react";
+import { IngredientsManager } from "@/components/admin/IngredientsManager";
+import { BarChart3, ShoppingBag, Package, FolderOpen, Database, Salad } from "lucide-react";
 import { logoutAdmin } from "@/app/actions/adminAuth";
 
-type AdminTab = "analytics" | "orders" | "products" | "categories" | "migration";
+type AdminTab = "analytics" | "orders" | "products" | "categories" | "ingredients" | "migration";
 
 export default function AdminPage() {
     const [activeTab, setActiveTab] = useState<AdminTab>("analytics");
 
     const tabs: { id: AdminTab; label: string; icon: any }[] = [
-        { id: "analytics", label: "Dashboard", icon: BarChart3 },
-        { id: "orders", label: "Pedidos", icon: ShoppingBag },
-        { id: "products", label: "Productos", icon: Package },
-        { id: "categories", label: "Categorías", icon: FolderOpen },
-        { id: "migration", label: "Migración", icon: Database },
+        { id: "analytics",   label: "Dashboard",    icon: BarChart3 },
+        { id: "orders",      label: "Pedidos",       icon: ShoppingBag },
+        { id: "products",    label: "Productos",     icon: Package },
+        { id: "categories",  label: "Categorías",   icon: FolderOpen },
+        { id: "ingredients", label: "Ingredientes",  icon: Salad },
+        { id: "migration",   label: "Migración",    icon: Database },
     ];
 
     return (
@@ -57,11 +59,12 @@ export default function AdminPage() {
             </div>
 
             <main className="p-4 max-w-7xl mx-auto">
-                {activeTab === "analytics" && <AdminAnalytics />}
-                {activeTab === "orders" && <AdminOrders />}
-                {activeTab === "products" && <ProductManager />}
-                {activeTab === "categories" && <CategoryManager />}
-                {activeTab === "migration" && <DataMigration />}
+                {activeTab === "analytics"   && <AdminAnalytics />}
+                {activeTab === "orders"       && <AdminOrders />}
+                {activeTab === "products"     && <ProductManager />}
+                {activeTab === "categories"   && <CategoryManager />}
+                {activeTab === "ingredients"  && <IngredientsManager />}
+                {activeTab === "migration"    && <DataMigration />}
             </main>
         </div>
     );

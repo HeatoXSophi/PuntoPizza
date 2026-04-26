@@ -2,26 +2,26 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Plus, Minus, ShoppingCart, Trash2 } from "lucide-react";
+import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types";
 import { useCartStore } from "@/lib/store";
 import { Modal } from "@/components/ui/modal";
+import { supabase } from "@/lib/supabase";
 
-// Precios por ingrediente según tamaño de pizza
-// P = Pequeña  |  G = Mediana  |  F = Grande  |  XL = Familiar
-const EXTRAS_CATALOG = [
-    { id: "queso",    name: "Queso",          prices: { personal: 2.00, mediana: 3.00, grande: 4.00, family: 5.00 } },
-    { id: "pimenton", name: "Pimentón",      prices: { personal: 0.75, mediana: 1.00, grande: 1.50, family: 2.00 } },
-    { id: "cebolla",  name: "Cebolla",        prices: { personal: 0.70, mediana: 1.00, grande: 1.50, family: 2.00 } },
-    { id: "anchoas",  name: "Anchoas",        prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
-    { id: "aceitunas",name: "Aceitunas",      prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
-    { id: "champinones",name:"Champiñones",  prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
-    { id: "maiz",     name: "Maíz",           prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
-    { id: "chorizo",  name: "Chorizo Criollo",prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
-    { id: "tocineta", name: "Tocineta",       prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
-    { id: "pepperoni",name: "Pepperoni",      prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
-    { id: "carne",    name: "Carne",          prices: { personal: 1.00, mediana: 1.50, grande: 2.00, family: 3.00 } },
+// ─── Static fallback (used if Supabase is unavailable) ──────────────────────────────────────
+const FALLBACK_EXTRAS = [
+    { id: "queso",       name: "Queso",           price_personal: 2.00, price_mediana: 3.00, price_grande: 4.00, price_family: 5.00 },
+    { id: "pimenton",   name: "Pimentón",        price_personal: 0.75, price_mediana: 1.00, price_grande: 1.50, price_family: 2.00 },
+    { id: "cebolla",    name: "Cebolla",          price_personal: 0.70, price_mediana: 1.00, price_grande: 1.50, price_family: 2.00 },
+    { id: "anchoas",    name: "Anchoas",          price_personal: 1.00, price_mediana: 1.50, price_grande: 2.00, price_family: 3.00 },
+    { id: "aceitunas",  name: "Aceitunas",        price_personal: 1.00, price_mediana: 1.50, price_grande: 2.00, price_family: 3.00 },
+    { id: "champinones",name: "Champiñones",    price_personal: 1.00, price_mediana: 1.50, price_grande: 2.00, price_family: 3.00 },
+    { id: "maiz",       name: "Maíz",             price_personal: 1.00, price_mediana: 1.50, price_grande: 2.00, price_family: 3.00 },
+    { id: "chorizo",    name: "Chorizo Criollo",  price_personal: 1.00, price_mediana: 1.50, price_grande: 2.00, price_family: 3.00 },
+    { id: "tocineta",   name: "Tocineta",         price_personal: 1.00, price_mediana: 1.50, price_grande: 2.00, price_family: 3.00 },
+    { id: "pepperoni",  name: "Pepperoni",        price_personal: 1.00, price_mediana: 1.50, price_grande: 2.00, price_family: 3.00 },
+    { id: "carne",      name: "Carne",            price_personal: 1.00, price_mediana: 1.50, price_grande: 2.00, price_family: 3.00 },
 ];
 
 type SizeKey = "personal" | "mediana" | "grande" | "family";
@@ -33,10 +33,12 @@ function getSizeKey(category: string): SizeKey {
     return "personal";
 }
 
-function buildExtraIngredients(category: string) {
+function buildExtraIngredients(catalog: typeof FALLBACK_EXTRAS, category: string) {
     const size = getSizeKey(category);
-    return EXTRAS_CATALOG.map(e => ({ id: e.id, name: e.name, price: e.prices[size] }));
+    const priceKey = `price_${size}` as keyof (typeof catalog[0]);
+    return catalog.map(e => ({ id: e.id, name: e.name, price: Number(e[priceKey]) }));
 }
+// ───────────────────────────────────────────────────────────────────────
 
 interface ProductModalProps {
     product: Product | null;
@@ -48,13 +50,22 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
     const addItem = useCartStore((state) => state.addItem);
     const setCartOpen = useCartStore((state) => state.setCartOpen);
 
-    // State for extra ingredients
     const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
-    // State for removed base ingredients
     const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
     const [quantity, setQuantity] = useState(1);
+    const [extrasCatalog, setExtrasCatalog] = useState(FALLBACK_EXTRAS);
 
-    // Reset state when product changes
+    // Fetch live catalog from Supabase
+    useEffect(() => {
+        if (!supabase) return;
+        supabase
+            .from("extra_ingredients")
+            .select("*")
+            .eq("is_active", true)
+            .order("order_index")
+            .then(({ data }) => { if (data && data.length > 0) setExtrasCatalog(data as any); });
+    }, []);
+
     useEffect(() => {
         if (isOpen) {
             setSelectedExtras([]);
@@ -65,8 +76,8 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
 
     if (!product) return null;
 
+    const extraIngredients = buildExtraIngredients(extrasCatalog, product.category);
     const basePrice = product.price;
-    const extraIngredients = buildExtraIngredients(product.category);
     const extrasTotal = selectedExtras.reduce((total, ingredientId) => {
         const ingredient = extraIngredients.find(i => i.id === ingredientId);
         return total + (ingredient ? ingredient.price : 0);
