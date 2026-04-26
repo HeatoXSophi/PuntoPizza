@@ -1,9 +1,148 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Loader2, Camera, Trash2, Plus, Edit2, Save, X, Eye, EyeOff, Flame } from "lucide-react";
+import { Loader2, Camera, Trash2, Plus, Edit2, Save, X, Eye, EyeOff, Flame, ZoomIn, ZoomOut, Move } from "lucide-react";
+
+// ─── Image Adjuster Modal ─────────────────────────────────────────────────────
+interface ImageAdjusterProps {
+    src: string;           // blob URL of the original file
+    isRectangular?: boolean;
+    onConfirm: (blob: Blob) => void;
+    onCancel: () => void;
+}
+
+function ImageAdjuster({ src, isRectangular, onConfirm, onCancel }: ImageAdjusterProps) {
+    const FRAME_W = isRectangular ? 480 : 320;
+    const FRAME_H = isRectangular ? 320 : 320;
+
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const imgRef = useRef<HTMLImageElement | null>(null);
+    const [zoom, setZoom] = useState(1);
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
+    const [dragging, setDragging] = useState(false);
+    const dragStart = useRef({ x: 0, y: 0, ox: 0, oy: 0 });
+
+    // Draw whenever zoom/offset change
+    const draw = useCallback(() => {
+        const canvas = canvasRef.current;
+        const img = imgRef.current;
+        if (!canvas || !img) return;
+        const ctx = canvas.getContext("2d")!;
+        ctx.clearRect(0, 0, FRAME_W, FRAME_H);
+
+        const iw = img.naturalWidth  * zoom;
+        const ih = img.naturalHeight * zoom;
+
+        // Center by default then apply offset
+        const dx = (FRAME_W - iw) / 2 + offset.x;
+        const dy = (FRAME_H - ih) / 2 + offset.y;
+        ctx.drawImage(img, dx, dy, iw, ih);
+    }, [zoom, offset, FRAME_W, FRAME_H]);
+
+    // Load image
+    useEffect(() => {
+        const img = new Image();
+        img.onload = () => { imgRef.current = img; draw(); };
+        img.src = src;
+    }, [src]);
+
+    useEffect(() => { draw(); }, [draw]);
+
+    // Mouse/touch handlers
+    const onMouseDown = (e: React.MouseEvent) => {
+        setDragging(true);
+        dragStart.current = { x: e.clientX, y: e.clientY, ox: offset.x, oy: offset.y };
+    };
+    const onMouseMove = (e: React.MouseEvent) => {
+        if (!dragging) return;
+        const dx = e.clientX - dragStart.current.x;
+        const dy = e.clientY - dragStart.current.y;
+        setOffset({ x: dragStart.current.ox + dx, y: dragStart.current.oy + dy });
+    };
+    const onMouseUp = () => setDragging(false);
+
+    // Touch handlers
+    const onTouchStart = (e: React.TouchEvent) => {
+        const t = e.touches[0];
+        setDragging(true);
+        dragStart.current = { x: t.clientX, y: t.clientY, ox: offset.x, oy: offset.y };
+    };
+    const onTouchMove = (e: React.TouchEvent) => {
+        if (!dragging) return;
+        const t = e.touches[0];
+        const dx = t.clientX - dragStart.current.x;
+        const dy = t.clientY - dragStart.current.y;
+        setOffset({ x: dragStart.current.ox + dx, y: dragStart.current.oy + dy });
+    };
+
+    const handleConfirm = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        canvas.toBlob(blob => { if (blob) onConfirm(blob); }, "image/jpeg", 0.92);
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-2xl shadow-2xl flex flex-col gap-4 p-6 w-full" style={{ maxWidth: FRAME_W + 80 }}>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h3 className="font-bold text-gray-800 text-lg">Ajustar Imagen</h3>
+                        <p className="text-xs text-gray-500 flex items-center gap-1"><Move className="w-3 h-3" /> Arrastra para mover · Usa el slider para el zoom</p>
+                    </div>
+                    <button onClick={onCancel} className="p-2 hover:bg-gray-100 rounded-full"><X className="w-5 h-5 text-gray-400" /></button>
+                </div>
+
+                {/* Canvas Preview */}
+                <div className="flex justify-center">
+                    <canvas
+                        ref={canvasRef}
+                        width={FRAME_W}
+                        height={FRAME_H}
+                        className="rounded-xl border-2 border-orange-200 shadow-inner cursor-grab active:cursor-grabbing"
+                        style={{ maxWidth: "100%", background: "#f5f5f5" }}
+                        onMouseDown={onMouseDown}
+                        onMouseMove={onMouseMove}
+                        onMouseUp={onMouseUp}
+                        onMouseLeave={onMouseUp}
+                        onTouchStart={onTouchStart}
+                        onTouchMove={onTouchMove}
+                        onTouchEnd={() => setDragging(false)}
+                    />
+                </div>
+
+                {/* Zoom Slider */}
+                <div className="flex items-center gap-3">
+                    <ZoomOut className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    <input
+                        type="range" min="0.3" max="3" step="0.01"
+                        value={zoom}
+                        onChange={e => setZoom(parseFloat(e.target.value))}
+                        className="flex-1 accent-orange-500"
+                    />
+                    <ZoomIn className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    <span className="text-xs text-gray-500 w-10 text-right">{Math.round(zoom * 100)}%</span>
+                </div>
+
+                {/* Reset */}
+                <button
+                    onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }}
+                    className="text-xs text-orange-500 hover:underline text-center"
+                >Restablecer posición</button>
+
+                {/* Action buttons */}
+                <div className="flex gap-3 pt-2">
+                    <button onClick={onCancel} className="flex-1 py-3 border border-gray-300 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition-colors">Cancelar</button>
+                    <button onClick={handleConfirm} className="flex-1 py-3 bg-[#FF5722] text-white rounded-xl font-bold hover:bg-[#F4511E] transition-colors shadow-lg shadow-orange-200 flex items-center justify-center gap-2">
+                        <Save className="w-4 h-4" /> Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface Variant {
     name: string;
@@ -41,7 +180,9 @@ export function ProductManager() {
     const [uploading, setUploading] = useState<string | null>(null);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isCreating, setIsCreating] = useState(false);
-    const [activeTab, setActiveTab] = useState<string>("all"); // "all" or category_id
+    const [activeTab, setActiveTab] = useState<string>("all");
+    // Image adjuster state
+    const [adjustingImage, setAdjustingImage] = useState<{ blobUrl: string; productId: string } | null>(null);
 
     // Helper to add a variant group
     function addVariant() {
@@ -151,48 +292,51 @@ export function ProductManager() {
         }
     }
 
-    async function handleImageUpload(file: File, productId: string) {
+    async function handleImageUpload(blob: Blob, productId: string, ext = "jpg") {
         if (!supabase) return;
         try {
             setUploading(productId === "creating" ? "editing" : productId);
-            const fileExt = file.name.split('.').pop();
-            const fileName = `product-${productId.replace(/[^a-zA-Z0-9-]/g, '')}-${Date.now()}.${fileExt}`;
-            const filePath = `${fileName}`;
+            const fileName = `product-${productId.replace(/[^a-zA-Z0-9-]/g, '')}-${Date.now()}.${ext}`;
 
             // 1. Upload to Supabase Storage
             const { error: uploadError } = await supabase.storage
                 .from('product-images')
-                .upload(filePath, file);
+                .upload(fileName, blob, { contentType: 'image/jpeg', upsert: true });
 
             if (uploadError) throw uploadError;
 
             // 2. Get Public URL
             const { data: { publicUrl } } = supabase.storage
                 .from('product-images')
-                .getPublicUrl(filePath);
+                .getPublicUrl(fileName);
 
-            // 3. Update Record vs State
-            if (isCreating || editingProduct?.id === productId || productId.startsWith("temp-")) {
-                // Update state only (user must click Save later, or we auto-save? Better to just update state for now)
-                setEditingProduct(prev => prev ? ({ ...prev, image_url: publicUrl }) : null);
-                toast.success("Foto subida (Recuerda Guardar)");
-            } else {
-                // Direct update for list view
-                const { error: updateError } = await supabase
-                    .from('products')
-                    .update({ image_url: publicUrl })
-                    .eq('id', productId);
-
-                if (updateError) throw updateError;
-                toast.success("Imagen actualizada");
-                fetchData();
-            }
+            // 3. Update state (user still clicks Guardar to persist)
+            setEditingProduct(prev => prev ? ({ ...prev, image_url: publicUrl }) : null);
+            toast.success("✅ Foto ajustada. Presiona Guardar para confirmar.");
         } catch (error) {
             console.error(error);
             toast.error("Error subiendo imagen");
         } finally {
             setUploading(null);
         }
+    }
+
+    if (adjustingImage) {
+        const isRect = editingProduct?.category_id === 'promos' || editingProduct?.category_id === 'family';
+        return (
+            <ImageAdjuster
+                src={adjustingImage.blobUrl}
+                isRectangular={isRect}
+                onConfirm={(blob) => {
+                    setAdjustingImage(null);
+                    handleImageUpload(blob, adjustingImage.productId);
+                }}
+                onCancel={() => {
+                    URL.revokeObjectURL(adjustingImage.blobUrl);
+                    setAdjustingImage(null);
+                }}
+            />
+        );
     }
 
     if (editingProduct) {
@@ -207,26 +351,25 @@ export function ProductManager() {
 
                 <div className="space-y-5">
                     <div className="flex flex-col items-center gap-3">
-                        {/* Image Uploader for Edit/Create */}
-                        <div className="relative w-32 h-32 bg-gray-100 rounded-xl overflow-hidden group shadow-inner border border-gray-200">
+                        {/* Image Preview */}
+                        <div className="relative w-40 h-32 bg-gray-100 rounded-xl overflow-hidden group shadow-inner border border-gray-200">
                             {editingProduct.image_url ? (
                                 <img src={editingProduct.image_url} alt={editingProduct.name} className="w-full h-full object-cover" />
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
                                     <Camera className="w-8 h-8 mb-1" />
-                                    <span className="text-[10px]">Subir Foto</span>
+                                    <span className="text-[10px]">Sin imagen</span>
                                 </div>
                             )}
+                        </div>
 
-                            {/* Overlay Upload Input */}
-                            <label className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity backdrop-blur-[1px]">
+                        {/* Upload button + Adjust button */}
+                        <div className="flex gap-2">
+                            <label className="cursor-pointer flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold px-4 py-2 rounded-xl transition-colors border border-gray-200">
                                 {uploading === "editing" ? (
-                                    <Loader2 className="w-8 h-8 text-white animate-spin" />
+                                    <><Loader2 className="w-4 h-4 animate-spin" /> Subiendo...</>
                                 ) : (
-                                    <>
-                                        <Camera className="w-8 h-8 text-white mb-1" />
-                                        <span className="text-xs text-white font-bold text-center px-2">Subir desde PC</span>
-                                    </>
+                                    <><Camera className="w-4 h-4" /> Subir foto</>  
                                 )}
                                 <input
                                     type="file"
@@ -234,14 +377,31 @@ export function ProductManager() {
                                     className="hidden"
                                     onChange={(e) => {
                                         const file = e.target.files?.[0];
-                                        if (file) handleImageUpload(file, editingProduct.id || "temp-" + Date.now());
+                                        if (!file) return;
+                                        const blobUrl = URL.createObjectURL(file);
+                                        setAdjustingImage({ blobUrl, productId: editingProduct.id || "temp-" + Date.now() });
                                     }}
                                     disabled={!!uploading}
                                 />
                             </label>
+
+                            {editingProduct.image_url && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (!editingProduct.image_url) return;
+                                        setAdjustingImage({ blobUrl: editingProduct.image_url, productId: editingProduct.id || "temp-" + Date.now() });
+                                    }}
+                                    className="flex items-center gap-2 bg-orange-50 hover:bg-orange-100 text-orange-600 text-sm font-bold px-4 py-2 rounded-xl transition-colors border border-orange-200"
+                                >
+                                    <ZoomIn className="w-4 h-4" /> Ajustar encuadre
+                                </button>
+                            )}
                         </div>
+
+                        {/* Manual URL input */}
                         <div className="w-full max-w-sm">
-                            <label className="block text-xs font-bold text-gray-500 mb-1 text-center">URL de la Imagen (o súbela arriba)</label>
+                            <label className="block text-xs font-bold text-gray-500 mb-1 text-center">O pega la URL de la imagen</label>
                             <input
                                 className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-orange-200 focus:border-orange-500 transition-all outline-none text-sm text-center"
                                 value={editingProduct.image_url || ""}
