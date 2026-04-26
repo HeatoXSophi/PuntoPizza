@@ -206,7 +206,7 @@ export function ProductManager() {
                 </div>
 
                 <div className="space-y-5">
-                    <div className="flex justify-center">
+                    <div className="flex flex-col items-center gap-3">
                         {/* Image Uploader for Edit/Create */}
                         <div className="relative w-32 h-32 bg-gray-100 rounded-xl overflow-hidden group shadow-inner border border-gray-200">
                             {editingProduct.image_url ? (
@@ -225,7 +225,7 @@ export function ProductManager() {
                                 ) : (
                                     <>
                                         <Camera className="w-8 h-8 text-white mb-1" />
-                                        <span className="text-xs text-white font-bold">Cambiar</span>
+                                        <span className="text-xs text-white font-bold text-center px-2">Subir desde PC</span>
                                     </>
                                 )}
                                 <input
@@ -239,6 +239,15 @@ export function ProductManager() {
                                     disabled={!!uploading}
                                 />
                             </label>
+                        </div>
+                        <div className="w-full max-w-sm">
+                            <label className="block text-xs font-bold text-gray-500 mb-1 text-center">URL de la Imagen (o súbela arriba)</label>
+                            <input
+                                className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-orange-200 focus:border-orange-500 transition-all outline-none text-sm text-center"
+                                value={editingProduct.image_url || ""}
+                                onChange={e => setEditingProduct({ ...editingProduct, image_url: e.target.value })}
+                                placeholder="Ej: /images/pizzas/foto.png"
+                            />
                         </div>
                     </div>
 
