@@ -1,63 +1,57 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { orders } from "@/lib/orders";
 import { toast } from "sonner";
 import { Loader2, RefreshCw, CheckCircle, Truck, XCircle, Clock } from "lucide-react";
+import { getAdminOrders, updateOrderStatus } from "@/app/actions/adminData";
 
 export function AdminOrders() {
     const [ordersList, setOrdersList] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchOrders = async () => {
-        setLoading(true);
+    const fetchOrders = async (silent = false) => {
+        if (!silent) setLoading(true);
         try {
-            const data = await orders.getAllOrders();
+            const data = await getAdminOrders();
+            
+            // Check for new orders if we already had some
+            if (ordersList.length > 0 && data.length > 0) {
+                const newestOldOrder = ordersList[0];
+                const newOrders = data.filter((o: any) => new Date(o.created_at) > new Date(newestOldOrder.created_at));
+                
+                if (newOrders.length > 0) {
+                    toast("¡Nuevo Pedido Recibido!", {
+                        icon: <span className="text-2xl">🍕</span>,
+                        duration: 5000,
+                    });
+                    const audio = new Audio('/notification.mp3');
+                    audio.play().catch(e => console.log("Audio play failed interaction"));
+                }
+            }
+            
             setOrdersList(data || []);
         } catch (error) {
             console.error(error);
-            toast.error("Error cargando pedidos");
+            if (!silent) toast.error("Error cargando pedidos");
         } finally {
-            setLoading(false);
+            if (!silent) setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchOrders();
 
-        // Real-time subscription
-        if (!supabase) return;
-        const channel = supabase
-            .channel('admin-orders')
-            .on(
-                'postgres_changes',
-                { event: '*', schema: 'public', table: 'orders' },
-                (payload) => {
-                    console.log('Real-time update:', payload);
-                    // Simple refresh strategy for now
-                    fetchOrders();
-                    if (payload.eventType === 'INSERT') {
-                        toast("¡Nuevo Pedido Recibido!", {
-                            icon: <span className="text-2xl">🍕</span>,
-                            duration: 5000,
-                        });
-                        // Play sound?
-                        const audio = new Audio('/notification.mp3'); // We'll need to add this file or use system sound
-                        audio.play().catch(e => console.log("Audio play failed interaction"));
-                    }
-                }
-            )
-            .subscribe();
+        // Polling para simular real-time de manera segura
+        const interval = setInterval(() => {
+            fetchOrders(true);
+        }, 15000); // 15 seconds polling
 
-        return () => {
-            supabase?.removeChannel(channel);
-        };
+        return () => clearInterval(interval);
     }, []);
 
     const handleStatusChange = async (orderId: string, newStatus: string) => {
         try {
-            await orders.updateStatus(orderId, newStatus);
+            await updateOrderStatus(orderId, newStatus);
             toast.success(`Pedido actualizado a: ${newStatus}`);
             // Optimistic update
             setOrdersList(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));

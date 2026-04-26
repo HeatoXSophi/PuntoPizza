@@ -1,13 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
-const LandingPage = dynamic(() => import("@/components/home/LandingPage"), {
-  ssr: false,
-  loading: () => <div className="min-h-screen bg-white" />,
-});
+import LandingPage from "@/components/home/LandingPage";
+import { FloatingCart } from "@/components/layout/FloatingCart";
+import { CartSidebar } from "@/components/layout/CartSidebar";
 
-const FloatingCart = dynamic(() => import("@/components/layout/FloatingCart").then(mod => mod.FloatingCart), { ssr: false });
-const CartSidebar = dynamic(() => import("@/components/layout/CartSidebar").then(mod => mod.CartSidebar), { ssr: false });
+
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";

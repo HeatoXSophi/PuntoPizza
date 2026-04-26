@@ -46,27 +46,29 @@ export function ProductCard({ id, name, description, price, category, image, onC
         setTimeout(() => setJustAdded(false), 1200);
     };
 
+    const isRectangular = category === "family" || category === "Familiar";
+
     return (
         <motion.div
             whileHover={{ y: -5 }}
-            className="flex flex-col items-center w-full max-w-[220px] mx-auto group cursor-pointer"
+            className="flex flex-col items-center w-full max-w-[240px] mx-auto group cursor-pointer"
             onClick={onClick}
         >
-            {/* Circle Image Wrapper */}
+            {/* Image Wrapper */}
             <div
                 ref={scope}
-                className="relative w-full aspect-square mb-[-25px] z-10 filter drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-300"
+                className={`relative w-full ${isRectangular ? 'aspect-[3/2]' : 'aspect-square'} mb-[-25px] z-10 filter drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-300`}
             >
                 <motion.div
-                    whileHover={{ scale: 1.1, rotate: 2 }}
+                    whileHover={{ scale: 1.05, rotate: isRectangular ? 0 : 2 }}
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                    className="w-full h-full relative"
+                    className={`w-full h-full relative bg-white flex items-center justify-center p-2 shadow-inner border border-gray-100 ${isRectangular ? 'rounded-2xl' : 'rounded-full'}`}
                 >
                     <Image
                         src={image}
                         alt={name}
                         fill
-                        className="object-contain rounded-full"
+                        className={`object-contain ${isRectangular ? 'rounded-xl p-1' : 'rounded-full'} mix-blend-multiply`}
                         sizes="(max-width: 768px) 50vw, 200px"
                     />
                 </motion.div>
