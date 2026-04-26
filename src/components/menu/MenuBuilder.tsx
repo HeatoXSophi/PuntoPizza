@@ -67,6 +67,7 @@ export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
     }
 
     const isLoading = initialProducts.length === 0 && !searchQuery;
+    const showComingSoon = activeCategory === "pasta" || activeCategory === "combos";
 
     return (
         <div className="pb-24">
@@ -116,8 +117,17 @@ export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
 
             {/* Content */}
             <div className="p-4 bg-[#FFF8E1] min-h-[calc(100vh-180px)]">
-                {/* Skeleton Loading State */}
-                {isLoading ? (
+                {showComingSoon ? (
+                    <div className="flex flex-col items-center justify-center py-24 text-center px-4">
+                        <div className="w-24 h-24 mb-6 rounded-full bg-orange-100 flex items-center justify-center border-4 border-white shadow-lg animate-bounce-slow">
+                            <span className="text-5xl">👨‍🍳</span>
+                        </div>
+                        <h2 className="text-4xl font-black text-[#5D4037] mb-3 uppercase tracking-wider">¡Muy Pronto!</h2>
+                        <p className="text-gray-600 text-lg font-medium max-w-md">
+                            Estamos perfeccionando nuestras recetas para traerte la mejor experiencia. ¡Mantente atento!
+                        </p>
+                    </div>
+                ) : isLoading ? (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8">
                         {Array.from({ length: 8 }).map((_, i) => (
                             <SkeletonCard key={i} />
