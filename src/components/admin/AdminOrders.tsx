@@ -78,7 +78,7 @@ export function AdminOrders() {
                     <p className="text-sm text-gray-500">Los nuevos pedidos aparecerán automáticamente aquí.</p>
                 </div>
                 <button
-                    onClick={fetchOrders}
+                    onClick={() => fetchOrders()}
                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
                     <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin text-[#FF5722]' : 'text-gray-600'}`} />
