@@ -28,8 +28,8 @@ type SizeKey = "personal" | "mediana" | "grande" | "family";
 
 function getSizeKey(category: string): SizeKey {
     if (category === "family" || category === "familiar") return "family";
-    if (category === "grande")  return "grande";
-    if (category === "mediana") return "mediana";
+    if (category === "grande" || category === "large")  return "grande";
+    if (category === "mediana" || category === "medium") return "mediana";
     return "personal";
 }
 
