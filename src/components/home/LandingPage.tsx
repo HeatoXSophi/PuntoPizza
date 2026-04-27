@@ -8,7 +8,7 @@ const AboutStory = lazy(() => import("@/components/home/AboutStory").then(m => (
 
 // Lazy loading para secciones below-the-fold
 const Menu = lazy(() => import("@/components/home/Menu").then(m => ({ default: m.Menu })));
-const Testimonials = lazy(() => import("@/components/home/Testimonials").then(m => ({ default: m.Testimonials })));
+
 const Contact = lazy(() => import("@/components/home/Contact").then(m => ({ default: m.Contact })));
 
 // Skeleton loader simple
@@ -33,9 +33,7 @@ export default function LandingPage() {
                 <Menu />
             </Suspense>
 
-            <Suspense fallback={<SectionSkeleton />}>
-                <Testimonials />
-            </Suspense>
+
 
             <Suspense fallback={<SectionSkeleton />}>
                 <Contact />

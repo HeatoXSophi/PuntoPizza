@@ -80,7 +80,7 @@ export function AboutStory() {
                             className="space-y-6 text-gray-400 text-lg leading-relaxed font-light"
                         >
                             <p>
-                                Todo comenzó con un pequeño horno y un gran sueño en el corazón de Santa Cruz.
+                                Todo comenzó con un pequeño horno y un gran sueño en el corazón de Punto Fijo.
                                 Queríamos recuperar el sabor de la pizza auténtica, esa que se hace con paciencia,
                                 con masa madre fermentada por 48 horas y con ingredientes que saben a lo que son.
                             </p>
