@@ -78,9 +78,7 @@ export function WhatsAppCheckout() {
 
         const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
         const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
-            // Count as pizza if it has a size-related category
-            const isPizza = ["personal", "mediana", "grande", "family", "familiar", "large", "medium"].includes(item.category?.toLowerCase());
-            return isPizza ? acc + item.quantity : acc;
+            return acc + ((item.boxesRequired ?? 0) * item.quantity);
         }, 0);
         const boxFee = boxCount * 1.00;
 
@@ -223,8 +221,7 @@ export function WhatsAppCheckout() {
 
     const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
     const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
-        const isPizza = ["personal", "mediana", "grande", "family", "familiar", "large", "medium"].includes(item.category?.toLowerCase());
-        return isPizza ? acc + item.quantity : acc;
+        return acc + ((item.boxesRequired ?? 0) * item.quantity);
     }, 0);
     const boxFee = boxCount * 1.00;
     const finalTotal = total + deliveryFee + boxFee;

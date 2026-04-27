@@ -28,6 +28,7 @@ async function getMenuData() {
         isSpicy: p.is_spicy,
         variants: p.variants,
         extrasLimit: p.extras_limit ?? -1,  // -1 = sin límite
+        boxesRequired: p.boxes_required ?? 1,
     })) || [];
 
     const mappedCategories = categories?.map(c => ({

@@ -153,6 +153,7 @@ interface Product {
     variants?: Variant[] | null;
     /** -1 = sin límite (default), 0 = desactivado, 1-N = máximo */
     extras_limit?: number;
+    boxes_required?: number;
 }
 
 
@@ -462,6 +463,49 @@ export function ProductManager() {
                             </select>
                         </div>
 
+                        {/* Boxes Required Section */}
+                        <div className="col-span-2 border-t pt-4 mt-2">
+                            <div className="mb-3">
+                                <label className="block text-sm font-bold text-gray-700 mb-1">📦 Cajas Requeridas (por unidad)</label>
+                                <p className="text-xs text-gray-400">¿Cuántas cajas de pizza ocupa este producto? (Pizzas = 1, Bebidas = 0, Promos = 2 o 3)</p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {[
+                                    { value: 0, label: "0 Cajas", desc: "Bebidas/Extras" },
+                                    { value: 1, label: "1 Caja",  desc: "Pizza normal" },
+                                    { value: 2, label: "2 Cajas", desc: "Promo 2x1" },
+                                    { value: 3, label: "3 Cajas", desc: "Promo 3x1" },
+                                ].map(({ value, label }) => {
+                                    const current = editingProduct.boxes_required ?? 1;
+                                    const isActive = current === value;
+                                    return (
+                                        <button
+                                            key={value}
+                                            type="button"
+                                            onClick={() => setEditingProduct({ ...editingProduct, boxes_required: value })}
+                                            className={`px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all ${
+                                                isActive
+                                                    ? "bg-orange-50 border-orange-400 text-orange-700 shadow-sm"
+                                                    : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300"
+                                            }`}
+                                        >
+                                            {label}
+                                        </button>
+                                    );
+                                })}
+                                {/* Custom input for more boxes if needed */}
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="10"
+                                    value={editingProduct.boxes_required ?? 1}
+                                    onChange={e => setEditingProduct({ ...editingProduct, boxes_required: parseInt(e.target.value) || 0 })}
+                                    className="w-16 border-2 border-gray-200 rounded-xl px-2 text-center text-sm font-bold focus:border-orange-400 outline-none transition-all"
+                                    placeholder="#"
+                                />
+                            </div>
+                        </div>
+
                         {/* Extras Limit Section */}
                         <div className="col-span-2 border-t pt-4 mt-2">
                             <div className="mb-3">
@@ -488,8 +532,8 @@ export function ProductManager() {
                                                 isActive
                                                     ? value === 0
                                                         ? "bg-red-50 border-red-400 text-red-700"
-                                                        : "bg-orange-50 border-orange-400 text-orange-700"
-                                                    : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300"
+                                                        : "bg-orange-50 border-orange-400 text-orange-700 shadow-sm"
+                                                        : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300"
                                             }`}
                                         >
                                             {label}
@@ -593,7 +637,7 @@ export function ProductManager() {
                 <h2 className="text-xl font-bold text-[#5D4037]">Gestión de Productos</h2>
                 <button
                     onClick={() => {
-                        setEditingProduct({ id: "", name: "", description: "", price: 0, category_id: categories[0]?.id || "", is_available: true });
+                        setEditingProduct({ id: "", name: "", description: "", price: 0, category_id: categories[0]?.id || "", is_available: true, boxes_required: 1 });
                         setIsCreating(true);
                     }}
                     className="bg-green-50 text-green-600 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-green-100 transition-colors shadow-sm"

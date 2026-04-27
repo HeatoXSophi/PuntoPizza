@@ -25,6 +25,8 @@ export interface Product {
     created_at?: string;
     /** -1 = sin límite, 0 = desactivado, 1-N = máximo N extras */
     extrasLimit?: number;
+    /** Cantidad de cajas que ocupa este producto (promos pueden ocupar 2 o 3) */
+    boxesRequired?: number;
 }
 
 export interface CartItem extends Product {
