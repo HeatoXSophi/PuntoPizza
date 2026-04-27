@@ -62,15 +62,22 @@ export function ProductCard({ id, name, description, price, category, image, onC
                 <motion.div
                     whileHover={{ scale: 1.05, rotate: isRectangular ? 0 : 2 }}
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                    className={`w-full h-full relative bg-black/40 flex items-center justify-center p-2 shadow-lg border-2 border-red-900/50 ${isRectangular ? 'rounded-2xl' : 'rounded-full'}`}
+                    className={`w-full h-full relative flex items-center justify-center ${isRectangular ? 'rounded-2xl' : 'rounded-full'}`}
                 >
-                    <Image
-                        src={image}
-                        alt={name}
-                        fill
-                        className={`object-contain ${isRectangular ? 'rounded-xl p-1' : 'rounded-full'} mix-blend-multiply`}
-                        sizes="(max-width: 768px) 50vw, 200px"
-                    />
+                    {/* Premium glow ring */}
+                    <div className={`absolute inset-0 bg-gradient-to-br from-red-600/30 via-amber-500/20 to-red-800/30 ${isRectangular ? 'rounded-2xl' : 'rounded-full'} group-hover:from-red-500/50 group-hover:via-amber-400/30 group-hover:to-red-700/50 transition-all duration-500`} />
+                    <div className={`absolute inset-[3px] bg-black ${isRectangular ? 'rounded-[14px]' : 'rounded-full'}`} />
+                    <div className={`absolute inset-[5px] bg-gradient-to-br from-gray-900 to-black ${isRectangular ? 'rounded-[12px]' : 'rounded-full'} overflow-hidden`}>
+                        <Image
+                            src={image}
+                            alt={name}
+                            fill
+                            className={`object-cover ${isRectangular ? 'rounded-[12px]' : 'rounded-full'}`}
+                            sizes="(max-width: 768px) 50vw, 200px"
+                        />
+                    </div>
+                    {/* Shine effect on hover */}
+                    <div className={`absolute inset-[5px] bg-gradient-to-tr from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ${isRectangular ? 'rounded-[12px]' : 'rounded-full'}`} />
                 </motion.div>
             </div>
 
