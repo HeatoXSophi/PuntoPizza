@@ -5,7 +5,7 @@ export interface CreateOrderDTO {
     user_id: string;
     items: CartItem[];
     total: number;
-    delivery_type: "pickup" | "delivery";
+    delivery_type: "pickup" | "delivery" | "dine_in";
     address?: string;
     phone?: string;
     payment_method: string;
