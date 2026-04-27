@@ -153,6 +153,7 @@ interface Product {
     variants?: Variant[] | null;
     /** -1 = sin límite (default), 0 = desactivado, 1-N = máximo */
     extras_limit?: number;
+    free_extras?: number;
     boxes_required?: number;
 }
 
@@ -509,8 +510,8 @@ export function ProductManager() {
                         {/* Extras Limit Section */}
                         <div className="col-span-2 border-t pt-4 mt-2">
                             <div className="mb-3">
-                                <label className="block text-sm font-bold text-gray-700 mb-1">🧂 Ingredientes Extra del Cliente</label>
-                                <p className="text-xs text-gray-400">Controla cuántos ingredientes extra puede seleccionar el cliente en este producto.</p>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">🧂 Límite de Ingredientes Extra</label>
+                                <p className="text-xs text-gray-400">¿Cuántos ingredientes extra puede seleccionar el cliente como máximo?</p>
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 {[
@@ -533,7 +534,7 @@ export function ProductManager() {
                                                     ? value === 0
                                                         ? "bg-red-50 border-red-400 text-red-700"
                                                         : "bg-orange-50 border-orange-400 text-orange-700 shadow-sm"
-                                                        : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300"
+                                                    : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300"
                                             }`}
                                         >
                                             {label}
@@ -542,6 +543,52 @@ export function ProductManager() {
                                 })}
                             </div>
                         </div>
+
+                        {/* Free Extras Section */}
+                        {(editingProduct.extras_limit ?? -1) !== 0 && (
+                            <div className="col-span-2 border-t pt-4 mt-2">
+                                <div className="mb-3">
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">🎁 Ingredientes Gratis Incluidos</label>
+                                    <p className="text-xs text-gray-400">¿Cuántos de los ingredientes seleccionados serán GRATIS? (Ej: Para la promo de "4 Ingredientes", pon 4 aquí).</p>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {[
+                                        { value: 0, label: "0 Gratis (Cobrar todos)" },
+                                        { value: 1, label: "1 Gratis" },
+                                        { value: 2, label: "2 Gratis" },
+                                        { value: 3, label: "3 Gratis" },
+                                        { value: 4, label: "4 Gratis" },
+                                    ].map(({ value, label }) => {
+                                        const current = editingProduct.free_extras ?? 0;
+                                        const isActive = current === value;
+                                        return (
+                                            <button
+                                                key={value}
+                                                type="button"
+                                                onClick={() => setEditingProduct({ ...editingProduct, free_extras: value })}
+                                                className={`px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all ${
+                                                    isActive
+                                                        ? "bg-green-50 border-green-400 text-green-700 shadow-sm"
+                                                        : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300"
+                                                }`}
+                                            >
+                                                {label}
+                                            </button>
+                                        );
+                                    })}
+                                    {/* Custom input */}
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="20"
+                                        value={editingProduct.free_extras ?? 0}
+                                        onChange={e => setEditingProduct({ ...editingProduct, free_extras: parseInt(e.target.value) || 0 })}
+                                        className="w-16 border-2 border-gray-200 rounded-xl px-2 text-center text-sm font-bold focus:border-green-400 outline-none transition-all"
+                                        placeholder="#"
+                                    />
+                                </div>
+                            </div>
+                        )}
 
                         {/* Variants Section */}
                         <div className="col-span-2 border-t pt-4 mt-2">

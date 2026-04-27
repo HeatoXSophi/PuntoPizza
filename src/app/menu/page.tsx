@@ -28,6 +28,7 @@ async function getMenuData() {
         isSpicy: p.is_spicy,
         variants: p.variants,
         extrasLimit: p.extras_limit ?? -1,  // -1 = sin límite
+        freeExtras: p.free_extras ?? 0,
         boxesRequired: p.boxes_required ?? 1,
     })) || [];
 

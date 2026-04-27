@@ -78,7 +78,18 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
 
     const extraIngredients = buildExtraIngredients(extrasCatalog, product.category);
     const basePrice = product.price;
-    const extrasTotal = selectedExtras.reduce((total, ingredientId) => {
+    
+    // Sort selected extras by price descending (most expensive are free)
+    const sortedSelectedExtras = [...selectedExtras].sort((a, b) => {
+        const priceA = extraIngredients.find(i => i.id === a)?.price || 0;
+        const priceB = extraIngredients.find(i => i.id === b)?.price || 0;
+        return priceB - priceA;
+    });
+
+    const freeExtrasLimit = product.freeExtras ?? 0;
+    
+    const extrasTotal = sortedSelectedExtras.reduce((total, ingredientId, index) => {
+        if (index < freeExtrasLimit) return total; // Free!
         const ingredient = extraIngredients.find(i => i.id === ingredientId);
         return total + (ingredient ? ingredient.price : 0);
     }, 0);
@@ -234,24 +245,34 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                                 ? "Agregar Ingredientes"
                                 : `Agregar Ingredientes — ${selectedExtras.length} / ${limit}`;
 
+                            const freeRemaining = Math.max(0, freeExtrasLimit - selectedExtras.length);
+
                             return (
                                 <div>
                                     <div className="flex items-center justify-between border-b pb-2 mb-4">
                                         <h3 className="font-black text-gray-900 uppercase text-sm tracking-wider">
                                             {headerLabel}
                                         </h3>
-                                        {limit > 0 && (
-                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                                                limitReached ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600"
-                                            }`}>
-                                                {limitReached ? "Límite alcanzado" : `Máx. ${limit}`}
-                                            </span>
-                                        )}
+                                        <div className="flex items-center gap-2">
+                                            {freeRemaining > 0 && (
+                                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 animate-pulse">
+                                                    🎁 {freeRemaining} Gratis
+                                                </span>
+                                            )}
+                                            {limit > 0 && (
+                                                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                                                    limitReached ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600"
+                                                }`}>
+                                                    {limitReached ? "Límite alcanzado" : `Máx. ${limit}`}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="space-y-1">
                                         {extraIngredients.map((ingredient) => {
                                             const isSelected = selectedExtras.includes(ingredient.id);
                                             const isDisabled = !isSelected && limitReached;
+                                            const isFree = isSelected && sortedSelectedExtras.indexOf(ingredient.id) < freeExtrasLimit;
                                             return (
                                                 <div
                                                     key={ingredient.id}
@@ -263,8 +284,8 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                                                 >
                                                     <span className="font-medium text-gray-700">{ingredient.name}</span>
                                                     <div className="flex items-center gap-3">
-                                                        <span className="font-bold text-gray-900 text-sm">
-                                                            +${ingredient.price.toFixed(2)}
+                                                        <span className={`font-bold text-sm ${isFree ? 'text-green-600' : 'text-gray-900'}`}>
+                                                            {isFree ? 'Gratis' : `+$${ingredient.price.toFixed(2)}`}
                                                         </span>
                                                         <button
                                                             onClick={() => toggleExtra(ingredient.id)}
