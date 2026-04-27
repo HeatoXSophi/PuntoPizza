@@ -71,9 +71,6 @@ export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
 
     return (
         <div className="pb-24">
-            <div className="bg-red-600 text-white text-center text-[10px] py-1 font-bold sticky top-0 z-[60]">
-                V.1.1.1-fees-debug
-            </div>
             {/* Product Modal */}
             <ProductModal
                 product={selectedProduct}

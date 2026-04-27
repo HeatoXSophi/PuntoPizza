@@ -129,13 +129,12 @@ export function Header() {
                         </div>
 
                         {/* Logo */}
-                        <Link href="/" className="shrink-0 order-2 flex flex-col items-center">
+                        <Link href="/" className="shrink-0 order-2">
                             <img
                                 src="/logo.png"
                                 alt="Santa Cruz"
                                 className="h-14 md:h-20 lg:h-24 w-auto object-contain"
                             />
-                            <span className="text-[6px] text-gray-300">v1.1.0-fees-fix</span>
                         </Link>
                     </div>
 
