@@ -15,8 +15,17 @@ export function CartSidebar() {
     const updateQuantity = useCartStore((state) => state.updateQuantity);
     const clearCart = useCartStore((state) => state.clearCart);
     const total = useCartStore((state) => state.total);
+    const deliveryType = useCartStore((state) => state.deliveryType);
 
     const isHydrated = useHydrated();
+
+    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
+    const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
+        const isPizza = ["personal", "mediana", "grande", "family", "familiar", "large", "medium"].includes(item.category?.toLowerCase());
+        return isPizza ? acc + item.quantity : acc;
+    }, 0);
+    const boxFee = boxCount * 1.00;
+    const finalTotal = total + deliveryFee + boxFee;
 
     if (!isHydrated) return null;
 
@@ -177,23 +186,37 @@ export function CartSidebar() {
                         {/* Footer */}
                         {items.length > 0 && (
                             <div className="border-t border-gray-100 p-6 bg-gray-50">
-                                {/* Subtotal */}
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-gray-500">Subtotal</span>
-                                    <span className="font-semibold text-gray-900">
-                                        ${total.toFixed(2)}
-                                    </span>
-                                </div>
-                                <div className="flex items-center justify-between mb-4">
-                                    <span className="text-gray-500">Delivery</span>
-                                    <span className="text-green-600 font-medium">Gratis</span>
+                                {/* Summary */}
+                                <div className="space-y-2 mb-4 text-sm">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-gray-500">Subtotal</span>
+                                        <span className="font-semibold text-gray-900">
+                                            ${total.toFixed(2)}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-gray-500">
+                                            Envío ({deliveryType === 'delivery' ? 'Delivery' : deliveryType === 'pickup' ? 'Retiro' : 'Local'})
+                                        </span>
+                                        <span className={deliveryFee > 0 ? "font-semibold text-gray-900" : "text-green-600 font-medium"}>
+                                            {deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : "Gratis"}
+                                        </span>
+                                    </div>
+
+                                    {boxFee > 0 && (
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-gray-500">Cajas ({boxCount})</span>
+                                            <span className="font-semibold text-gray-900">${boxFee.toFixed(2)}</span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Total */}
                                 <div className="flex items-center justify-between py-4 border-t border-gray-200 mb-4">
                                     <span className="text-lg font-bold text-gray-900">Total</span>
                                     <span className="text-2xl font-bold text-[#FF5722]">
-                                        ${total.toFixed(2)}
+                                        ${finalTotal.toFixed(2)}
                                     </span>
                                 </div>
 
