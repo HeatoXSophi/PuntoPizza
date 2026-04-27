@@ -62,7 +62,7 @@ export function ProductCard({ id, name, description, price, category, image, onC
                 <motion.div
                     whileHover={{ scale: 1.05, rotate: isRectangular ? 0 : 2 }}
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                    className={`w-full h-full relative bg-gray-900 flex items-center justify-center p-2 shadow-inner border border-white/10 ${isRectangular ? 'rounded-2xl' : 'rounded-full'}`}
+                    className={`w-full h-full relative bg-transparent flex items-center justify-center p-2 ${isRectangular ? 'rounded-2xl' : 'rounded-full'}`}
                 >
                     <Image
                         src={image}
