@@ -35,8 +35,13 @@ export default function CartPage() {
         );
     }
 
-    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.50 : 0;
-    const finalTotal = total + deliveryFee;
+    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
+    const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
+        const isPizza = ["personal", "mediana", "grande", "family", "familiar", "large", "medium"].includes(item.category?.toLowerCase());
+        return isPizza ? acc + item.quantity : acc;
+    }, 0);
+    const boxFee = boxCount * 1.00;
+    const finalTotal = total + deliveryFee + boxFee;
 
     if (items.length === 0) {
         return (
@@ -141,9 +146,15 @@ export default function CartPage() {
                                     <span className="font-medium">${total.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-600">
-                                    <span>Envío ({deliveryType === "delivery" ? "Delivery" : "Pickup"})</span>
+                                    <span>Envío ({deliveryType === "delivery" ? "Delivery" : deliveryType === "pickup" ? "Retiro" : "Local"})</span>
                                     <span className="font-medium">{deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : "Gratis"}</span>
                                 </div>
+                                {boxFee > 0 && (
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Cajas ({boxCount} {boxCount === 1 ? "unidad" : "unidades"})</span>
+                                        <span className="font-medium">${boxFee.toFixed(2)}</span>
+                                    </div>
+                                )}
                                 <div className="border-t border-dashed my-2 pt-2"></div>
                                 <div className="flex justify-between items-end">
                                     <span className="font-bold text-gray-900 text-lg">Total</span>

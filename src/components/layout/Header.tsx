@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Phone, Bell, Globe, ChevronDown, Bike, Store, MapPin, ShoppingCart } from "lucide-react";
+import { User, Phone, Bell, Globe, ChevronDown, Bike, Store, MapPin, ShoppingCart, Utensils } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/lib/store";
 import { toast } from "sonner";
@@ -43,6 +43,11 @@ export function Header() {
     const handleDeliveryClick = () => {
         setDeliveryType("delivery");
         setShowLocationModal(true);
+    };
+
+    const handleDineInClick = () => {
+        setDeliveryType("dine_in");
+        toast.info("Opción: Comer en el Local");
     };
 
     const handlePickupClick = () => {
@@ -133,19 +138,29 @@ export function Header() {
                         </Link>
                     </div>
 
-                    {/* CENTER: Toggle Pickup/Delivery */}
+                    {/* CENTER: Toggle Pickup/Delivery/DineIn */}
                     <div className="flex justify-center flex-none">
                         <div className="flex bg-white rounded-full p-1 shadow-md border border-gray-100">
                             <button
+                                onClick={handleDineInClick}
+                                className={`px-2.5 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'dine_in' ? 'bg-[#FF5722] text-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                title="Comer en el Local"
+                            >
+                                <Utensils className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                                <span className="hidden sm:inline">Local</span>
+                            </button>
+                            <button
                                 onClick={handlePickupClick}
-                                className={`px-3 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'pickup' ? 'bg-[#FF5722] text-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                className={`px-2.5 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'pickup' ? 'bg-[#FF5722] text-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                title="Retirar en Tienda"
                             >
                                 <Store className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                                <span className="hidden sm:inline">Recoger</span>
+                                <span className="hidden sm:inline">Retiro</span>
                             </button>
                             <button
                                 onClick={handleDeliveryClick}
-                                className={`px-3 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'delivery' ? 'bg-[#FF5722] text-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                className={`px-2.5 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'delivery' ? 'bg-[#FF5722] text-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                title="Envío a Domicilio"
                             >
                                 <Bike className="w-3 h-3 md:w-3.5 md:h-3.5" />
                                 <span className="hidden sm:inline">Delivery</span>

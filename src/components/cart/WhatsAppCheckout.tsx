@@ -76,8 +76,15 @@ export function WhatsAppCheckout() {
             }
         }
 
-        const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.50 : 0;
-        const finalTotal = total + deliveryFee;
+        const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
+        const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
+            // Count as pizza if it has a size-related category
+            const isPizza = ["personal", "mediana", "grande", "family", "familiar", "large", "medium"].includes(item.category?.toLowerCase());
+            return isPizza ? acc + item.quantity : acc;
+        }, 0);
+        const boxFee = boxCount * 1.00;
+
+        const finalTotal = total + deliveryFee + boxFee;
         const totalBs = bcvRate ? finalTotal * bcvRate : 0;
 
         // Cash Change Validation & Calculation
@@ -107,8 +114,10 @@ export function WhatsAppCheckout() {
                 message += `🗺️ *Maps (Ref):* https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formData.address)}\n`;
             }
             message += `\n`;
-        } else {
+        } else if (deliveryType === "pickup") {
             message += `📍 *RETIRO EN TIENDA*\n\n`;
+        } else {
+            message += `📍 *COMER EN EL LOCAL*\n\n`;
         }
 
         message += `💰 *MÉTODO DE PAGO: ${formData.paymentMethod.toUpperCase()}*\n`;
@@ -139,6 +148,9 @@ export function WhatsAppCheckout() {
 
         if (deliveryType === "delivery") {
             message += `\n🚚 *Envío:* $${deliveryFee.toFixed(2)}`;
+        }
+        if (boxFee > 0) {
+            message += `\n📦 *Cajas (${boxCount}):* $${boxFee.toFixed(2)}`;
         }
         message += `\n💰 *TOTAL USD:* $${finalTotal.toFixed(2)}`;
         if (bcvRate) {
@@ -209,8 +221,13 @@ export function WhatsAppCheckout() {
 
     if (items.length === 0) return null;
 
-    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.50 : 0;
-    const finalTotal = total + deliveryFee;
+    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
+    const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
+        const isPizza = ["personal", "mediana", "grande", "family", "familiar", "large", "medium"].includes(item.category?.toLowerCase());
+        return isPizza ? acc + item.quantity : acc;
+    }, 0);
+    const boxFee = boxCount * 1.00;
+    const finalTotal = total + deliveryFee + boxFee;
 
     const cashChange = (formData.cashAmount && !isNaN(parseFloat(formData.cashAmount)))
         ? parseFloat(formData.cashAmount) - finalTotal

@@ -11,7 +11,7 @@ interface CartState {
     total: number;
 
     // Delivery State
-    deliveryType: "pickup" | "delivery";
+    deliveryType: "pickup" | "delivery" | "dine_in";
     address: string;
     phoneNumber: string;
     userName: string;
@@ -23,7 +23,7 @@ interface CartState {
     orders: Order[];
     addOrder: (order: Order) => void;
 
-    setDeliveryType: (type: "pickup" | "delivery") => void;
+    setDeliveryType: (type: "pickup" | "delivery" | "dine_in") => void;
     setAddress: (address: string) => void;
     setPhoneNumber: (phone: string) => void;
     setUserName: (name: string) => void;
