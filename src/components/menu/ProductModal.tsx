@@ -138,7 +138,8 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                 price: unitPrice,
                 image: product.image,
                 category: product.category,
-                description: finalDescription
+                description: finalDescription,
+                boxesRequired: product.boxesRequired
             });
         }
 
