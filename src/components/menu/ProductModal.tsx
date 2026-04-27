@@ -26,15 +26,25 @@ const FALLBACK_EXTRAS = [
 
 type SizeKey = "personal" | "mediana" | "grande" | "family";
 
-function getSizeKey(category: string): SizeKey {
+function getSizeKey(product: Product): SizeKey {
+    const category = (product.category || "").toLowerCase();
+    const name = (product.name || "").toLowerCase();
+    const desc = (product.description || "").toLowerCase();
+
     if (category === "family" || category === "familiar") return "family";
     if (category === "grande" || category === "large")  return "grande";
     if (category === "mediana" || category === "medium") return "mediana";
+
+    // Heuristics based on name and description
+    if (name.includes("familiar") || name.includes("family") || desc.includes("familiar") || desc.includes("family")) return "family";
+    if (name.includes("grande") || desc.includes("grande")) return "grande";
+    if (name.includes("mediana") || name.includes("medium") || desc.includes("mediana") || desc.includes("medium")) return "mediana";
+
     return "personal";
 }
 
-function buildExtraIngredients(catalog: typeof FALLBACK_EXTRAS, category: string) {
-    const size = getSizeKey(category);
+function buildExtraIngredients(catalog: typeof FALLBACK_EXTRAS, product: Product) {
+    const size = getSizeKey(product);
     const priceKey = `price_${size}` as keyof (typeof catalog[0]);
     return catalog.map(e => ({ id: e.id, name: e.name, price: Number(e[priceKey]) }));
 }
@@ -76,7 +86,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
 
     if (!product) return null;
 
-    const extraIngredients = buildExtraIngredients(extrasCatalog, product.category);
+    const extraIngredients = buildExtraIngredients(extrasCatalog, product);
     const basePrice = product.price;
     
     // Sort selected extras by price descending (most expensive are free)
