@@ -143,7 +143,6 @@ export const useCartStore = create<CartState>()(
                     removeItem: () => { },
                 };
             }),
-            skipHydration: true,
             // Only persist critical data, NOT UI state like isCartOpen
             partialize: (state) => ({
                 items: state.items,

@@ -15,32 +15,23 @@ export const auth = {
     async register(email: string, password: string, metadata: { full_name: string; phone: string; address: string }) {
         if (!supabase) throw new Error("Supabase not configured");
 
-        // 1. Sign up user
+        // 1. Sign up user with metadata
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+                data: {
+                    full_name: metadata.full_name,
+                    phone: metadata.phone,
+                    address: metadata.address
+                }
+            }
         });
 
         if (authError) throw authError;
         if (!authData.user) throw new Error("No se pudo crear el usuario");
 
-        // 2. Insert into profiles table
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-                id: authData.user.id,
-                full_name: metadata.full_name,
-                phone: metadata.phone,
-                address: metadata.address,
-                updated_at: new Date().toISOString(),
-            });
-
-        if (profileError) {
-            // Optional: Delete user if profile creation fails? Or just warn?
-            console.error("Error creating profile:", profileError);
-            toast.error("Usuario creado pero hubo error al guardar perfil.");
-        }
-
+        // Note: Profile is now created automatically by DB trigger 010_auto_profile_trigger.sql
         return authData;
     },
 

@@ -82,21 +82,25 @@ export function ProfileSidebar({ isOpen, onClose }: { isOpen: boolean; onClose: 
 
         setIsLoading(true);
         try {
-            const { user: newUser } = await auth.register(emailInput, passwordInput, {
+            const { user: newUser, session } = await auth.register(emailInput, passwordInput, {
                 full_name: nameInput,
                 phone: phoneInput,
                 address: addressInput
             });
 
             if (newUser) {
-                setUser(newUser);
-                setEmail(newUser.email || "");
-                setUserName(nameInput);
-                setPhoneNumber(phoneInput);
-                setAddress(addressInput);
-
-                toast.success("¡Cuenta creada exitosamente!");
-                setViewState("view");
+                if (session) {
+                    setUser(newUser);
+                    setEmail(newUser.email || "");
+                    setUserName(nameInput);
+                    setPhoneNumber(phoneInput);
+                    setAddress(addressInput);
+                    toast.success("¡Cuenta creada exitosamente!");
+                    setViewState("view");
+                } else {
+                    toast.success("¡Cuenta creada! Por favor revisa tu email para confirmarla antes de ingresar.");
+                    setViewState("login");
+                }
             }
         } catch (error: any) {
             console.error(error);

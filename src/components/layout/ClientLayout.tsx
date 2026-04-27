@@ -116,7 +116,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             }
 
             const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
-                if (event === 'SIGNED_IN' && session?.user) {
+                if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'USER_UPDATED') && session?.user) {
                     setUser(session.user);
                     setEmail(session.user.email || "");
                     const profile = await auth.getProfile(session.user.id);
@@ -127,9 +127,8 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                     }
                 } else if (event === 'SIGNED_OUT') {
                     setUser(null);
-                    setUserName("");
-                    setPhoneNumber("");
-                    setAddress("");
+                    // Do NOT clear userName, phoneNumber, address here 
+                    // to allow guest persistence or keep local info
                     setEmail("");
                 }
             });
