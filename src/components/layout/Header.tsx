@@ -105,7 +105,7 @@ export function Header() {
 
     return (
         <>
-            <header className="bg-[#FFF8E1] shadow-sm sticky top-0 z-50 transition-all">
+            <header className="bg-black/95 backdrop-blur-md shadow-lg shadow-red-900/10 sticky top-0 z-50 transition-all border-b border-red-900/30">
                 <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
 
                     {/* LEFT: Profile & Logo */}
@@ -115,14 +115,14 @@ export function Header() {
                             className="hidden md:flex items-center gap-1.5 md:gap-2 cursor-pointer hover:opacity-70 transition-opacity shrink-0 order-1"
                             onClick={() => setProfileOpen(true)}
                         >
-                            <div className="bg-white p-2 rounded-full shadow-sm text-[#FF5722]">
+                            <div className="bg-red-900/30 p-2 rounded-full shadow-sm text-red-400">
                                 <User className="w-5 h-5" />
                             </div>
                             <div className="flex flex-col leading-none">
-                                <span className="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                                <span className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase tracking-wider">
                                     {userName ? "Hola," : "Bienvenido"}
                                 </span>
-                                <span className="text-xs md:text-sm font-black text-[#5D4037] truncate max-w-[70px] md:max-w-[100px]">
+                                <span className="text-xs md:text-sm font-black text-white truncate max-w-[70px] md:max-w-[100px]">
                                     {userName || "Ingresar"}
                                 </span>
                             </div>
@@ -140,10 +140,10 @@ export function Header() {
 
                     {/* CENTER: Toggle Pickup/Delivery/DineIn */}
                     <div className="flex justify-center flex-none">
-                        <div className="flex bg-white rounded-full p-1 shadow-md border border-gray-100">
+                        <div className="flex bg-white/10 backdrop-blur-sm rounded-full p-1 shadow-md border border-white/10">
                             <button
                                 onClick={handleDineInClick}
-                                className={`px-2.5 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'dine_in' ? 'bg-[#FF5722] text-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                className={`px-2.5 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'dine_in' ? 'bg-red-600 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
                                 title="Comer en el Local"
                             >
                                 <Utensils className="w-3 h-3 md:w-3.5 md:h-3.5" />
@@ -151,7 +151,7 @@ export function Header() {
                             </button>
                             <button
                                 onClick={handlePickupClick}
-                                className={`px-2.5 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'pickup' ? 'bg-[#FF5722] text-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                className={`px-2.5 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'pickup' ? 'bg-red-600 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
                                 title="Retirar en Tienda"
                             >
                                 <Store className="w-3 h-3 md:w-3.5 md:h-3.5" />
@@ -159,7 +159,7 @@ export function Header() {
                             </button>
                             <button
                                 onClick={handleDeliveryClick}
-                                className={`px-2.5 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'delivery' ? 'bg-[#FF5722] text-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                className={`px-2.5 py-1.5 rounded-full flex items-center gap-1 text-[10px] md:text-xs font-bold transition-all duration-300 ${deliveryType === 'delivery' ? 'bg-red-600 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
                                 title="Envío a Domicilio"
                             >
                                 <Bike className="w-3 h-3 md:w-3.5 md:h-3.5" />
@@ -173,7 +173,7 @@ export function Header() {
                         {/* Language Button (Hidden on very small screens to save space) */}
                         <button
                             onClick={toggleLanguage}
-                            className="hidden sm:flex bg-white px-3 py-1.5 rounded-full items-center gap-1.5 shadow-sm border border-gray-100 text-[#5D4037] hover:bg-gray-50 transition-colors"
+                            className="hidden sm:flex bg-white/10 px-3 py-1.5 rounded-full items-center gap-1.5 shadow-sm border border-white/10 text-gray-300 hover:bg-white/20 transition-colors"
                         >
                             <Globe className="w-4 h-4" />
                             <span className="text-xs font-bold">{(language || "es").toUpperCase()}</span>
@@ -184,7 +184,7 @@ export function Header() {
                             href="https://wa.me/584246802805"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-white p-2 rounded-full shadow-sm text-green-600 hover:bg-green-50 transition-colors"
+                            className="bg-white/10 p-2 rounded-full shadow-sm text-green-400 hover:bg-green-900/30 transition-colors border border-white/10"
                         >
                             <Phone className="w-5 h-5" />
                         </a>
@@ -197,7 +197,7 @@ export function Header() {
                                     initial={{ scale: 1 }}
                                     animate={{ scale: [1, 1.2, 1] }}
                                     transition={{ duration: 0.3 }}
-                                    className="bg-[#FF5722] p-2.5 rounded-full shadow-md text-white hover:bg-[#E64A19] transition-colors cursor-pointer flex items-center justify-center min-w-[42px] min-h-[42px]"
+                                    className="bg-red-600 p-2.5 rounded-full shadow-md text-white hover:bg-red-700 transition-colors cursor-pointer flex items-center justify-center min-w-[42px] min-h-[42px]"
                                 >
                                     <ShoppingCart className="w-5 h-5" />
                                 </motion.div>

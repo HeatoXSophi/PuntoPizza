@@ -25,8 +25,8 @@ export function CategoryTabs({ categories, activeCategory, onSelectCategory }: C
                         className={cn(
                             "relative px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wide transition-all duration-200 flex-shrink-0 border font-heading",
                             isActive
-                                ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-orange-500/30 scale-105"
-                                : "bg-white text-muted-foreground border-transparent shadow-sm hover:bg-gray-50"
+                                ? "bg-red-600 text-white border-red-600 shadow-lg shadow-red-900/40 scale-105"
+                                : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white"
                         )}
                     >
                         {cat.name}

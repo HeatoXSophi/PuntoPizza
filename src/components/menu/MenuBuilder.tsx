@@ -16,12 +16,12 @@ interface MenuBuilderProps {
 
 function SkeletonCard() {
     return (
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
-            <div className="w-full aspect-square bg-gray-200" />
+        <div className="bg-gray-900/80 rounded-2xl overflow-hidden shadow-sm animate-pulse border border-white/5">
+            <div className="w-full aspect-square bg-gray-800" />
             <div className="p-3 space-y-2">
-                <div className="h-3 bg-gray-200 rounded w-16" />
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-3 bg-gray-200 rounded w-full" />
+                <div className="h-3 bg-gray-700 rounded w-16" />
+                <div className="h-4 bg-gray-700 rounded w-3/4" />
+                <div className="h-3 bg-gray-700 rounded w-full" />
             </div>
         </div>
     );
@@ -79,8 +79,8 @@ export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
             />
 
             {/* Page Header */}
-            <div className="bg-white p-4 shadow-sm sticky top-0 z-10">
-                <h1 className="text-2xl font-black text-[#5D4037] mb-3">
+            <div className="bg-black p-4 shadow-lg sticky top-0 z-10 border-b border-red-900/30">
+                <h1 className="text-2xl font-black text-white mb-3">
                     {t.menu_title || "Nuestro Menú"}
                 </h1>
 
@@ -92,7 +92,7 @@ export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
                         placeholder={language === "en" ? "Search products..." : "Buscar productos..."}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-10 py-2.5 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5722]/50 transition-all"
+                        className="w-full pl-10 pr-10 py-2.5 bg-white/10 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-600/50 transition-all"
                     />
                     {searchQuery && (
                         <button
@@ -116,14 +116,14 @@ export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
             </div>
 
             {/* Content */}
-            <div className="p-4 bg-[#FFF8E1] min-h-[calc(100vh-180px)]">
+            <div className="p-4 bg-gray-950 min-h-[calc(100vh-180px)]">
                 {showComingSoon ? (
                     <div className="flex flex-col items-center justify-center py-24 text-center px-4">
-                        <div className="w-24 h-24 mb-6 rounded-full bg-orange-100 flex items-center justify-center border-4 border-white shadow-lg animate-bounce-slow">
+                        <div className="w-24 h-24 mb-6 rounded-full bg-red-900/30 flex items-center justify-center border-4 border-red-900/50 shadow-lg animate-bounce-slow">
                             <span className="text-5xl">👨‍🍳</span>
                         </div>
-                        <h2 className="text-4xl font-black text-[#5D4037] mb-3 uppercase tracking-wider">¡Muy Pronto!</h2>
-                        <p className="text-gray-600 text-lg font-medium max-w-md">
+                        <h2 className="text-4xl font-black text-white mb-3 uppercase tracking-wider">¡Muy Pronto!</h2>
+                        <p className="text-gray-400 text-lg font-medium max-w-md">
                             Estamos perfeccionando nuestras recetas para traerte la mejor experiencia. ¡Mantente atento!
                         </p>
                     </div>
@@ -162,7 +162,7 @@ export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
                                         </p>
                                         <button
                                             onClick={() => setSearchQuery("")}
-                                            className="text-[#FF5722] font-medium text-sm hover:underline"
+                                            className="text-red-500 font-medium text-sm hover:underline"
                                         >
                                             {language === "en" ? "Clear search" : "Limpiar búsqueda"}
                                         </button>

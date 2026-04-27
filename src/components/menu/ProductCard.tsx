@@ -62,7 +62,7 @@ export function ProductCard({ id, name, description, price, category, image, onC
                 <motion.div
                     whileHover={{ scale: 1.05, rotate: isRectangular ? 0 : 2 }}
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                    className={`w-full h-full relative bg-white flex items-center justify-center p-2 shadow-inner border border-gray-100 ${isRectangular ? 'rounded-2xl' : 'rounded-full'}`}
+                    className={`w-full h-full relative bg-gray-900 flex items-center justify-center p-2 shadow-inner border border-white/10 ${isRectangular ? 'rounded-2xl' : 'rounded-full'}`}
                 >
                     <Image
                         src={image}
@@ -77,17 +77,17 @@ export function ProductCard({ id, name, description, price, category, image, onC
             {/* Price & Add Row - "The Pill" */}
             <motion.div
                 whileTap={{ scale: 0.95 }}
-                className="bg-[#FFF8E1] dark:bg-gray-800 rounded-full px-1 pl-4 py-0.5 flex items-center gap-2 shadow-sm border border-[#FFE082] dark:border-gray-700 z-20 mb-3 scale-90 origin-top hover:shadow-md transition-shadow"
+                className="bg-gray-900 rounded-full px-1 pl-4 py-0.5 flex items-center gap-2 shadow-sm border border-red-900/40 z-20 mb-3 scale-90 origin-top hover:shadow-md hover:shadow-red-900/20 transition-shadow"
                 onClick={(e) => e.stopPropagation()}
             >
-                <span className="font-extrabold text-[#5D4037] dark:text-orange-300 text-base font-body">
+                <span className="font-extrabold text-white text-base font-body">
                     ${price.toFixed(2)}
                 </span>
                 <motion.button
                     whileTap={{ scale: 0.8, rotate: 90 }}
                     className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${justAdded
                             ? "bg-green-500 text-white border-green-500"
-                            : "bg-white dark:bg-gray-700 border border-[#FF9800] text-[#FF9800] hover:bg-[#FF9800] hover:text-white"
+                            : "bg-gray-800 border border-red-600 text-red-500 hover:bg-red-600 hover:text-white"
                         }`}
                     onClick={handleAdd}
                 >
@@ -101,8 +101,8 @@ export function ProductCard({ id, name, description, price, category, image, onC
 
             {/* Info */}
             <div className="text-center px-1 w-full">
-                <h3 className="font-black text-xs uppercase tracking-wide text-gray-900 dark:text-gray-100 mb-1 leading-tight font-heading group-hover:text-primary transition-colors">{name}</h3>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight line-clamp-2 px-1 font-body">
+                <h3 className="font-black text-xs uppercase tracking-wide text-gray-100 mb-1 leading-tight font-heading group-hover:text-red-400 transition-colors">{name}</h3>
+                <p className="text-[10px] text-gray-500 leading-tight line-clamp-2 px-1 font-body">
                     {description}
                 </p>
             </div>
