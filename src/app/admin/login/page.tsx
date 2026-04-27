@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { loginAdmin } from "@/app/actions/adminAuth";
 import { Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function AdminLogin() {
     const [password, setPassword] = useState("");
@@ -16,6 +17,24 @@ export default function AdminLogin() {
         
         setIsLoading(true);
         try {
+            // 1. Iniciar sesión real en Supabase para obtener el token de seguridad
+            if (supabase) {
+                const { error: sbError } = await supabase.auth.signInWithPassword({
+                    email: 'admin@puntopizza.com',
+                    password: password
+                });
+                
+                if (sbError) {
+                    // Si falla el login en Supabase, mostramos error genérico
+                    // Nota: El usuario "admin@puntopizza.com" DEBE ser creado en el panel de Supabase.
+                    console.error("Supabase Auth Error:", sbError);
+                    toast.error("Credenciales incorrectas o usuario no configurado.");
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
+            // 2. Mantener la sesión de Next.js (cookie) para proteger la ruta /admin visualmente
             const result = await loginAdmin(password);
             
             if (result.success) {

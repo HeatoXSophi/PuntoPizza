@@ -4,7 +4,10 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export async function loginAdmin(password: string) {
-    if (password === 'Heatox.227') {
+    // 1. Usa la variable de entorno si existe, sino usa el fallback temporal
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Heatox.227';
+    
+    if (password === adminPassword) {
         const cookieStore = await cookies();
         cookieStore.set('admin_session', 'true', {
             httpOnly: true,
