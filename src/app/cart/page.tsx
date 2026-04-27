@@ -12,7 +12,7 @@ import { useHydrated } from "@/hooks/use-hydrated";
 import { motion } from "framer-motion";
 
 export default function CartPage() {
-    const { items, total, updateQuantity, removeItem, deliveryType } = useCartStore();
+    const { items, total, updateQuantity, removeItem, deliveryType, settings } = useCartStore();
     const isHydrated = useHydrated();
     const [bcvRate, setBcvRate] = useState<number | null>(null);
 
@@ -35,12 +35,15 @@ export default function CartPage() {
         );
     }
 
-    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
+    const deliveryFeeAmount = settings?.delivery_fee ?? 2.00;
+    const boxFeeAmount = settings?.box_fee ?? 1.00;
+
+    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? deliveryFeeAmount : 0;
     const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
         const defaultBoxes = ["bebidas", "postres", "pastas"].includes(item.category?.toLowerCase()) ? 0 : 1;
         return acc + ((item.boxesRequired ?? defaultBoxes) * item.quantity);
     }, 0);
-    const boxFee = boxCount * 1.00;
+    const boxFee = boxCount * boxFeeAmount;
     const finalTotal = total + deliveryFee + boxFee;
 
     if (items.length === 0) {

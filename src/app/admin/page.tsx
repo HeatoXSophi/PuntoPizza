@@ -7,10 +7,11 @@ import { DataMigration } from "@/components/admin/DataMigration";
 import { ProductManager } from "@/components/admin/ProductManager";
 import { AdminAnalytics } from "@/components/admin/AdminAnalytics";
 import { IngredientsManager } from "@/components/admin/IngredientsManager";
-import { BarChart3, ShoppingBag, Package, FolderOpen, Database, Salad } from "lucide-react";
+import { SettingsManager } from "@/components/admin/SettingsManager";
+import { BarChart3, ShoppingBag, Package, FolderOpen, Database, Salad, Settings } from "lucide-react";
 import { logoutAdmin } from "@/app/actions/adminAuth";
 
-type AdminTab = "analytics" | "orders" | "products" | "categories" | "ingredients" | "migration";
+type AdminTab = "analytics" | "orders" | "products" | "categories" | "ingredients" | "settings" | "migration";
 
 export default function AdminPage() {
     const [activeTab, setActiveTab] = useState<AdminTab>("analytics");
@@ -21,6 +22,7 @@ export default function AdminPage() {
         { id: "products",    label: "Productos",     icon: Package },
         { id: "categories",  label: "Categorías",   icon: FolderOpen },
         { id: "ingredients", label: "Ingredientes",  icon: Salad },
+        { id: "settings",    label: "Ajustes",       icon: Settings },
         { id: "migration",   label: "Migración",    icon: Database },
     ];
 
@@ -61,10 +63,11 @@ export default function AdminPage() {
             <main className="p-4 max-w-7xl mx-auto">
                 {activeTab === "analytics"   && <AdminAnalytics />}
                 {activeTab === "orders"       && <AdminOrders />}
-                {activeTab === "products"     && <ProductManager />}
-                {activeTab === "categories"   && <CategoryManager />}
-                {activeTab === "ingredients"  && <IngredientsManager />}
-                {activeTab === "migration"    && <DataMigration />}
+                { activeTab === "products"     && <ProductManager /> }
+                { activeTab === "categories"   && <CategoryManager /> }
+                { activeTab === "ingredients"  && <IngredientsManager /> }
+                { activeTab === "settings"     && <SettingsManager /> }
+                { activeTab === "migration"    && <DataMigration /> }
             </main>
         </div>
     );

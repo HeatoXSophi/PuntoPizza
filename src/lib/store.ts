@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { CartItem, Order } from "@/types";
+import { CartItem, Order, StoreSettings } from "@/types";
+import { supabase } from "@/lib/supabase";
 
 interface CartState {
     items: CartItem[];
@@ -43,6 +44,10 @@ interface CartState {
     // App Mode
     isAppMode: boolean;
     setAppMode: (isApp: boolean) => void;
+
+    // Settings
+    settings: StoreSettings | null;
+    fetchSettings: () => Promise<void>;
 }
 
 export const useCartStore = create<CartState>()(
@@ -128,6 +133,20 @@ export const useCartStore = create<CartState>()(
             setProfileOpen: (isOpen: boolean) => set({ isProfileOpen: isOpen }),
             isAppMode: false,
             setAppMode: (isApp: boolean) => set({ isAppMode: isApp }),
+
+            // Settings
+            settings: null,
+            fetchSettings: async () => {
+                if (!supabase) return;
+                try {
+                    const { data, error } = await supabase.from('store_settings').select('*').limit(1).single();
+                    if (!error && data) {
+                        set({ settings: data });
+                    }
+                } catch (err) {
+                    console.error("Error fetching settings:", err);
+                }
+            },
         }),
         {
             name: "cart-storage",

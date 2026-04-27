@@ -11,7 +11,7 @@ import { getBCVRate } from "@/lib/services/dolar";
 import Image from "next/image";
 
 export function WhatsAppCheckout() {
-    const { items, total, deliveryType } = useCartStore();
+    const { items, total, deliveryType, address, phoneNumber, userName, location, settings } = useCartStore();
     const [formData, setFormData] = useState({
         name: "",
         address: "",
@@ -76,12 +76,15 @@ export function WhatsAppCheckout() {
             }
         }
 
-        const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
+        const deliveryFeeAmount = settings?.delivery_fee ?? 2.00;
+        const boxFeeAmount = settings?.box_fee ?? 1.00;
+
+        const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? deliveryFeeAmount : 0;
         const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
             const defaultBoxes = ["bebidas", "postres", "pastas"].includes(item.category?.toLowerCase()) ? 0 : 1;
             return acc + ((item.boxesRequired ?? defaultBoxes) * item.quantity);
         }, 0);
-        const boxFee = boxCount * 1.00;
+        const boxFee = boxCount * boxFeeAmount;
 
         const finalTotal = total + deliveryFee + boxFee;
         const totalBs = bcvRate ? finalTotal * bcvRate : 0;
@@ -220,12 +223,15 @@ export function WhatsAppCheckout() {
 
     if (items.length === 0) return null;
 
-    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
+    const deliveryFeeAmount = settings?.delivery_fee ?? 2.00;
+    const boxFeeAmount = settings?.box_fee ?? 1.00;
+
+    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? deliveryFeeAmount : 0;
     const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
         const defaultBoxes = ["bebidas", "postres", "pastas"].includes(item.category?.toLowerCase()) ? 0 : 1;
         return acc + ((item.boxesRequired ?? defaultBoxes) * item.quantity);
     }, 0);
-    const boxFee = boxCount * 1.00;
+    const boxFee = boxCount * boxFeeAmount;
     const finalTotal = total + deliveryFee + boxFee;
 
     const cashChange = (formData.cashAmount && !isNaN(parseFloat(formData.cashAmount)))

@@ -29,6 +29,13 @@ export interface Product {
     boxesRequired?: number;
 }
 
+export interface StoreSettings {
+    id?: string;
+    delivery_fee: number;
+    box_fee: number;
+    updated_at?: string;
+}
+
 export interface CartItem extends Product {
     quantity: number;
     totalPrice?: number;
