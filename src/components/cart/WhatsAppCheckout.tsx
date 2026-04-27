@@ -78,7 +78,8 @@ export function WhatsAppCheckout() {
 
         const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
         const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
-            return acc + ((item.boxesRequired ?? 0) * item.quantity);
+            const defaultBoxes = ["bebidas", "postres", "pastas"].includes(item.category?.toLowerCase()) ? 0 : 1;
+            return acc + ((item.boxesRequired ?? defaultBoxes) * item.quantity);
         }, 0);
         const boxFee = boxCount * 1.00;
 
@@ -221,7 +222,8 @@ export function WhatsAppCheckout() {
 
     const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
     const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
-        return acc + ((item.boxesRequired ?? 0) * item.quantity);
+        const defaultBoxes = ["bebidas", "postres", "pastas"].includes(item.category?.toLowerCase()) ? 0 : 1;
+        return acc + ((item.boxesRequired ?? defaultBoxes) * item.quantity);
     }, 0);
     const boxFee = boxCount * 1.00;
     const finalTotal = total + deliveryFee + boxFee;
