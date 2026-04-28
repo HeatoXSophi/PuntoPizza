@@ -3,6 +3,7 @@
 import { User, Phone, Bell, Globe, ChevronDown, Bike, Store, MapPin, ShoppingCart, Utensils } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/lib/store";
+import { useHydrated } from "@/hooks/use-hydrated";
 import { toast } from "sonner";
 import { DICTIONARY } from "@/lib/dictionary";
 import Link from "next/link";
@@ -26,6 +27,7 @@ export function Header() {
         setProfileOpen
     } = useCartStore();
 
+    const isHydrated = useHydrated();
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [tempAddress, setTempAddress] = useState("");
     const [tempPhone, setTempPhone] = useState("");
@@ -33,6 +35,7 @@ export function Header() {
 
     // Get current dictionary
     const t = DICTIONARY[language || "es"] || DICTIONARY.es;
+    const cartCount = isHydrated ? (items?.length || 0) : 0;
 
     // Initialize temp address and phone from store (only on client)
     useEffect(() => {
@@ -193,7 +196,7 @@ export function Header() {
                         <Link href="/cart" className="flex-shrink-0">
                             <div className="relative group">
                                 <motion.div
-                                    key={items?.length}
+                                    key={cartCount}
                                     initial={{ scale: 1 }}
                                     animate={{ scale: [1, 1.2, 1] }}
                                     transition={{ duration: 0.3 }}
@@ -201,13 +204,13 @@ export function Header() {
                                 >
                                     <ShoppingCart className="w-5 h-5" />
                                 </motion.div>
-                                {(items?.length || 0) > 0 && (
+                                {cartCount > 0 && (
                                     <motion.span
                                         initial={{ scale: 0 }}
                                         animate={{ scale: 1 }}
                                         className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm"
                                     >
-                                        {items?.length || 0}
+                                        {cartCount}
                                     </motion.span>
                                 )}
                             </div>
