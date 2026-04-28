@@ -8,7 +8,7 @@ import { Category, Product } from "@/types";
 import { Search, X } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { DICTIONARY } from "@/lib/dictionary";
-import { SizeGuide } from "@/components/menu/SizeGuide";
+
 
 interface MenuBuilderProps {
     categories: Category[];
@@ -136,10 +136,7 @@ export function MenuBuilder({ categories, initialProducts }: MenuBuilderProps) {
                     </div>
                 ) : (
                     <>
-                        {/* Pizza Size Reference Guide */}
-                        {["all", "personal", "medium", "large", "family"].includes(activeCategory) && (
-                            <SizeGuide />
-                        )}
+
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8">
                             {filteredProducts.map((product) => (
                                 <ProductCard
