@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 
 interface CartState {
     items: CartItem[];
-    addItem: (item: Omit<CartItem, "quantity">) => void;
+    addItem: (item: Omit<CartItem, "quantity">, quantityToAdd?: number) => void;
     removeItem: (id: string) => void;
     updateQuantity: (id: string, delta: number) => void;
     clearCart: () => void;
@@ -81,16 +81,16 @@ export const useCartStore = create<CartState>()(
             setLocation: (location) => set({ location }),
             setLanguage: (language) => set({ language }),
 
-            addItem: (product) => {
+            addItem: (product, quantityToAdd = 1) => {
                 set((state) => {
                     const existing = state.items.find((i) => i.id === product.id);
                     let newItems;
                     if (existing) {
                         newItems = state.items.map((i) =>
-                            i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+                            i.id === product.id ? { ...i, quantity: i.quantity + quantityToAdd } : i
                         );
                     } else {
-                        newItems = [...state.items, { ...product, quantity: 1 }];
+                        newItems = [...state.items, { ...product, quantity: quantityToAdd }];
                     }
                     return {
                         items: newItems,

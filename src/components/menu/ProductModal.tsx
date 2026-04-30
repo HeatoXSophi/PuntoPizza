@@ -151,22 +151,18 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
             ? `${product.id}-cust-${Date.now()}`
             : product.id;
 
-        // Loop for quantity
-        for (let i = 0; i < quantity; i++) {
-            addItem({
-                id: customId, // Note: with loop same ID might be issue if logic merges, but here timestamp helps unique batch
-                name: product.name,
-                price: unitPrice,
-                image: product.image,
-                category: product.category,
-                description: finalDescription,
-                boxesRequired: product.boxesRequired
-            });
-        }
+        addItem({
+            id: customId,
+            name: product.name,
+            price: unitPrice,
+            image: product.image,
+            category: product.category,
+            description: finalDescription,
+            boxesRequired: product.boxesRequired
+        }, quantity);
 
-        toast.success(`Agregado: ${product.name}`);
+        toast.success(`Agregado: ${quantity}x ${product.name}`);
         onClose();
-        setCartOpen(true);
     };
 
     return (
