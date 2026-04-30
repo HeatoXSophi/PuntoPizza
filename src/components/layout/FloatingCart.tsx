@@ -14,13 +14,13 @@ export function FloatingCart() {
     const toggleCart = useCartStore((state) => state.toggleCart);
 
     const handleClick = useCallback((e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent navigation
+        e.preventDefault();
         try {
             webhookService.sendEvent("CART_OPENED", { count });
         } catch (error) {
             // Ignored
         }
-        toggleCart(); // Open Sidebar
+        toggleCart();
     }, [count, toggleCart]);
 
     if (!isHydrated || count === 0) return null;
@@ -29,7 +29,7 @@ export function FloatingCart() {
 
     return (
         <div
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden md:block"
             role="region"
             aria-label="Carrito de compras"
         >

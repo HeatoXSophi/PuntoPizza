@@ -18,7 +18,7 @@ const SIZE_INFO: Record<string, { size: string; pieces: string }> = {
     personal: { size: "25cm", pieces: "8 pzas" },
     medium:   { size: "33cm", pieces: "8 pzas" },
     large:    { size: "40cm", pieces: "12 pzas" },
-    family:   { size: "60×40cm", pieces: "24 pzas" },
+    family:   { size: "55×35cm", pieces: "20 pzas" },
 };
 
 export function CategoryTabs({ categories, activeCategory, onSelectCategory }: CategoryTabsProps) {

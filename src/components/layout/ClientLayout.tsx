@@ -152,9 +152,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                 <div className="flex min-h-screen flex-col pb-24 md:pb-0 bg-[#F5F5F7]">
                     <Header />
                     <main className="flex-grow">{children}</main>
-                    <div className="hidden md:block">
-                        <FloatingCart />
-                    </div>
+                    <FloatingCart />
                     <CartSidebar />
                     <BottomNav />
                     <Toaster position="bottom-right" />
