@@ -70,23 +70,19 @@ export function WhatsAppCheckout() {
             return;
         }
         if (formData.paymentMethod === "Pago Móvil") {
-            if (!formData.paymentReference) {
-                toast.error("Por favor indica el número de referencia del pago");
-                return;
-            }
+            // Note: Reference not required here anymore, requested via WhatsApp
         }
 
-        const deliveryFeeAmount = settings?.delivery_fee ?? 2.00;
         const boxFeeAmount = settings?.box_fee ?? 1.00;
 
-        const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? deliveryFeeAmount : 0;
+        const deliveryFee = 0; // Handled separately via WhatsApp for delivery
         const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
             const defaultBoxes = ["bebidas", "postres", "pastas"].includes(item.category?.toLowerCase()) ? 0 : 1;
             return acc + ((item.boxesRequired ?? defaultBoxes) * item.quantity);
         }, 0);
         const boxFee = boxCount * boxFeeAmount;
 
-        const finalTotal = total + deliveryFee + boxFee;
+        const finalTotal = total + boxFee;
         const totalBs = bcvRate ? finalTotal * bcvRate : 0;
 
         // Cash Change Validation & Calculation
@@ -125,8 +121,7 @@ export function WhatsAppCheckout() {
         message += `💰 *MÉTODO DE PAGO: ${formData.paymentMethod.toUpperCase()}*\n`;
 
         if (formData.paymentMethod === "Pago Móvil") {
-            message += `🔢 *Referencia:* ${formData.paymentReference}\n`;
-            message += `📸 *Comprobante:* (Pendiente por enviar en el chat)\n`;
+            message += `📲 *Nota:* Enviar datos de Pago Móvil por este chat para procesar el pago.\n`;
         } else if (formData.paymentMethod === "Efectivo" && formData.cashAmount) {
             message += `💵 *Paga con:* $${parseFloat(formData.cashAmount).toFixed(2)}\n`;
             message += `🔄 *Cambio:* $${changeAmount.toFixed(2)}\n`;
@@ -149,7 +144,7 @@ export function WhatsAppCheckout() {
         });
 
         if (deliveryType === "delivery") {
-            message += `\n🚚 *Envío:* $${deliveryFee.toFixed(2)}`;
+            message += `\n🚚 *Envío:* A consultar zona`;
         }
         if (boxFee > 0) {
             message += `\n📦 *Cajas (${boxCount}):* $${boxFee.toFixed(2)}`;
@@ -223,16 +218,15 @@ export function WhatsAppCheckout() {
 
     if (items.length === 0) return null;
 
-    const deliveryFeeAmount = settings?.delivery_fee ?? 2.00;
     const boxFeeAmount = settings?.box_fee ?? 1.00;
 
-    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? deliveryFeeAmount : 0;
+    const deliveryFee = 0; // Handled separately via WhatsApp
     const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
         const defaultBoxes = ["bebidas", "postres", "pastas"].includes(item.category?.toLowerCase()) ? 0 : 1;
         return acc + ((item.boxesRequired ?? defaultBoxes) * item.quantity);
     }, 0);
     const boxFee = boxCount * boxFeeAmount;
-    const finalTotal = total + deliveryFee + boxFee;
+    const finalTotal = total + boxFee;
 
     const cashChange = (formData.cashAmount && !isNaN(parseFloat(formData.cashAmount)))
         ? parseFloat(formData.cashAmount) - finalTotal
@@ -258,7 +252,7 @@ export function WhatsAppCheckout() {
             <p className="text-sm text-muted-foreground text-center">
                 {formData.paymentMethod === "Efectivo"
                     ? "Paga al recibir tu pedido."
-                    : "Realiza el pago y envía el comprobante por WhatsApp."}
+                    : "Te enviaremos los datos de Pago Móvil por WhatsApp para confirmar."}
             </p>
 
             <div className="space-y-3">
@@ -366,31 +360,15 @@ export function WhatsAppCheckout() {
                 {formData.paymentMethod === "Pago Móvil" && bcvRate && (
                     <div className="space-y-3 p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300 animate-in fade-in slide-in-from-top-2">
                         <div className="flex justify-between items-center bg-green-50 p-2 rounded border border-green-100 mb-2">
-                            <span className="text-xs font-semibold text-green-800">Monto a Pagar:</span>
+                            <span className="text-xs font-semibold text-green-800">Monto del Pedido:</span>
                             <span className="text-lg font-bold text-green-700">Bs. {(finalTotal * bcvRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
 
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Datos de Pago</p>
-
-                        <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded border border-blue-100">
-                            <p><strong>BANCO MERCANTIL 0105</strong></p>
-                            <p>0424-6670560</p>
-                            <p>C.I: V - 17499726</p>
-                        </div>
-
-                        <Input
-                            name="paymentReference"
-                            placeholder="Número de Referencia (Últimos 4 dígitos)"
-                            value={formData.paymentReference}
-                            onChange={handleChange}
-                            className="bg-white"
-                        />
-
-                        <div className="p-3 bg-yellow-50 text-yellow-800 text-xs rounded border border-yellow-200 flex items-start gap-2">
-                            <span>⚠️</span>
+                        <div className="p-3 bg-blue-50 text-blue-800 text-xs rounded border border-blue-200 flex items-start gap-2">
+                            <span>ℹ️</span>
                             <p>
-                                <strong>Importante:</strong> Al finalizar el pedido, se abrirá WhatsApp.
-                                Por favor envía la captura de pantalla de tu pago en ese chat.
+                                <strong>Nota:</strong> Te enviaremos los datos para el Pago Móvil por WhatsApp 
+                                al enviar tu pedido (y confirmaremos el costo de delivery si aplica).
                             </p>
                         </div>
                     </div>

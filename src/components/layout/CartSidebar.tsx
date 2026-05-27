@@ -19,13 +19,13 @@ export function CartSidebar() {
 
     const isHydrated = useHydrated();
 
-    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? 2.00 : 0;
+    const deliveryFee = 0; // Confirmed via WhatsApp
     const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
         const defaultBoxes = ["bebidas", "postres", "pastas"].includes(item.category?.toLowerCase()) ? 0 : 1;
         return acc + ((item.boxesRequired ?? defaultBoxes) * item.quantity);
     }, 0);
     const boxFee = boxCount * 1.00;
-    const finalTotal = total + deliveryFee + boxFee;
+    const finalTotal = total + boxFee;
 
     if (!isHydrated) return null;
 
@@ -199,8 +199,8 @@ export function CartSidebar() {
                                         <span className="text-gray-500">
                                             Envío ({deliveryType === 'delivery' ? 'Delivery' : deliveryType === 'pickup' ? 'Retiro' : 'Local'})
                                         </span>
-                                        <span className={deliveryFee > 0 ? "font-semibold text-gray-900" : "text-green-600 font-medium"}>
-                                            {deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : "Gratis"}
+                                        <span className={deliveryType === 'delivery' ? "font-semibold text-gray-900" : "text-green-600 font-medium"}>
+                                            {deliveryType === 'delivery' ? "A consultar" : "Gratis"}
                                         </span>
                                     </div>
 

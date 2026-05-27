@@ -35,16 +35,15 @@ export default function CartPage() {
         );
     }
 
-    const deliveryFeeAmount = settings?.delivery_fee ?? 2.00;
     const boxFeeAmount = settings?.box_fee ?? 1.00;
 
-    const deliveryFee = (items.length > 0 && deliveryType === "delivery") ? deliveryFeeAmount : 0;
+    const deliveryFee = 0; // Not calculated in cart, consulted via WhatsApp
     const boxCount = deliveryType === "dine_in" ? 0 : items.reduce((acc, item) => {
         const defaultBoxes = ["bebidas", "postres", "pastas"].includes(item.category?.toLowerCase()) ? 0 : 1;
         return acc + ((item.boxesRequired ?? defaultBoxes) * item.quantity);
     }, 0);
     const boxFee = boxCount * boxFeeAmount;
-    const finalTotal = total + deliveryFee + boxFee;
+    const finalTotal = total + boxFee;
 
     if (items.length === 0) {
         return (
@@ -150,7 +149,7 @@ export default function CartPage() {
                                 </div>
                                 <div className="flex justify-between text-gray-600">
                                     <span>Envío ({deliveryType === "delivery" ? "Delivery" : deliveryType === "pickup" ? "Retiro" : "Local"})</span>
-                                    <span className="font-medium">{deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : "Gratis"}</span>
+                                    <span className="font-medium">{deliveryType === "delivery" ? "A consultar" : "Gratis"}</span>
                                 </div>
                                 {boxFee > 0 && (
                                     <div className="flex justify-between text-gray-600">
